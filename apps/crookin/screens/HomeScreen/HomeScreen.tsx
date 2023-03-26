@@ -11,7 +11,7 @@ export const HomeScreen = () => {
     <HomeScreenWrapper>
       <TagSelectorComponent />
       <HomeScreenScrollWrapper>
-        <HomeScreenColumnWrapper></HomeScreenColumnWrapper>
+        <HomeScreenColumnWrapper />
         <HomeScreenColumnWrapper />
       </HomeScreenScrollWrapper>
     </HomeScreenWrapper>
