@@ -24,3 +24,17 @@ export const HomeScreenColumnWrapper: FC<PropsWithChildren> = ({
 }) => {
   return <View style={{ flex: 1, marginTop: 8 }}>{children}</View>;
 };
+
+export const NoRecipesWrapper: FC<PropsWithChildren> = ({ children }) => {
+  return (
+    <View
+      style={{
+        alignItems: "center",
+        flex: 1,
+        justifyContent: "center",
+      }}
+    >
+      {children}
+    </View>
+  );
+};

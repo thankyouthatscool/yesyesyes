@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import { FlatList, View } from "react-native";
 import { Chip } from "react-native-paper";
 
@@ -14,10 +14,6 @@ export const TagSelectorComponent = () => {
   const { availableTags, selectedTags } = useAppSelector(
     ({ recipes }) => recipes
   );
-
-  useEffect(() => {
-    console.log(availableTags);
-  }, [availableTags]);
 
   return (
     <View

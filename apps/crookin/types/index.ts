@@ -1,3 +1,23 @@
+import {
+  DrawerNavigationProp,
+  DrawerScreenProps,
+} from "@react-navigation/drawer";
+
+export type RootDrawerNavigationProps = {
+  Home: undefined;
+  NewRecipe: undefined;
+};
+
+export type HomeScreenNavigationProps = DrawerScreenProps<
+  RootDrawerNavigationProps,
+  "Home"
+>;
+
+export type NewRecipeScreenNavigationProps = DrawerScreenProps<
+  RootDrawerNavigationProps,
+  "NewRecipe"
+>;
+
 export type RecipeStep = {
   description: string;
   duration?: number;

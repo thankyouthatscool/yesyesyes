@@ -1,3 +1,4 @@
+import { DefaultTheme, NavigationContainer } from "@react-navigation/native";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, View } from "react-native";
@@ -13,14 +14,24 @@ SplashScreen.preventAutoHideAsync();
 export const App = () => {
   return (
     <ReduxProvider store={store}>
-      <SafeAreaProvider>
-        <PaperProvider>
-          <View style={styles.container}>
-            <AppRoot />
-            <StatusBar style="auto" />
-          </View>
-        </PaperProvider>
-      </SafeAreaProvider>
+      <NavigationContainer
+        theme={{
+          ...DefaultTheme,
+          colors: {
+            ...DefaultTheme.colors,
+            background: "#fff",
+          },
+        }}
+      >
+        <SafeAreaProvider>
+          <PaperProvider>
+            <View style={styles.container}>
+              <AppRoot />
+              <StatusBar style="auto" />
+            </View>
+          </PaperProvider>
+        </SafeAreaProvider>
+      </NavigationContainer>
     </ReduxProvider>
   );
 };

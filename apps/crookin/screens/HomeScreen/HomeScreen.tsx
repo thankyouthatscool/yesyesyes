@@ -1,38 +1,43 @@
 import { FC, useMemo } from "react";
 import { Text } from "react-native";
-import { Button, Card } from "react-native-paper";
+import { Card, IconButton, Text as RNPText } from "react-native-paper";
 
 import { TagSelectorComponent } from "@components/TagSelectorComponent";
 import { useAppDispatch, useAppSelector } from "@hooks";
 import { setSelectedRecipe } from "@store";
 import { defaultAppPaddingSize } from "@theme";
-import { Recipe } from "@types";
+import { Recipe, HomeScreenNavigationProps } from "@types";
 
 import {
   HomeScreenWrapper,
   HomeScreenColumnWrapper,
   HomeScreenScrollWrapper,
+  NoRecipesWrapper,
 } from "./Styled";
 
-export const HomeScreen = () => {
+export const HomeScreen: FC<HomeScreenNavigationProps> = ({ navigation }) => {
   const { recipes } = useAppSelector(({ recipes }) => recipes);
 
   return (
     <HomeScreenWrapper>
       <TagSelectorComponent />
-      {!recipes.length && (
-        <Button
-          icon="plus"
-          mode="contained"
-          onPress={() => {
-            console.log("will do the add ");
-          }}
-          style={{ alignSelf: "flex-start" }}
-        >
-          Add
-        </Button>
+      {!recipes.length ? (
+        <NoRecipesWrapper>
+          <IconButton
+            iconColor="purple"
+            icon="plus"
+            mode="contained"
+            onPress={() => {
+              navigation.navigate("NewRecipe");
+            }}
+            size={50}
+          />
+          <RNPText variant="titleLarge">Add Recipes</RNPText>
+          <RNPText variant="bodySmall">No recipes found on the device.</RNPText>
+        </NoRecipesWrapper>
+      ) : (
+        <RecipeColumns columnsNum={2} recipes={recipes} />
       )}
-      <RecipeColumns columnsNum={3} recipes={recipes} />
     </HomeScreenWrapper>
   );
 };
