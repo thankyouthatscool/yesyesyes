@@ -9,7 +9,11 @@ export const HomeScreenScrollWrapper: FC<PropsWithChildren> = ({
   children,
 }) => {
   return (
-    <ScrollView contentContainerStyle={{ flexDirection: "row" }}>
+    <ScrollView
+      contentContainerStyle={{
+        flexDirection: "row",
+      }}
+    >
       {children}
     </ScrollView>
   );

@@ -1,6 +1,6 @@
 import { FC, useMemo } from "react";
 import { Text } from "react-native";
-import { Card } from "react-native-paper";
+import { Button, Card } from "react-native-paper";
 
 import { TagSelectorComponent } from "@components/TagSelectorComponent";
 import { useAppDispatch, useAppSelector } from "@hooks";
@@ -20,7 +20,19 @@ export const HomeScreen = () => {
   return (
     <HomeScreenWrapper>
       <TagSelectorComponent />
-      <RecipeColumns columnsNum={2} recipes={recipes} />
+      {!recipes.length && (
+        <Button
+          icon="plus"
+          mode="contained"
+          onPress={() => {
+            console.log("will do the add ");
+          }}
+          style={{ alignSelf: "flex-start" }}
+        >
+          Add
+        </Button>
+      )}
+      <RecipeColumns columnsNum={3} recipes={recipes} />
     </HomeScreenWrapper>
   );
 };

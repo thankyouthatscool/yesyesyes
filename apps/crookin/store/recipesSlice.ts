@@ -1,11 +1,17 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { Recipe, RecipesState } from "@types";
+import { Recipe, RecipesState, RecipeTag } from "@types";
 
 const initialState: RecipesState = {
-  activeStep: null,
+  // Recipes
   recipes: [],
   selectedRecipe: null,
+
+  // Steps
+  activeStep: null,
+
+  // Tags
+  availableTags: [],
   selectedTags: [],
 };
 
@@ -13,13 +19,32 @@ export const recipesSlice = createSlice({
   name: "recipes",
   initialState,
   reducers: {
+    // Recipes
     setRecipes: (state, { payload }: PayloadAction<Recipe[]>) => {
       state.recipes = payload;
     },
     setSelectedRecipe: (state, { payload }: PayloadAction<string | null>) => {
       state.selectedRecipe = payload;
     },
+
+    // Tags
+    setAvailableTags: (state, { payload }: PayloadAction<RecipeTag[]>) => {
+      state.availableTags = payload;
+    },
+    setSelectedTags: (state, { payload }: PayloadAction<string[]>) => {
+      state.selectedTags = payload;
+    },
   },
 });
 
-export const { setRecipes, setSelectedRecipe } = recipesSlice.actions;
+export const {
+  // Recipes
+  setRecipes,
+  setSelectedRecipe,
+
+  // Steps
+
+  // Tags
+  setAvailableTags,
+  setSelectedTags,
+} = recipesSlice.actions;

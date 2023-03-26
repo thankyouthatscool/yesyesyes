@@ -4,8 +4,8 @@ import { ToastAndroid } from "react-native";
 
 import { useAppDispatch } from "@hooks";
 import { HomeScreen } from "@screens/HomeScreen";
-import { setRecipes } from "@store";
-import { lsGetRecipes } from "@utils";
+import { setAvailableTags, setRecipes } from "@store";
+import { lsGetRecipes, lsGetTags } from "@utils";
 
 import { AppRootWrapper } from "./Styled";
 
@@ -14,6 +14,7 @@ export const AppRoot = () => {
 
   const handleInitialLoad = useCallback(async () => {
     const { recipes, status } = await lsGetRecipes();
+    const { tags } = await lsGetTags();
 
     ToastAndroid.show(
       status === 200
@@ -24,6 +25,7 @@ export const AppRoot = () => {
       ToastAndroid.SHORT
     );
 
+    dispatch(setAvailableTags(tags));
     dispatch(setRecipes(recipes));
 
     SplashScreen.hideAsync();

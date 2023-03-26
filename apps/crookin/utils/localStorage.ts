@@ -1,7 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { Recipe } from "@types";
+import { Recipe, RecipeTag } from "@types";
 
+// Recipes
 export const lsGetRecipes = async () => {
   const resString = await AsyncStorage.getItem("recipes");
 
@@ -36,5 +37,18 @@ export const lsAddRecipe = async (newRecipe: Recipe) => {
     return { status: 200 };
   } catch {
     return { status: 500 };
+  }
+};
+
+// Tags
+export const lsGetTags = async () => {
+  const resString = await AsyncStorage.getItem("tags");
+
+  if (!!resString) {
+    const tags = JSON.parse(resString) as RecipeTag[];
+
+    return { status: 200, tags };
+  } else {
+    return { status: 400, tags: [] };
   }
 };
