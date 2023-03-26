@@ -18,5 +18,5 @@ export const HomeScreenScrollWrapper: FC<PropsWithChildren> = ({
 export const HomeScreenColumnWrapper: FC<PropsWithChildren> = ({
   children,
 }) => {
-  return <View style={{ flex: 1 }}>{children}</View>;
+  return <View style={{ flex: 1, marginTop: 8 }}>{children}</View>;
 };

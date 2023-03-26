@@ -1,4 +1,12 @@
+import { FC, useMemo } from "react";
+import { Text } from "react-native";
+import { Card } from "react-native-paper";
+
 import { TagSelectorComponent } from "@components/TagSelectorComponent";
+import { useAppDispatch, useAppSelector } from "@hooks";
+import { setSelectedRecipe } from "@store";
+import { defaultAppPaddingSize } from "@theme";
+import { Recipe } from "@types";
 
 import {
   HomeScreenWrapper,
@@ -7,13 +15,55 @@ import {
 } from "./Styled";
 
 export const HomeScreen = () => {
+  const { recipes } = useAppSelector(({ recipes }) => recipes);
+
   return (
     <HomeScreenWrapper>
       <TagSelectorComponent />
-      <HomeScreenScrollWrapper>
-        <HomeScreenColumnWrapper />
-        <HomeScreenColumnWrapper />
-      </HomeScreenScrollWrapper>
+      <RecipeColumns columnsNum={2} recipes={recipes} />
     </HomeScreenWrapper>
+  );
+};
+
+export const RecipeColumns: FC<{ columnsNum?: number; recipes: Recipe[] }> = ({
+  columnsNum,
+  recipes,
+}) => {
+  const dispatch = useAppDispatch();
+
+  const numberOfColumns = useMemo(() => columnsNum || 2, [columnsNum]);
+
+  return (
+    <HomeScreenScrollWrapper>
+      {Array.from({ length: numberOfColumns }).map((_, outerIdx) => (
+        <HomeScreenColumnWrapper key={outerIdx}>
+          {recipes
+            .filter((_, idx) => idx % numberOfColumns === outerIdx)
+            .map((recipe) => (
+              <Card
+                key={recipe.id}
+                onPress={() => {
+                  dispatch(setSelectedRecipe(recipe.id));
+                }}
+                style={{
+                  marginLeft:
+                    outerIdx === 0
+                      ? defaultAppPaddingSize
+                      : defaultAppPaddingSize / 2,
+                  marginRight:
+                    outerIdx === numberOfColumns - 1
+                      ? defaultAppPaddingSize
+                      : defaultAppPaddingSize / 2,
+                  marginBottom: 8,
+                }}
+              >
+                <Card.Content>
+                  <Text>{recipe.name}</Text>
+                </Card.Content>
+              </Card>
+            ))}
+        </HomeScreenColumnWrapper>
+      ))}
+    </HomeScreenScrollWrapper>
   );
 };

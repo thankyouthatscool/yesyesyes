@@ -1,3 +1,4 @@
+import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, View } from "react-native";
 import { Provider as PaperProvider } from "react-native-paper";
@@ -6,6 +7,8 @@ import { Provider as ReduxProvider } from "react-redux";
 
 import { AppRoot } from "@components/AppRoot";
 import { store } from "@store";
+
+SplashScreen.preventAutoHideAsync();
 
 export const App = () => {
   return (
