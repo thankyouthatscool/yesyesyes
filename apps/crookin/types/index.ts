@@ -25,6 +25,8 @@ export type RecipeStep = {
   type?: "prep" | "cook";
 };
 
+export type RecipeTag = { id: string; name: string };
+
 export type Recipe = {
   id: string;
   description?: string;
@@ -34,8 +36,6 @@ export type Recipe = {
   reactions: string[];
   tags: string[];
 };
-
-export type RecipeTag = { id: string; name: string };
 
 export type RecipesState = {
   activeStep: string | null;

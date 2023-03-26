@@ -1,6 +1,6 @@
-import { FC, useMemo } from "react";
+import { FC, useEffect, useMemo } from "react";
 import { Text } from "react-native";
-import { Card, IconButton, Text as RNPText } from "react-native-paper";
+import { Card, FAB, IconButton, Text as RNPText } from "react-native-paper";
 
 import { TagSelectorComponent } from "@components/TagSelectorComponent";
 import { useAppDispatch, useAppSelector } from "@hooks";
@@ -16,7 +16,9 @@ import {
 } from "./Styled";
 
 export const HomeScreen: FC<HomeScreenNavigationProps> = ({ navigation }) => {
-  const { recipes } = useAppSelector(({ recipes }) => recipes);
+  const { recipes, selectedTags } = useAppSelector(({ recipes }) => recipes);
+
+  // selectedTags are an UUID, so that sucks dick
 
   return (
     <HomeScreenWrapper>
@@ -76,6 +78,9 @@ export const RecipeColumns: FC<{ columnsNum?: number; recipes: Recipe[] }> = ({
               >
                 <Card.Content>
                   <Text>{recipe.name}</Text>
+                  {recipe.tags.map((tag) => (
+                    <Text key={tag}>{tag}</Text>
+                  ))}
                 </Card.Content>
               </Card>
             ))}

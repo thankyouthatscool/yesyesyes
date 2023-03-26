@@ -23,10 +23,11 @@ export const TagSelectorComponent = () => {
     >
       <FlatList
         horizontal
-        data={availableTags.sort((a, b) => a.name.localeCompare(b.name))}
+        data={availableTags}
         keyExtractor={(item) => item.id}
         renderItem={({ item: { id, name }, index }) => (
           <Chip
+            key={id}
             mode={selectedTags.includes(id) ? "flat" : "outlined"}
             onPress={() => {
               if (!!selectedTags.includes(id)) {

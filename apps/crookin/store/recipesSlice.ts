@@ -20,6 +20,9 @@ export const recipesSlice = createSlice({
   initialState,
   reducers: {
     // Recipes
+    addRecipe: (state, { payload }: PayloadAction<Recipe>) => {
+      state.recipes = [...state.recipes, payload];
+    },
     setRecipes: (state, { payload }: PayloadAction<Recipe[]>) => {
       state.recipes = payload;
     },
@@ -39,6 +42,7 @@ export const recipesSlice = createSlice({
 
 export const {
   // Recipes
+  addRecipe,
   setRecipes,
   setSelectedRecipe,
 

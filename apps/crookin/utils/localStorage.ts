@@ -1,9 +1,12 @@
+import * as Crypto from "expo-crypto";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { Recipe, RecipeTag } from "@types";
 
 // Recipes
 export const lsGetRecipes = async () => {
+  // await AsyncStorage.multiRemove(["recipes", "tags"]);
+
   const resString = await AsyncStorage.getItem("recipes");
 
   try {
@@ -33,7 +36,6 @@ export const lsAddRecipe = async (newRecipe: Recipe) => {
     } else {
       await AsyncStorage.setItem("recipes", JSON.stringify([newRecipe]));
     }
-
     return { status: 200 };
   } catch {
     return { status: 500 };
@@ -41,6 +43,46 @@ export const lsAddRecipe = async (newRecipe: Recipe) => {
 };
 
 // Tags
+export const lsAddTags = async (newTags: string[]) => {
+  const resString = await AsyncStorage.getItem("tags");
+  const uniqueNewTags = Array.from(new Set(newTags));
+
+  try {
+    if (!!resString) {
+      const tags = JSON.parse(resString) as RecipeTag[];
+
+      const allTags = Array.from(
+        new Set([
+          ...tags,
+          ...uniqueNewTags.map((tag) => ({
+            id: Crypto.randomUUID() as string,
+            name: tag,
+          })),
+        ])
+      );
+
+      await AsyncStorage.setItem("tags", JSON.stringify(allTags));
+
+      return { status: 200, tags: allTags };
+    } else {
+      const allTags = Array.from(
+        new Set([
+          ...uniqueNewTags.map((tag) => ({
+            id: Crypto.randomUUID() as string,
+            name: tag,
+          })),
+        ])
+      );
+
+      await AsyncStorage.setItem("tags", JSON.stringify(allTags));
+
+      return { status: 200, tags: allTags };
+    }
+  } catch {
+    return { status: 500, tags: [] };
+  }
+};
+
 export const lsGetTags = async () => {
   const resString = await AsyncStorage.getItem("tags");
 
