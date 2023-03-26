@@ -77,7 +77,7 @@ const NewRecipeScreen: FC<NewRecipeScreenNavigationProps> = ({
 
   return (
     <View style={{ height: "100%", padding: defaultAppPaddingSize }}>
-      <Text variant="headlineSmall">New Recipe Details</Text>
+      <Text variant="headlineSmall">New Recipe</Text>
       <ScrollView>
         <TextInput
           mode="outlined"
