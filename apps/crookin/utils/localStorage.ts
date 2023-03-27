@@ -51,10 +51,14 @@ export const lsAddTags = async (newTags: string[]) => {
     if (!!resString) {
       const tags = JSON.parse(resString) as RecipeTag[];
 
+      const tagsToAdd = uniqueNewTags.filter(
+        (newTag) => !tags.map((tag) => tag.name).includes(newTag)
+      );
+
       const allTags = Array.from(
         new Set([
           ...tags,
-          ...uniqueNewTags.map((tag) => ({
+          ...tagsToAdd.map((tag) => ({
             id: Crypto.randomUUID() as string,
             name: tag,
           })),

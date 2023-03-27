@@ -34,7 +34,7 @@ export type Recipe = {
   coverPhoto?: string;
   steps: RecipeStep[];
   reactions: string[];
-  tags: string[];
+  tags: RecipeTag[];
 };
 
 export type RecipesState = {

@@ -5,6 +5,7 @@ import { Chip } from "react-native-paper";
 import { useAppDispatch, useAppSelector } from "@hooks";
 import { setSelectedTags } from "@store";
 import { defaultAppPaddingSize } from "@theme";
+import { RecipeTag } from "@types";
 
 export const TagSelectorComponent = () => {
   const numberOfTags = useMemo(() => 10, []);
@@ -23,7 +24,7 @@ export const TagSelectorComponent = () => {
     >
       <FlatList
         horizontal
-        data={availableTags}
+        data={[...availableTags]?.sort((a, b) => a.name.localeCompare(b.name))}
         keyExtractor={(item) => item.id}
         renderItem={({ item: { id, name }, index }) => (
           <Chip

@@ -33,6 +33,7 @@ export const NewRecipeScreen: FC<NewRecipeScreenNavigationProps> = ({
           .split(",")
           .map((tag) => tag.trim())
           .map((tag) => tag.toLowerCase())
+          .filter((tag) => !!tag)
       )
     );
 
@@ -50,26 +51,31 @@ export const NewRecipeScreen: FC<NewRecipeScreenNavigationProps> = ({
       if (status === 200) {
         dispatch(setAvailableTags(tags));
       }
-    }
 
-    dispatch(addRecipe(newRecipe));
+      const withFullTags = {
+        ...newRecipe,
+        tags: tags.filter((tag) => newRecipe.tags.includes(tag.name)),
+      };
 
-    const { status } = await lsAddRecipe(newRecipe);
+      dispatch(addRecipe(withFullTags));
 
-    if (status === 200) {
-      ToastAndroid.show(
-        `Recipe ${newRecipeData.name} saved to device.`,
-        ToastAndroid.LONG
-      );
+      const { status: recStatus } = await lsAddRecipe(withFullTags);
 
-      handleResetNewRecipeData();
+      if (recStatus === 200) {
+        ToastAndroid.show(
+          `Recipe ${newRecipeData.name} saved to device.`,
+          ToastAndroid.LONG
+        );
 
-      navigation.navigate("Home");
-    } else {
-      ToastAndroid.show(
-        `Something went wrong saving the recipe ${newRecipeData.name}!\nPlease try again later!`,
-        ToastAndroid.LONG
-      );
+        handleResetNewRecipeData();
+
+        navigation.navigate("Home");
+      } else {
+        ToastAndroid.show(
+          `Something went wrong saving the recipe ${newRecipeData.name}!\nPlease try again later!`,
+          ToastAndroid.LONG
+        );
+      }
     }
   }, [newRecipeData]);
 

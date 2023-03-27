@@ -1,5 +1,5 @@
 import { FC, useEffect, useMemo } from "react";
-import { Text } from "react-native";
+import { Text, View } from "react-native";
 import { Card, FAB, IconButton, Text as RNPText } from "react-native-paper";
 
 import { TagSelectorComponent } from "@components/TagSelectorComponent";
@@ -18,7 +18,7 @@ import {
 export const HomeScreen: FC<HomeScreenNavigationProps> = ({ navigation }) => {
   const { recipes, selectedTags } = useAppSelector(({ recipes }) => recipes);
 
-  // selectedTags are an UUID, so that sucks dick
+  useEffect(() => console.log(selectedTags), [selectedTags]);
 
   return (
     <HomeScreenWrapper>
@@ -38,8 +38,27 @@ export const HomeScreen: FC<HomeScreenNavigationProps> = ({ navigation }) => {
           <RNPText variant="bodySmall">No recipes found on the device.</RNPText>
         </NoRecipesWrapper>
       ) : (
-        <RecipeColumns columnsNum={2} recipes={recipes} />
+        <RecipeColumns
+          columnsNum={2}
+          recipes={recipes.filter((rec) =>
+            selectedTags.every((tag) =>
+              rec.tags.map((tag) => tag.id).includes(tag)
+            )
+          )}
+        />
       )}
+      <FAB
+        icon="plus"
+        onPress={() => {
+          navigation.navigate("NewRecipe");
+        }}
+        style={{
+          alignSelf: "flex-start",
+          bottom: defaultAppPaddingSize * 3,
+          position: "absolute",
+          right: defaultAppPaddingSize * 3,
+        }}
+      />
     </HomeScreenWrapper>
   );
 };
@@ -79,7 +98,7 @@ export const RecipeColumns: FC<{ columnsNum?: number; recipes: Recipe[] }> = ({
                 <Card.Content>
                   <Text>{recipe.name}</Text>
                   {recipe.tags.map((tag) => (
-                    <Text key={tag}>{tag}</Text>
+                    <Text key={tag.id}>{tag.name}</Text>
                   ))}
                 </Card.Content>
               </Card>
