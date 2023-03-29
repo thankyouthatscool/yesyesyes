@@ -1,4 +1,5 @@
 import * as Crypto from "expo-crypto";
+import * as ImagePicker from "expo-image-picker";
 import { FC, useCallback, useEffect, useState } from "react";
 import { Modal, ScrollView, ToastAndroid, View } from "react-native";
 import {
@@ -29,7 +30,7 @@ export const NewRecipeScreen: FC<NewRecipeScreenNavigationProps> = ({
   }>({
     description: "",
     name: "",
-    steps: [{ description: "", id: Crypto.randomUUID(), pictures: [] }],
+    steps: [],
     tags: "",
   });
 
@@ -252,6 +253,35 @@ export const NewRecipeScreen: FC<NewRecipeScreenNavigationProps> = ({
 
             <View>
               <Text>Step Pics</Text>
+              <IconButton
+                mode="contained"
+                onPress={async () => {
+                  const res = await ImagePicker.launchImageLibraryAsync({
+                    allowsEditing: false,
+                    allowsMultipleSelection: true,
+                    aspect: [4, 3],
+                    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                    quality: 0.5,
+                  });
+
+                  if (res.assets?.length) {
+                    setNewRecipeData((data) => ({
+                      ...data,
+                      steps: [
+                        ...data.steps.slice(0, idx),
+                        { ...data.steps[idx], pictures: res.assets },
+                        ...data.steps.slice(idx + 1),
+                      ],
+                    }));
+                  } else {
+                    ToastAndroid.show(
+                      "Image picking cancelled by the user.",
+                      ToastAndroid.SHORT
+                    );
+                  }
+                }}
+                icon="plus"
+              />
             </View>
           </View>
         ))}

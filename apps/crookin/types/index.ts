@@ -2,6 +2,7 @@ import {
   DrawerNavigationProp,
   DrawerScreenProps,
 } from "@react-navigation/drawer";
+import type { ImagePickerAsset } from "expo-image-picker";
 
 export type RootDrawerNavigationProps = {
   Home: undefined;
@@ -23,7 +24,7 @@ export type RecipeStep = {
   duration?: number;
   durationUnit?: "s" | "m" | "h";
   id: string;
-  pictures: string[];
+  pictures: ImagePickerAsset[];
   type?: "prep" | "cook";
 };
 
