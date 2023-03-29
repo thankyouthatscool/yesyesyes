@@ -186,7 +186,19 @@ export const NewRecipeScreen: FC<NewRecipeScreenNavigationProps> = ({
                 keyboardType="numeric"
                 mode="outlined"
                 onChangeText={(e) => {
-                  setNewRecipeData((data) => ({ ...data }));
+                  setNewRecipeData((data) => {
+                    return {
+                      ...data,
+                      steps: [
+                        ...data.steps.slice(0, idx),
+                        {
+                          ...data.steps[idx],
+                          duration: parseInt(e) || data.steps[idx].duration,
+                        },
+                        ...data.steps.slice(idx + 1),
+                      ],
+                    };
+                  });
                 }}
                 placeholder="Duration"
                 style={{ width: "100%" }}
