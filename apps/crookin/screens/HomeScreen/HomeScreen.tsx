@@ -18,8 +18,6 @@ import {
 export const HomeScreen: FC<HomeScreenNavigationProps> = ({ navigation }) => {
   const { recipes, selectedTags } = useAppSelector(({ recipes }) => recipes);
 
-  useEffect(() => console.log(selectedTags), [selectedTags]);
-
   return (
     <HomeScreenWrapper>
       <TagSelectorComponent />

@@ -21,7 +21,9 @@ export type NewRecipeScreenNavigationProps = DrawerScreenProps<
 export type RecipeStep = {
   description: string;
   duration?: number;
+  durationUnit?: "s" | "m" | "h";
   id: string;
+  pictures: string[];
   type?: "prep" | "cook";
 };
 

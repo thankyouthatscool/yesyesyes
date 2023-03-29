@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FlatList, View } from "react-native";
 import { Chip } from "react-native-paper";
 
@@ -6,15 +6,24 @@ import { useAppDispatch, useAppSelector } from "@hooks";
 import { setSelectedTags } from "@store";
 import { defaultAppPaddingSize } from "@theme";
 import { RecipeTag } from "@types";
+import { useSafeAreaFrame } from "react-native-safe-area-context";
 
 export const TagSelectorComponent = () => {
-  const numberOfTags = useMemo(() => 10, []);
+  // const numberOfTags = useMemo(() => 10, []);
+
+  const [numberOfTags, setNumberOfTags] = useState<number>(0);
 
   const dispatch = useAppDispatch();
 
   const { availableTags, selectedTags } = useAppSelector(
     ({ recipes }) => recipes
   );
+
+  useEffect(() => {
+    if (!!availableTags) {
+      setNumberOfTags(() => availableTags.length);
+    }
+  }, [availableTags]);
 
   return (
     <View
