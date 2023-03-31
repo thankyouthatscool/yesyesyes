@@ -250,7 +250,6 @@ export const NewRecipeScreen: FC<NewRecipeScreenNavigationProps> = ({
                 value={newRecipeData.steps[idx].type as string}
               />
             </View>
-
             <View>
               <Text>Step Pics</Text>
               <IconButton
