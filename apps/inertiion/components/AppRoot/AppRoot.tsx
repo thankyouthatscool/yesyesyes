@@ -1,7 +1,7 @@
 import { createDrawerNavigator } from "@react-navigation/drawer";
 
 import { CustomDrawer } from "@components/CustomDrawer";
-import { HomeScreen } from "@screens/HomeScreen";
+import { HomeScreen, HomeScreenRoot } from "@screens/HomeScreen";
 import { RootDrawerNavigationProps } from "@types";
 
 const RootDrawer = createDrawerNavigator<RootDrawerNavigationProps>();
@@ -13,7 +13,7 @@ export const AppRoot = () => {
       initialRouteName="Home"
       screenOptions={{ headerShown: false }}
     >
-      <RootDrawer.Screen component={HomeScreen} name="Home" />
+      <RootDrawer.Screen component={HomeScreenRoot} name="Home" />
     </RootDrawer.Navigator>
   );
 };
