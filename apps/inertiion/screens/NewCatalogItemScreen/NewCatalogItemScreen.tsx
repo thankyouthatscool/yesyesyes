@@ -1,4 +1,5 @@
 import * as Crypto from "expo-crypto";
+import * as SQLite from "expo-sqlite";
 import { FC, useCallback, useState } from "react";
 import { ScrollView, ToastAndroid } from "react-native";
 import { IconButton, Text, TextInput } from "react-native-paper";
@@ -30,27 +31,53 @@ export const NewCatalogItemScreen: FC<NewCatalogItemScreenNavProps> = ({
   const handleSaveNewCatalogItem = useCallback(() => {
     setIsDataUpdated(() => false);
 
-    dispatch(
-      addCatalogItem({
-        ...newCatalogItemData,
-        id: Crypto.randomUUID(),
-        color:
-          newCatalogItemData.color
-            ?.split(",")
-            .map((color) => color.trim().toLowerCase()) || [],
-        size:
-          newCatalogItemData.size
-            ?.split(",")
-            .map((size) => size.trim().toLowerCase()) || [],
-      })
-    );
+    const newCatalogItemId = Crypto.randomUUID();
 
-    ToastAndroid.show(
-      `Catalog Item ${newCatalogItemData.code} saved!`,
-      ToastAndroid.LONG
-    );
+    const { code, color, location, size } = newCatalogItemData;
 
-    navigation.navigate("HomeScreen");
+    const db = SQLite.openDatabase("catalog.db");
+
+    db.transaction(
+      (tx) => {
+        tx.executeSql(
+          "INSERT INTO items (id, code, color, size, location) VALUES (?, ?, ?, ?, ?)",
+          [
+            newCatalogItemId,
+            code.toUpperCase(),
+            color ? color.toUpperCase() : null,
+            size ? size.toUpperCase() : null,
+            location.toUpperCase(),
+          ]
+        );
+      },
+      (err) => console.log(err),
+      () => {
+        dispatch(
+          addCatalogItem({
+            code: code.toUpperCase(),
+            color:
+              color
+                ?.split(",")
+                .map((color) => color.trim().toLowerCase())
+                .filter((color) => !!color) || [],
+            id: newCatalogItemId,
+            location: location.toUpperCase(),
+            size:
+              size
+                ?.split(",")
+                .map((size) => size.trim().toLowerCase())
+                .filter((size) => !!size) || [],
+          })
+        );
+
+        ToastAndroid.show(
+          `Catalog Item ${newCatalogItemData.code} saved!`,
+          ToastAndroid.LONG
+        );
+
+        navigation.navigate("HomeScreen");
+      }
+    );
   }, [newCatalogItemData]);
 
   const handleResetNewCatalogItemForm = useCallback(() => {
