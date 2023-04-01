@@ -1,3 +1,4 @@
+import _debounce from "lodash.debounce";
 import { useCallback, useEffect, useState } from "react";
 import { View } from "react-native";
 import { Text } from "react-native-paper";
@@ -18,29 +19,31 @@ export const SearchResult = () => {
     []
   );
 
-  const searchDatabase = useCallback((searchTerm: string) => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        "SELECT * FROM items WHERE code LIKE ?",
-        [`%${searchTerm}%`],
-        (_, { rows: { _array } }) => {
-          try {
-            const searchResult = _array.map((item) => ({
-              ...item,
-              color: item.color
-                ?.split(",")
-                .map((color: string) => color.trim()),
-              size: item.size?.split(",").map((size: string) => size.trim()),
-            })) as unknown as CatalogItem[];
+  const searchDatabase = _debounce(
+    useCallback((searchTerm: string) => {
+      db.transaction((tx) => {
+        tx.executeSql(
+          "SELECT * FROM items WHERE code LIKE ?",
+          [`%${searchTerm}%`],
+          (_, { rows: { _array } }) => {
+            try {
+              const searchResult = _array.map((item) => ({
+                ...item,
+                color: item.color
+                  ?.split(",")
+                  .map((color: string) => color.trim()),
+                size: item.size?.split(",").map((size: string) => size.trim()),
+              })) as unknown as CatalogItem[];
 
-            setCatalogItemsSearchResult(() => searchResult);
-          } catch (err) {
-            console.log(err);
+              setCatalogItemsSearchResult(() => searchResult);
+            } catch (err) {
+              console.log(err);
+            }
           }
-        }
-      );
-    });
-  }, []);
+        );
+      });
+    }, [])
+  );
 
   useEffect(() => {
     if (searchTerm.length > 2) {
