@@ -1,18 +1,20 @@
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import * as SQLite from "expo-sqlite";
 import { useCallback, useEffect } from "react";
 import { ToastAndroid } from "react-native";
 
 import { CustomDrawer } from "@components/CustomDrawer";
+import { useAppSelector } from "@hooks";
 import { HomeScreenRoot } from "@screens/HomeScreen";
 import { RootDrawerNavigationProps } from "@types";
 
 const RootDrawer = createDrawerNavigator<RootDrawerNavigationProps>();
 
 export const AppRoot = () => {
-  const handleInitialDatabase = useCallback(async () => {
-    const db = SQLite.openDatabase("catalog.db");
+  const { databaseInstance: db } = useAppSelector(({ app }) => ({ ...app }));
 
+  // TODO: Joining the location and item tables.
+
+  const handleInitialDatabase = useCallback(async () => {
     db.transaction(
       (tx) => {
         // tx.executeSql("DROP TABLE items");
@@ -21,9 +23,9 @@ export const AppRoot = () => {
           "CREATE TABLE IF NOT EXISTS items (id TEXT UNIQUE NOT NULL PRIMARY KEY, code TEXT NOT NULL, color TEXT, size TEXT, location TEXT NOT NULL)"
         );
 
-        tx.executeSql("SELECT * FROM items", [], (_, { rows: { _array } }) => {
-          console.log(_array);
-        });
+        // tx.executeSql("SELECT * FROM items", [], (_, { rows: { _array } }) => {
+        //   console.log(_array);
+        // });
       },
       (err) => {
         console.log(err);
@@ -34,11 +36,9 @@ export const AppRoot = () => {
   }, []);
 
   const handleInitialLoad = useCallback(async () => {
+    console.log("doing the initial load");
+    console.log("Will need to get the splashy");
     await handleInitialDatabase();
-
-    // console.log("doing the initial load");
-
-    // console.log("Will need to get the splashy");
   }, []);
 
   useEffect(() => {

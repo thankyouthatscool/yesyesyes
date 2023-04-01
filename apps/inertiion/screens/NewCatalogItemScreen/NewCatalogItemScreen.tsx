@@ -1,11 +1,10 @@
 import * as Crypto from "expo-crypto";
-import * as SQLite from "expo-sqlite";
 import { FC, useCallback, useState } from "react";
 import { ScrollView, ToastAndroid } from "react-native";
 import { IconButton, Text, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { useAppDispatch } from "@hooks";
+import { useAppDispatch, useAppSelector } from "@hooks";
 import { addCatalogItem } from "@store";
 import { defaultAppPadding } from "@theme";
 import { NewCatalogItemInput, NewCatalogItemScreenNavProps } from "@types";
@@ -16,6 +15,8 @@ export const NewCatalogItemScreen: FC<NewCatalogItemScreenNavProps> = ({
   navigation,
 }) => {
   const dispatch = useAppDispatch();
+
+  const { databaseInstance: db } = useAppSelector(({ app }) => ({ ...app }));
 
   const [isConfirmCancelModalOpen, setIsConfirmCancelModalOpen] =
     useState<boolean>(false);
@@ -34,8 +35,6 @@ export const NewCatalogItemScreen: FC<NewCatalogItemScreenNavProps> = ({
     const newCatalogItemId = Crypto.randomUUID();
 
     const { code, color, location, size } = newCatalogItemData;
-
-    const db = SQLite.openDatabase("catalog.db");
 
     db.transaction(
       (tx) => {
@@ -106,7 +105,7 @@ export const NewCatalogItemScreen: FC<NewCatalogItemScreenNavProps> = ({
           value={newCatalogItemData.code}
         />
         <TextInput
-          label="Color"
+          label="Color(s)"
           mode="outlined"
           onChangeText={(newColor) => {
             setIsDataUpdated(() => true);
@@ -117,7 +116,7 @@ export const NewCatalogItemScreen: FC<NewCatalogItemScreenNavProps> = ({
           value={newCatalogItemData.color}
         />
         <TextInput
-          label="Size"
+          label="Size(s)"
           mode="outlined"
           onChangeText={(newSize) => {
             setIsDataUpdated(() => true);

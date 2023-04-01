@@ -1,8 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import * as SQLite from "expo-sqlite";
 
 import { AppState } from "@types";
 
 const initialState: AppState = {
+  databaseInstance: SQLite.openDatabase("catalog.db"),
   searchTerm: "",
 };
 

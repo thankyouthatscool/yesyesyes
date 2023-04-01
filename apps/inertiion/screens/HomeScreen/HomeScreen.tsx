@@ -1,4 +1,3 @@
-import * as SQLite from "expo-sqlite";
 import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ScrollView, TextInput, View } from "react-native";
 import { IconButton, Searchbar, Text } from "react-native-paper";
@@ -12,7 +11,9 @@ import { CatalogItem, HomeScreenNavProps } from "@types";
 export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
   const dispatch = useAppDispatch();
 
-  const { searchTerm } = useAppSelector(({ app }) => ({ ...app }));
+  const { searchTerm } = useAppSelector(({ app }) => ({
+    ...app,
+  }));
 
   const [isFocus, setIsFocus] = useState<boolean>(false);
 
@@ -59,7 +60,9 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
 };
 
 export const SearchResult = () => {
-  const { searchTerm } = useAppSelector(({ app }) => ({ ...app }));
+  const { databaseInstance: db, searchTerm } = useAppSelector(({ app }) => ({
+    ...app,
+  }));
 
   const [catalogItemsSearchResult, setCatalogItemsSearchResult] = useState<
     CatalogItem[]
@@ -67,8 +70,6 @@ export const SearchResult = () => {
   const [locationSearchResults, setLocationSearchResults] = useState<string[]>(
     []
   );
-
-  const db = useMemo(() => SQLite.openDatabase("catalog.db"), []);
 
   const searchDatabase = useCallback((searchTerm: string) => {
     db.transaction((tx) => {

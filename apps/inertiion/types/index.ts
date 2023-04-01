@@ -1,5 +1,6 @@
 import { DrawerScreenProps } from "@react-navigation/drawer";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import * as SQLite from "expo-sqlite";
 
 export type RootDrawerNavigationProps = {
   Home: undefined;
@@ -21,6 +22,7 @@ export type NewCatalogItemScreenNavProps = NativeStackScreenProps<
 >;
 
 export type AppState = {
+  databaseInstance: SQLite.WebSQLDatabase;
   searchTerm: string;
 };
 
