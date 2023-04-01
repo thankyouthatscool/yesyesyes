@@ -4,8 +4,9 @@ import { View } from "react-native";
 import { Text } from "react-native-paper";
 
 import { useAppSelector } from "@hooks";
-import { defaultAppPadding } from "@theme";
 import { CatalogItem } from "@types";
+
+import { SearchResultWrapper } from "./Styled";
 
 export const SearchResult = () => {
   const { databaseInstance: db, searchTerm } = useAppSelector(({ app }) => ({
@@ -52,19 +53,23 @@ export const SearchResult = () => {
   }, [searchTerm]);
 
   return (
-    <View style={{ marginTop: defaultAppPadding }}>
-      <Text>Search Results</Text>
-      {!!catalogItemsSearchResult.length && <Text>Items</Text>}
+    <SearchResultWrapper>
+      <Text variant="labelLarge">Search Results</Text>
+      {!!catalogItemsSearchResult.length && (
+        <Text variant="labelMedium">Items</Text>
+      )}
       {catalogItemsSearchResult.map((item) => (
         <View key={item.id}>
           <Text>
             {item.code}
-            {!!item.color && `/${item.color.join(", ")}`}
-            {!!item.size && `/${item.size.join(", ")}`}/{item.location}
+            {!!item.color && ` / ${item.color.join(", ")}`}
+            {!!item.size && ` / ${item.size.join(", ")}`} / {item.location}
           </Text>
         </View>
       ))}
-      {!!locationSearchResults.length && <Text>Locations</Text>}
-    </View>
+      {!!locationSearchResults.length && (
+        <Text variant="labelMedium">Locations</Text>
+      )}
+    </SearchResultWrapper>
   );
 };
