@@ -23,9 +23,9 @@ export const AppRoot = () => {
           "CREATE TABLE IF NOT EXISTS items (id TEXT UNIQUE NOT NULL PRIMARY KEY, code TEXT NOT NULL, color TEXT, size TEXT, location TEXT NOT NULL)"
         );
 
-        // tx.executeSql("SELECT * FROM items", [], (_, { rows: { _array } }) => {
-        //   console.log(_array);
-        // });
+        tx.executeSql("SELECT * FROM items", [], (_, { rows: { _array } }) => {
+          console.log(_array);
+        });
       },
       (err) => {
         console.log(err);
@@ -38,6 +38,7 @@ export const AppRoot = () => {
   const handleInitialLoad = useCallback(async () => {
     console.log("doing the initial load");
     console.log("Will need to get the splashy");
+
     await handleInitialDatabase();
   }, []);
 

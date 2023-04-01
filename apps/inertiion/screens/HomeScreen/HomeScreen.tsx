@@ -1,12 +1,13 @@
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { ScrollView, TextInput, View } from "react-native";
-import { IconButton, Searchbar, Text } from "react-native-paper";
+import { IconButton, Searchbar } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { SearchResult } from "@components/SearchResult";
 import { useAppDispatch, useAppSelector } from "@hooks";
 import { setSearchTerm } from "@store";
 import { defaultAppPadding } from "@theme";
-import { CatalogItem, HomeScreenNavProps } from "@types";
+import { HomeScreenNavProps } from "@types";
 
 export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
   const dispatch = useAppDispatch();
@@ -56,63 +57,5 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
         {!!searchTerm && <SearchResult />}
       </ScrollView>
     </SafeAreaView>
-  );
-};
-
-export const SearchResult = () => {
-  const { databaseInstance: db, searchTerm } = useAppSelector(({ app }) => ({
-    ...app,
-  }));
-
-  const [catalogItemsSearchResult, setCatalogItemsSearchResult] = useState<
-    CatalogItem[]
-  >([]);
-  const [locationSearchResults, setLocationSearchResults] = useState<string[]>(
-    []
-  );
-
-  const searchDatabase = useCallback((searchTerm: string) => {
-    db.transaction((tx) => {
-      tx.executeSql(
-        "SELECT * FROM items WHERE code LIKE ?",
-        [`%${searchTerm}%`],
-        (_, { rows: { _array } }) => {
-          try {
-            const searchResult = _array.map((item) => ({
-              ...item,
-              color: item.color
-                ?.split(",")
-                .map((color: string) => color.trim()),
-              size: item.size?.split(",").map((size: string) => size.trim()),
-            })) as unknown as CatalogItem[];
-
-            setCatalogItemsSearchResult(() => searchResult);
-          } catch (err) {
-            console.log(err);
-          }
-        }
-      );
-    });
-  }, []);
-
-  useEffect(() => {
-    searchDatabase(searchTerm);
-  }, [searchTerm]);
-
-  return (
-    <View style={{ marginTop: defaultAppPadding }}>
-      <Text>Search Results</Text>
-      {!!catalogItemsSearchResult.length && <Text>Items</Text>}
-      {catalogItemsSearchResult.map((item) => (
-        <View key={item.id}>
-          <Text>
-            {item.code}
-            {!!item.color && `/${item.color.join(", ")}`}
-            {!!item.size && `/${item.size.join(", ")}`}/{item.location}
-          </Text>
-        </View>
-      ))}
-      {!!locationSearchResults.length && <Text>Locations</Text>}
-    </View>
   );
 };
