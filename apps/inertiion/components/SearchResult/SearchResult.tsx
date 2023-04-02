@@ -1,31 +1,35 @@
 import _debounce from "lodash.debounce";
 import { useCallback, useEffect, useState } from "react";
-import { View } from "react-native";
-import { Text } from "react-native-paper";
+import { ToastAndroid, View } from "react-native";
+import { Card, Text } from "react-native-paper";
 
-import { useAppSelector } from "@hooks";
+import { useAppDispatch, useAppSelector } from "@hooks";
+import { addToItemQueue } from "@store";
+import { defaultAppPadding } from "@theme";
 import { CatalogItem } from "@types";
+import { localStorageSetItemQueue } from "@utils";
 
 import { SearchResultWrapper } from "./Styled";
 
 export const SearchResult = () => {
-  const { databaseInstance: db, searchTerm } = useAppSelector(({ app }) => ({
+  const dispatch = useAppDispatch();
+
+  const {
+    databaseInstance: db,
+    itemQueue,
+    searchTerm,
+  } = useAppSelector(({ app }) => ({
     ...app,
   }));
 
-  const [catalogItemsSearchResult, setCatalogItemsSearchResult] = useState<
-    CatalogItem[]
-  >([]);
-  const [locationSearchResults, setLocationSearchResults] = useState<string[]>(
-    []
-  );
+  const [searchResult, setSearchResult] = useState<CatalogItem[]>([]);
 
   const searchDatabase = _debounce(
     useCallback((searchTerm: string) => {
       db.transaction((tx) => {
         tx.executeSql(
-          "SELECT * FROM items WHERE code LIKE ?",
-          [`%${searchTerm}%`],
+          "SELECT * FROM items WHERE code LIKE ? OR location LIKE ?",
+          [`%${searchTerm}%`, `%${searchTerm}%`],
           (_, { rows: { _array } }) => {
             try {
               const searchResult = _array.map((item) => ({
@@ -36,7 +40,7 @@ export const SearchResult = () => {
                 size: item.size?.split(",").map((size: string) => size.trim()),
               })) as unknown as CatalogItem[];
 
-              setCatalogItemsSearchResult(() => searchResult);
+              setSearchResult(() => searchResult);
             } catch (err) {
               console.log(err);
             }
@@ -55,21 +59,35 @@ export const SearchResult = () => {
   return (
     <SearchResultWrapper>
       <Text variant="labelLarge">Search Results</Text>
-      {!!catalogItemsSearchResult.length && (
-        <Text variant="labelMedium">Items</Text>
-      )}
-      {catalogItemsSearchResult.map((item) => (
-        <View key={item.id}>
-          <Text>
-            {item.code}
-            {!!item.color && ` / ${item.color.join(", ")}`}
-            {!!item.size && ` / ${item.size.join(", ")}`} / {item.location}
-          </Text>
-        </View>
+      {searchResult.map((item, idx) => (
+        <Card
+          key={item.id}
+          onPress={() => {
+            console.log(`Opening ${item.id}`);
+          }}
+          onLongPress={async () => {
+            ToastAndroid.show(
+              `${item.code} added to item queue.`,
+              ToastAndroid.SHORT
+            );
+
+            await localStorageSetItemQueue([...itemQueue, item.id]);
+
+            dispatch(addToItemQueue(item.id));
+          }}
+          style={{
+            marginTop: !idx ? 0 : defaultAppPadding,
+          }}
+        >
+          <Card.Content>
+            <Text>
+              {item.code}
+              {!!item.color && ` / ${item.color.join(", ")}`}
+              {!!item.size && ` / ${item.size.join(", ")}`} / {item.location}
+            </Text>
+          </Card.Content>
+        </Card>
       ))}
-      {!!locationSearchResults.length && (
-        <Text variant="labelMedium">Locations</Text>
-      )}
     </SearchResultWrapper>
   );
 };

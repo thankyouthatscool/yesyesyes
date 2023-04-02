@@ -1,18 +1,19 @@
 import { FC, useEffect, useRef, useState } from "react";
-import { ScrollView, TextInput, View } from "react-native";
-import { IconButton, Searchbar } from "react-native-paper";
+import { ScrollView, TextInput, ToastAndroid, View } from "react-native";
+import { FAB, IconButton, Searchbar } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { SearchResult } from "@components/SearchResult";
 import { useAppDispatch, useAppSelector } from "@hooks";
-import { setSearchTerm } from "@store";
+import { clearItemQueue, setSearchTerm } from "@store";
 import { defaultAppPadding } from "@theme";
 import { HomeScreenNavProps } from "@types";
+import { localStorageSetItemQueue } from "@utils";
 
 export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
   const dispatch = useAppDispatch();
 
-  const { searchTerm } = useAppSelector(({ app }) => ({
+  const { itemQueue, searchTerm } = useAppSelector(({ app }) => ({
     ...app,
   }));
 
@@ -27,7 +28,7 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
   }, [searchBarRef]);
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{ height: "100%" }}>
       <ScrollView contentContainerStyle={{ padding: defaultAppPadding }}>
         <View
           style={{
@@ -56,6 +57,26 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
         </View>
         {!!searchTerm && <SearchResult />}
       </ScrollView>
+      {!!itemQueue.length && (
+        <FAB
+          icon="pickaxe"
+          onPress={() => {
+            console.log(itemQueue.length);
+          }}
+          onLongPress={async () => {
+            ToastAndroid.show("Item queue cleared!", ToastAndroid.LONG);
+
+            await localStorageSetItemQueue([]);
+
+            dispatch(clearItemQueue());
+          }}
+          style={{
+            position: "absolute",
+            bottom: defaultAppPadding * 2,
+            right: defaultAppPadding * 2,
+          }}
+        />
+      )}
     </SafeAreaView>
   );
 };

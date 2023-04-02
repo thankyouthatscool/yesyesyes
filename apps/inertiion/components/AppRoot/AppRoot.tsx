@@ -3,16 +3,18 @@ import { useCallback, useEffect } from "react";
 import { ToastAndroid } from "react-native";
 
 import { CustomDrawer } from "@components/CustomDrawer";
-import { useAppSelector } from "@hooks";
+import { useAppDispatch, useAppSelector } from "@hooks";
 import { HomeScreenRoot } from "@screens/HomeScreen";
-import { RootDrawerNavigationProps } from "@types";
+import { setItemQueue } from "@store";
+import { AsyncStorageReturnStatus, RootDrawerNavigationProps } from "@types";
+import { localStorageGetItemQueue } from "@utils";
 
 const RootDrawer = createDrawerNavigator<RootDrawerNavigationProps>();
 
 export const AppRoot = () => {
-  const { databaseInstance: db } = useAppSelector(({ app }) => ({ ...app }));
+  const dispatch = useAppDispatch();
 
-  // TODO: Joining the location and item tables.
+  const { databaseInstance: db } = useAppSelector(({ app }) => ({ ...app }));
 
   const handleInitialDatabase = useCallback(async () => {
     db.transaction(
@@ -20,7 +22,11 @@ export const AppRoot = () => {
         // tx.executeSql("DROP TABLE items");
 
         tx.executeSql(
-          "CREATE TABLE IF NOT EXISTS items (id TEXT UNIQUE NOT NULL PRIMARY KEY, code TEXT NOT NULL, color TEXT, size TEXT, location TEXT NOT NULL)"
+          "CREATE TABLE IF NOT EXISTS items (id TEXT UNIQUE NOT NULL PRIMARY KEY, code TEXT NOT NULL, color TEXT, size TEXT, location TEXT NOT NULL)",
+          [],
+          () => {
+            ToastAndroid.show("Database OK", ToastAndroid.SHORT);
+          }
         );
 
         tx.executeSql("SELECT * FROM items", [], (_, { rows: { _array } }) => {
@@ -35,11 +41,23 @@ export const AppRoot = () => {
     );
   }, []);
 
+  const handleInitialItemQueue = useCallback(async () => {
+    const { itemQueue, status } = await localStorageGetItemQueue();
+
+    if (status === AsyncStorageReturnStatus.OK) {
+      dispatch(setItemQueue(itemQueue));
+    }
+  }, []);
+
   const handleInitialLoad = useCallback(async () => {
     console.log("doing the initial load");
     console.log("Will need to get the splashy");
 
-    await handleInitialDatabase();
+    await Promise.all(
+      [handleInitialDatabase, handleInitialItemQueue].map((functionName) =>
+        functionName()
+      )
+    );
   }, []);
 
   useEffect(() => {

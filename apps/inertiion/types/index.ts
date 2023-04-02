@@ -23,6 +23,7 @@ export type NewCatalogItemScreenNavProps = NativeStackScreenProps<
 
 export type AppState = {
   databaseInstance: SQLite.WebSQLDatabase;
+  itemQueue: string[];
   searchTerm: string;
 };
 
@@ -44,3 +45,9 @@ export type NewCatalogItemInput = {
 export type CatalogState = {
   items: CatalogItem[];
 };
+
+export enum AsyncStorageReturnStatus {
+  OK = 200,
+  NOT_FOUND = 400,
+  ERROR = 500,
+}
