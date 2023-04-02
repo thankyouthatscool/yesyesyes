@@ -39,13 +39,14 @@ export const NewCatalogItemScreen: FC<NewCatalogItemScreenNavProps> = ({
     db.transaction(
       (tx) => {
         tx.executeSql(
-          "INSERT INTO items (id, code, color, size, location) VALUES (?, ?, ?, ?, ?)",
+          "INSERT INTO items (id, code, color, size, location, storage) VALUES (?, ?, ?, ?, ?, ?)",
           [
             newCatalogItemId,
             code.toUpperCase(),
             color ? color.toUpperCase() : null,
             size ? size.toUpperCase() : null,
             location.toUpperCase(),
+            null,
           ]
         );
       },
