@@ -4,16 +4,23 @@ import * as SQLite from "expo-sqlite";
 
 export type RootDrawerNavigationProps = {
   Home: undefined;
+  Settings: undefined;
 };
 
 export type HomeScreenNavStackProps = {
   HomeScreen: undefined;
+  ItemQueueScreen: undefined;
   NewCatalogItemScreen: undefined;
 };
 
 export type HomeScreenNavProps = NativeStackScreenProps<
   HomeScreenNavStackProps,
   "HomeScreen"
+>;
+
+export type ItemQueueScreenNavProps = NativeStackScreenProps<
+  HomeScreenNavStackProps,
+  "ItemQueueScreen"
 >;
 
 export type NewCatalogItemScreenNavProps = NativeStackScreenProps<

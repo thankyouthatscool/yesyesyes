@@ -5,6 +5,7 @@ import { ToastAndroid } from "react-native";
 import { CustomDrawer } from "@components/CustomDrawer";
 import { useAppDispatch, useAppSelector } from "@hooks";
 import { HomeScreenRoot } from "@screens/HomeScreen";
+import { SettingsScreen } from "@screens/SettingsScreen";
 import { setItemQueue } from "@store";
 import { AsyncStorageReturnStatus, RootDrawerNavigationProps } from "@types";
 import { localStorageGetItemQueue } from "@utils";
@@ -67,10 +68,11 @@ export const AppRoot = () => {
   return (
     <RootDrawer.Navigator
       drawerContent={CustomDrawer}
-      initialRouteName="Home"
+      initialRouteName="Settings"
       screenOptions={{ headerShown: false }}
     >
       <RootDrawer.Screen component={HomeScreenRoot} name="Home" />
+      <RootDrawer.Screen component={SettingsScreen} name="Settings" />
     </RootDrawer.Navigator>
   );
 };

@@ -60,8 +60,9 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
       {!!itemQueue.length && (
         <FAB
           icon="pickaxe"
+          label={`${itemQueue.length} item(s) in queue`}
           onPress={() => {
-            console.log(itemQueue.length);
+            navigation.navigate("ItemQueueScreen");
           }}
           onLongPress={async () => {
             ToastAndroid.show("Item queue cleared!", ToastAndroid.LONG);
