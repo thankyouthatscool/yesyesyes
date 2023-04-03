@@ -38,13 +38,15 @@ export type CatalogItem = {
   id: string;
   code: string;
   color?: string[];
-  size?: string[];
+  description?: string;
   location: string;
+  size?: string[];
 };
 
 export type NewCatalogItemInput = {
   code: string;
   color?: string;
+  description?: string;
   location: string;
   size?: string;
 };

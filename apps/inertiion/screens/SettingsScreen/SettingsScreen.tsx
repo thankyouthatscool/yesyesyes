@@ -1,8 +1,9 @@
-import * as Crypto from "expo-crypto";
+import flattenDeep from "lodash.flattendeep";
 import { ToastAndroid, View } from "react-native";
 import { Button, Text } from "react-native-paper";
 
 import { useAppSelector } from "@hooks";
+import { databaseItems, sqlStatement } from "@utils";
 
 import { SettingsScreenWrapper } from "./Styled";
 
@@ -46,37 +47,8 @@ export const SettingsScreen = () => {
                 );
 
                 tx.executeSql(
-                  "INSERT INTO items (id, code, color, size, location, storage) VALUES (?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?)",
-                  [
-                    // Item 1
-                    Crypto.randomUUID(),
-                    "AH230",
-                    "BLACK",
-                    null,
-                    "21B12",
-                    null,
-                    // Item 2
-                    Crypto.randomUUID(),
-                    "AH230",
-                    "NAVY",
-                    null,
-                    "21B11",
-                    null,
-                    // Item 3
-                    Crypto.randomUUID(),
-                    "AH317",
-                    "MARBLE",
-                    null,
-                    "21D31",
-                    null,
-                    // Item 4
-                    Crypto.randomUUID(),
-                    "AH695",
-                    "GREY, BLACK",
-                    "S/M",
-                    "21M11",
-                    null,
-                  ],
+                  sqlStatement,
+                  flattenDeep(databaseItems),
                   (_, { rows, rowsAffected }) => {
                     console.log(rows);
                     console.log(rowsAffected);
