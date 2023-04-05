@@ -30,3 +30,24 @@ export const localStorageSetItemQueue = async (itemQueue: string[]) => {
     return { status: AsyncStorageReturnStatus.ERROR };
   }
 };
+
+// Search Term
+export const localStorageSetSearchTerm = async (searchTerm: string) => {
+  await AsyncStorage.setItem("searchTerm", JSON.stringify(searchTerm));
+};
+
+export const localStorageGetSearchTerm = async () => {
+  try {
+    const resString = await AsyncStorage.getItem("searchTerm");
+
+    if (!!resString) {
+      const searchTerm = JSON.parse(resString) as string;
+
+      return { searchTerm, status: AsyncStorageReturnStatus.OK };
+    } else {
+      return { searchTerm: null, status: AsyncStorageReturnStatus.NOT_FOUND };
+    }
+  } catch {
+    return { searchTerm: null, status: AsyncStorageReturnStatus.ERROR };
+  }
+};

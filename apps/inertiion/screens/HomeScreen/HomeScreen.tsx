@@ -1,14 +1,18 @@
-import { FC, useEffect, useRef, useState } from "react";
-import { ScrollView, TextInput, ToastAndroid, View } from "react-native";
-import { FAB, IconButton, Searchbar } from "react-native-paper";
+import { FC, useCallback, useEffect, useRef, useState } from "react";
+import { Text, TextInput, ToastAndroid, View } from "react-native";
+import { Chip, FAB, IconButton, Searchbar } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { SearchResult } from "@components/SearchResult";
 import { useAppDispatch, useAppSelector } from "@hooks";
 import { clearItemQueue, setSearchTerm } from "@store";
 import { defaultAppPadding } from "@theme";
-import { HomeScreenNavProps } from "@types";
-import { localStorageSetItemQueue } from "@utils";
+import { AsyncStorageReturnStatus, HomeScreenNavProps } from "@types";
+import {
+  localStorageGetSearchTerm,
+  localStorageSetItemQueue,
+  localStorageSetSearchTerm,
+} from "@utils";
 
 export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
   const dispatch = useAppDispatch();
@@ -18,8 +22,17 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
   }));
 
   const [isFocus, setIsFocus] = useState<boolean>(false);
+  const [lastSearchTerm, setLastSearchTerm] = useState<string | null>(null);
 
   const searchBarRef = useRef<TextInput>(null);
+
+  const handleLocalStorageSearchTerm = useCallback(async () => {
+    const { searchTerm, status } = await localStorageGetSearchTerm();
+
+    if (status === AsyncStorageReturnStatus.OK) {
+      setLastSearchTerm(() => searchTerm);
+    }
+  }, []);
 
   useEffect(() => {
     if (!!searchBarRef.current) {
@@ -27,36 +40,68 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
     }
   }, [searchBarRef]);
 
+  useEffect(() => {
+    handleLocalStorageSearchTerm();
+  }, []);
+
+  useEffect(() => {
+    if (searchTerm.length > 2) {
+      localStorageSetSearchTerm(searchTerm);
+
+      handleLocalStorageSearchTerm();
+    }
+  }, [searchTerm]);
+
   return (
     <SafeAreaView style={{ height: "100%" }}>
-      <ScrollView contentContainerStyle={{ padding: defaultAppPadding }}>
+      <View
+        style={{
+          alignItems: "center",
+          flexDirection: "row",
+          padding: defaultAppPadding,
+        }}
+      >
+        <Searchbar
+          autoCapitalize="characters"
+          elevation={isFocus ? 3 : 0}
+          onBlur={() => setIsFocus(() => false)}
+          onChangeText={(newSearchTerm) => {
+            dispatch(setSearchTerm(newSearchTerm));
+          }}
+          onFocus={() => setIsFocus(() => true)}
+          placeholder="Search item or location"
+          ref={searchBarRef}
+          style={{ flex: 1 }}
+          value={searchTerm || ""}
+        />
+        <IconButton
+          icon="plus"
+          mode="contained"
+          onPress={() => {
+            navigation.navigate("NewCatalogItemScreen");
+          }}
+          size={30}
+        />
+      </View>
+      {!searchTerm && (
         <View
           style={{
-            alignItems: "center",
             flexDirection: "row",
+            paddingHorizontal: defaultAppPadding,
           }}
         >
-          <Searchbar
-            elevation={isFocus ? 3 : 0}
-            onBlur={() => setIsFocus(() => false)}
-            onChangeText={(e) => dispatch(setSearchTerm(e))}
-            onFocus={() => setIsFocus(() => true)}
-            placeholder="Search item or location"
-            ref={searchBarRef}
-            style={{ flex: 1 }}
-            value={searchTerm || ""}
-          />
-          <IconButton
-            icon="plus"
-            mode="contained"
+          <Chip
             onPress={() => {
-              navigation.navigate("NewCatalogItemScreen");
+              searchBarRef.current?.focus();
+
+              dispatch(setSearchTerm(lastSearchTerm!));
             }}
-            size={30}
-          />
+          >
+            {lastSearchTerm?.toUpperCase()}
+          </Chip>
         </View>
-        {!!searchTerm && <SearchResult />}
-      </ScrollView>
+      )}
+      {!!searchTerm && <SearchResult />}
       {!!itemQueue.length && (
         <FAB
           icon="pickaxe"

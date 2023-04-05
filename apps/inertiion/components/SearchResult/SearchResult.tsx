@@ -4,7 +4,7 @@ import { ToastAndroid, View } from "react-native";
 import { Card, Text } from "react-native-paper";
 
 import { useAppDispatch, useAppSelector } from "@hooks";
-import { addToItemQueue } from "@store";
+import { addToItemQueue, removeFromItemQueue } from "@store";
 import { defaultAppPadding } from "@theme";
 import { CatalogItem } from "@types";
 import { localStorageSetItemQueue } from "@utils";
@@ -58,7 +58,6 @@ export const SearchResult = () => {
 
   return (
     <SearchResultWrapper>
-      <Text variant="labelLarge">Search Results</Text>
       {searchResult.map((item, idx) => (
         <Card
           key={item.id}
@@ -66,16 +65,33 @@ export const SearchResult = () => {
             console.log(`Opening ${item.id}`);
           }}
           onLongPress={async () => {
-            ToastAndroid.show(
-              `${item.code} added to item queue.`,
-              ToastAndroid.SHORT
-            );
+            if (itemQueue.includes(item.id)) {
+              ToastAndroid.show(
+                `${item.code} removed from item queue.`,
+                ToastAndroid.SHORT
+              );
 
-            await localStorageSetItemQueue([...itemQueue, item.id]);
+              await localStorageSetItemQueue(
+                itemQueue.filter((i) => i !== item.id)
+              );
 
-            dispatch(addToItemQueue(item.id));
+              dispatch(removeFromItemQueue(item.id));
+            } else {
+              ToastAndroid.show(
+                `${item.code} added to item queue.`,
+                ToastAndroid.SHORT
+              );
+
+              await localStorageSetItemQueue([...itemQueue, item.id]);
+
+              dispatch(addToItemQueue(item.id));
+            }
           }}
           style={{
+            borderColor: !itemQueue.includes(item.id)
+              ? "gainsboro"
+              : "dodgerblue",
+            borderWidth: 2,
             marginTop: !idx ? 0 : defaultAppPadding,
           }}
         >
@@ -88,6 +104,7 @@ export const SearchResult = () => {
           </Card.Content>
         </Card>
       ))}
+      {searchTerm.length > 2 && !searchResult.length && <Text>No Results</Text>}
     </SearchResultWrapper>
   );
 };

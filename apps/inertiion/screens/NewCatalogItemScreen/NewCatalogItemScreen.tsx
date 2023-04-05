@@ -128,6 +128,20 @@ export const NewCatalogItemScreen: FC<NewCatalogItemScreenNavProps> = ({
           value={newCatalogItemData.size}
         />
         <TextInput
+          label="Description"
+          mode="outlined"
+          multiline
+          numberOfLines={4}
+          onChangeText={(newDescription) => {
+            setIsDataUpdated(() => true);
+
+            setNewCatalogItemData((data) => ({
+              ...data,
+              description: newDescription,
+            }));
+          }}
+        />
+        <TextInput
           label="Location"
           mode="outlined"
           onChangeText={(newLocation) => {
