@@ -2,6 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { AsyncStorageReturnStatus } from "@types";
 
+// Item Queue
 export const localStorageGetItemQueue = async () => {
   const resString = await AsyncStorage.getItem("itemQueue");
 
@@ -30,6 +31,10 @@ export const localStorageSetItemQueue = async (itemQueue: string[]) => {
     return { status: AsyncStorageReturnStatus.ERROR };
   }
 };
+
+export const localStorageGetCheckedItems = () => {};
+
+export const localStorageSetCheckedItems = () => {};
 
 // Search Term
 export const localStorageSetSearchTerm = async (searchTerm: string) => {

@@ -9,6 +9,10 @@ export const items: DatabaseItem[] = [
 
   // AH317
   ["AH317", "MARBLE", null, "21D31", null],
+  ["AH317", "ROYAL", null, "21D31", null],
+  ["AH317", "RED", null, "21D31", null],
+  ["AH317", "MAROON", null, "21D31", null],
+  ["AH317", "BOTTLE", null, "21D31", null],
 
   // AH695
   ["AH695", "GREY, BLACK", "S/M", "21M11", null],

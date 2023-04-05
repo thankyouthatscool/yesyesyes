@@ -20,8 +20,6 @@ export const AppRoot = () => {
   const handleInitialDatabase = useCallback(async () => {
     db.transaction(
       (tx) => {
-        // tx.executeSql("DROP TABLE items");
-
         tx.executeSql(
           "CREATE TABLE IF NOT EXISTS items (id TEXT UNIQUE NOT NULL PRIMARY KEY, code TEXT NOT NULL, color TEXT, size TEXT, location TEXT NOT NULL, storage TEXT)",
           [],
