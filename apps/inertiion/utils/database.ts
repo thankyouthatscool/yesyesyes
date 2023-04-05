@@ -63,7 +63,7 @@ export const items: DatabaseItem[] = [
   ["STS5050", "NAVY", "XL", "12K41", null],
 ];
 
-const databaseItems = items.map(
+export const databaseItems = items.map(
   (item) => [Crypto.randomUUID() as string, ...item] as DatabaseItemWithId
 );
 

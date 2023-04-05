@@ -1,17 +1,20 @@
+import Checkbox from "expo-checkbox";
 import _debounce from "lodash.debounce";
-import { useCallback, useEffect, useState } from "react";
-import { ToastAndroid, View } from "react-native";
+import { FC, useCallback, useEffect, useState } from "react";
+import { ToastAndroid } from "react-native";
 import { Card, Text } from "react-native-paper";
 
 import { useAppDispatch, useAppSelector } from "@hooks";
 import { addToItemQueue, removeFromItemQueue } from "@store";
 import { defaultAppPadding } from "@theme";
-import { CatalogItem } from "@types";
+import { CatalogItem, HomeScreenNav } from "@types";
 import { localStorageSetItemQueue } from "@utils";
 
 import { SearchResultWrapper } from "./Styled";
 
-export const SearchResult = () => {
+export const SearchResult: FC<{ navigation: HomeScreenNav }> = ({
+  navigation,
+}) => {
   const dispatch = useAppDispatch();
 
   const {
@@ -22,6 +25,7 @@ export const SearchResult = () => {
     ...app,
   }));
 
+  const [haveBeenTouched, setHaveBeenTouched] = useState<string[]>([]);
   const [searchResult, setSearchResult] = useState<CatalogItem[]>([]);
 
   const searchDatabase = _debounce(
@@ -56,6 +60,14 @@ export const SearchResult = () => {
     }
   }, [searchTerm]);
 
+  useEffect(() => {
+    if (itemQueue.length > haveBeenTouched.length) {
+      setHaveBeenTouched((haveBeenTouched) =>
+        Array.from(new Set([...haveBeenTouched, ...itemQueue]))
+      );
+    }
+  }, [itemQueue]);
+
   return (
     <SearchResultWrapper>
       {searchResult.map((item, idx) => (
@@ -63,6 +75,8 @@ export const SearchResult = () => {
           key={item.id}
           onPress={() => {
             console.log(`Opening ${item.id}`);
+
+            navigation.navigate("CatalogItemScreen", { itemId: item.id });
           }}
           onLongPress={async () => {
             if (itemQueue.includes(item.id)) {
@@ -82,25 +96,57 @@ export const SearchResult = () => {
                 ToastAndroid.SHORT
               );
 
+              setHaveBeenTouched((touched) => [...touched, item.id]);
+
               await localStorageSetItemQueue([...itemQueue, item.id]);
 
               dispatch(addToItemQueue(item.id));
             }
           }}
           style={{
-            borderColor: !itemQueue.includes(item.id)
-              ? "gainsboro"
-              : "dodgerblue",
-            borderWidth: 2,
             marginTop: !idx ? 0 : defaultAppPadding,
           }}
         >
-          <Card.Content>
-            <Text>
+          <Card.Content
+            style={{
+              alignItems: "center",
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <Text variant="titleSmall">
               {item.code}
               {!!item.color && ` / ${item.color.join(", ")}`}
               {!!item.size && ` / ${item.size.join(", ")}`} / {item.location}
             </Text>
+            {!!haveBeenTouched.includes(item.id) && (
+              <Checkbox
+                onValueChange={async (e) => {
+                  if (!e) {
+                    ToastAndroid.show(
+                      `${item.code} removed from item queue.`,
+                      ToastAndroid.SHORT
+                    );
+
+                    await localStorageSetItemQueue(
+                      itemQueue.filter((i) => i !== item.id)
+                    );
+
+                    dispatch(removeFromItemQueue(item.id));
+                  } else {
+                    ToastAndroid.show(
+                      `${item.code} added to item queue.`,
+                      ToastAndroid.SHORT
+                    );
+
+                    await localStorageSetItemQueue([...itemQueue, item.id]);
+
+                    dispatch(addToItemQueue(item.id));
+                  }
+                }}
+                value={itemQueue.includes(item.id)}
+              />
+            )}
           </Card.Content>
         </Card>
       ))}

@@ -1,5 +1,6 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
+import { CatalogItemScreen } from "@screens/CatalogItemScreen";
 import { NewCatalogItemScreen } from "@screens/NewCatalogItemScreen";
 import { ItemQueueScreen } from "@screens/ItemQueueScreen";
 import { HomeScreenNavStackProps } from "@types";
@@ -23,6 +24,10 @@ export const HomeScreenRoot = () => {
       <HomeScreenNavStack.Screen
         component={NewCatalogItemScreen}
         name="NewCatalogItemScreen"
+      />
+      <HomeScreenNavStack.Screen
+        component={CatalogItemScreen}
+        name="CatalogItemScreen"
       />
     </HomeScreenNavStack.Navigator>
   );

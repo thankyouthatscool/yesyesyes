@@ -1,5 +1,8 @@
 import { DrawerScreenProps } from "@react-navigation/drawer";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import {
+  NativeStackScreenProps,
+  NativeStackNavigationProp,
+} from "@react-navigation/native-stack";
 import * as SQLite from "expo-sqlite";
 
 export type RootDrawerNavigationProps = {
@@ -8,12 +11,23 @@ export type RootDrawerNavigationProps = {
 };
 
 export type HomeScreenNavStackProps = {
+  CatalogItemScreen: { itemId: string };
   HomeScreen: undefined;
   ItemQueueScreen: undefined;
   NewCatalogItemScreen: undefined;
 };
 
+export type CatalogItemScreenNavProps = NativeStackScreenProps<
+  HomeScreenNavStackProps,
+  "CatalogItemScreen"
+>;
+
 export type HomeScreenNavProps = NativeStackScreenProps<
+  HomeScreenNavStackProps,
+  "HomeScreen"
+>;
+
+export type HomeScreenNav = NativeStackNavigationProp<
   HomeScreenNavStackProps,
   "HomeScreen"
 >;

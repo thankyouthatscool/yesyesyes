@@ -101,7 +101,7 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
           </Chip>
         </View>
       )}
-      {!!searchTerm && <SearchResult />}
+      {!!searchTerm && <SearchResult navigation={navigation} />}
       {!!itemQueue.length && (
         <FAB
           icon="pickaxe"

@@ -51,7 +51,6 @@ export const SettingsScreen = () => {
                   flattenDeep(databaseItems),
                   (_, { rows, rowsAffected }) => {
                     console.log(rows);
-                    console.log(rowsAffected);
                   }
                 );
               },
