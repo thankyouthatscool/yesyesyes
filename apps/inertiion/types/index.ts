@@ -60,3 +60,13 @@ export enum AsyncStorageReturnStatus {
   NOT_FOUND = 400,
   ERROR = 500,
 }
+
+export type DatabaseItem = [
+  string,
+  string,
+  string | null,
+  string,
+  string | null
+];
+
+export type DatabaseItemWithId = [string, ...DatabaseItem];
