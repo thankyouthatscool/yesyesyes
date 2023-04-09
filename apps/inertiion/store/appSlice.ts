@@ -1,11 +1,12 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import * as SQLite from "expo-sqlite";
 
-import { AppState } from "@types";
+import { AppState, CatalogItem } from "@types";
 
 const initialState: AppState = {
   databaseInstance: SQLite.openDatabase("catalog.db"),
   itemQueue: [],
+  searchResult: [],
   searchTerm: "",
 };
 
@@ -26,6 +27,11 @@ export const appSlice = createSlice({
     clearItemQueue: (state) => {
       state.itemQueue = [];
     },
+    // Search Result
+    setSearchResult: (state, { payload }: PayloadAction<CatalogItem[]>) => {
+      state.searchResult = payload;
+    },
+
     // Search term
     setSearchTerm: (state, { payload }: PayloadAction<string>) => {
       state.searchTerm = payload;
@@ -34,11 +40,15 @@ export const appSlice = createSlice({
 });
 
 export const {
-  // Item queue
+  // Item Queue
   setItemQueue,
   addToItemQueue,
   removeFromItemQueue,
   clearItemQueue,
-  // Search term
+
+  // Search Result
+  setSearchResult,
+
+  // Search Term
   setSearchTerm,
 } = appSlice.actions;

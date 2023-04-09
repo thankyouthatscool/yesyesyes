@@ -5,7 +5,7 @@ import { ToastAndroid } from "react-native";
 import { Card, Text } from "react-native-paper";
 
 import { useAppDispatch, useAppSelector } from "@hooks";
-import { addToItemQueue, removeFromItemQueue } from "@store";
+import { addToItemQueue, removeFromItemQueue, setSearchResult } from "@store";
 import { defaultAppPadding } from "@theme";
 import { CatalogItem, HomeScreenNav } from "@types";
 import { localStorageSetItemQueue } from "@utils";
@@ -20,13 +20,13 @@ export const SearchResult: FC<{ navigation: HomeScreenNav }> = ({
   const {
     databaseInstance: db,
     itemQueue,
+    searchResult,
     searchTerm,
   } = useAppSelector(({ app }) => ({
     ...app,
   }));
 
   const [haveBeenTouched, setHaveBeenTouched] = useState<string[]>([]);
-  const [searchResult, setSearchResult] = useState<CatalogItem[]>([]);
 
   const searchDatabase = _debounce(
     useCallback((searchTerm: string) => {
@@ -44,7 +44,7 @@ export const SearchResult: FC<{ navigation: HomeScreenNav }> = ({
                 size: item.size?.split(",").map((size: string) => size.trim()),
               })) as unknown as CatalogItem[];
 
-              setSearchResult(() => searchResult);
+              dispatch(setSearchResult(searchResult));
             } catch (err) {
               console.log(err);
             }
@@ -72,10 +72,9 @@ export const SearchResult: FC<{ navigation: HomeScreenNav }> = ({
     <SearchResultWrapper>
       {searchResult.map((item, idx) => (
         <Card
+          delayLongPress={200}
           key={item.id}
           onPress={() => {
-            console.log(`Opening ${item.id}`);
-
             navigation.navigate("CatalogItemScreen", { itemId: item.id });
           }}
           onLongPress={async () => {

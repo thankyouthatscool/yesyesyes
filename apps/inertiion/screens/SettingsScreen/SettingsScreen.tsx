@@ -3,7 +3,11 @@ import { ToastAndroid, View } from "react-native";
 import { Button, Text } from "react-native-paper";
 
 import { useAppSelector } from "@hooks";
-import { databaseItems, sqlStatement } from "@utils";
+import {
+  databaseItems,
+  sqlStatementCreateItemsTable,
+  sqlStatementSeedItemsTable,
+} from "@utils";
 
 import { SettingsScreenWrapper } from "./Styled";
 
@@ -42,14 +46,12 @@ export const SettingsScreen = () => {
           onPress={() => {
             db.transaction(
               (tx) => {
-                tx.executeSql(
-                  "CREATE TABLE IF NOT EXISTS items (id TEXT UNIQUE NOT NULL PRIMARY KEY, code TEXT NOT NULL, color TEXT, size TEXT, location TEXT NOT NULL, storage TEXT)"
-                );
+                tx.executeSql(sqlStatementCreateItemsTable);
 
                 tx.executeSql(
-                  sqlStatement,
+                  sqlStatementSeedItemsTable,
                   flattenDeep(databaseItems),
-                  (_, { rows, rowsAffected }) => {
+                  (_, { rows }) => {
                     console.log(rows);
                   }
                 );

@@ -1,3 +1,4 @@
+import _debounce from "lodash.debounce";
 import { FC, useCallback, useEffect, useRef, useState } from "react";
 import { Text, TextInput, ToastAndroid, View } from "react-native";
 import { Chip, FAB, IconButton, Searchbar } from "react-native-paper";
@@ -22,15 +23,28 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
   }));
 
   const [isFocus, setIsFocus] = useState<boolean>(false);
-  const [lastSearchTerm, setLastSearchTerm] = useState<string | null>(null);
+  const [lastSearchTerms, setLastSearchTerms] = useState<string[] | null>(null);
 
   const searchBarRef = useRef<TextInput>(null);
+
+  const _handleSetLastSearchTerm = useCallback(
+    _debounce((searchTerm: string) => {
+      setLastSearchTerms((lastSearchTerms) =>
+        !!lastSearchTerms
+          ? Array.from(
+              new Set([searchTerm!.toUpperCase(), ...lastSearchTerms!])
+            ).slice(0, 5)
+          : [searchTerm!.toUpperCase()]
+      );
+    }, 500),
+    []
+  );
 
   const handleLocalStorageSearchTerm = useCallback(async () => {
     const { searchTerm, status } = await localStorageGetSearchTerm();
 
     if (status === AsyncStorageReturnStatus.OK) {
-      setLastSearchTerm(() => searchTerm);
+      _handleSetLastSearchTerm(searchTerm!);
     }
   }, []);
 
@@ -83,22 +97,35 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
           size={30}
         />
       </View>
-      {!searchTerm && (
+      {searchTerm.length < 3 && (
         <View
           style={{
             flexDirection: "row",
             paddingHorizontal: defaultAppPadding,
           }}
         >
-          <Chip
-            onPress={() => {
-              searchBarRef.current?.focus();
+          {lastSearchTerms?.map((term) => (
+            <Chip
+              key={term}
+              onPress={() => {
+                searchBarRef.current?.focus();
 
-              dispatch(setSearchTerm(lastSearchTerm!));
-            }}
-          >
-            {lastSearchTerm?.toUpperCase()}
-          </Chip>
+                dispatch(setSearchTerm(term));
+              }}
+              onLongPress={() => {
+                setLastSearchTerms((lastSearchTerms) => {
+                  if (!!lastSearchTerms) {
+                    return lastSearchTerms.filter((t) => t !== term);
+                  } else {
+                  }
+                  return [];
+                });
+              }}
+              style={{ marginRight: defaultAppPadding / 2 }}
+            >
+              {term}
+            </Chip>
+          ))}
         </View>
       )}
       {!!searchTerm && <SearchResult navigation={navigation} />}

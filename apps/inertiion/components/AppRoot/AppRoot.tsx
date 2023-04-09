@@ -8,7 +8,7 @@ import { HomeScreenRoot } from "@screens/HomeScreen";
 import { SettingsScreen } from "@screens/SettingsScreen";
 import { setItemQueue } from "@store";
 import { AsyncStorageReturnStatus, RootDrawerNavigationProps } from "@types";
-import { localStorageGetItemQueue } from "@utils";
+import { localStorageGetItemQueue, sqlStatementCreateItemsTable } from "@utils";
 
 const RootDrawer = createDrawerNavigator<RootDrawerNavigationProps>();
 
@@ -20,13 +20,9 @@ export const AppRoot = () => {
   const handleInitialDatabase = useCallback(async () => {
     db.transaction(
       (tx) => {
-        tx.executeSql(
-          "CREATE TABLE IF NOT EXISTS items (id TEXT UNIQUE NOT NULL PRIMARY KEY, code TEXT NOT NULL, color TEXT, size TEXT, location TEXT NOT NULL, storage TEXT)",
-          [],
-          () => {
-            ToastAndroid.show("Database OK", ToastAndroid.SHORT);
-          }
-        );
+        tx.executeSql(sqlStatementCreateItemsTable, [], () => {
+          ToastAndroid.show("Database OK", ToastAndroid.SHORT);
+        });
 
         tx.executeSql("SELECT * FROM items", [], (_, { rows: { _array } }) => {
           console.log(_array);
