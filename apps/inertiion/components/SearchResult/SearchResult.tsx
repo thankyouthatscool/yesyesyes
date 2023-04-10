@@ -1,8 +1,8 @@
 import Checkbox from "expo-checkbox";
 import _debounce from "lodash.debounce";
 import { FC, useCallback, useEffect, useState } from "react";
-import { ToastAndroid } from "react-native";
-import { Card, Text } from "react-native-paper";
+import { ToastAndroid, View } from "react-native";
+import { Button, Card, Text } from "react-native-paper";
 
 import { useAppDispatch, useAppSelector } from "@hooks";
 import { addToItemQueue, removeFromItemQueue, setSearchResult } from "@store";
@@ -149,7 +149,26 @@ export const SearchResult: FC<{ navigation: HomeScreenNav }> = ({
           </Card.Content>
         </Card>
       ))}
-      {searchTerm.length > 2 && !searchResult.length && <Text>No Results</Text>}
+      {searchTerm.length > 2 && !searchResult.length && (
+        <View
+          style={{
+            alignItems: "center",
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <Text variant="bodyLarge">No Results</Text>
+          <Button
+            icon="plus"
+            mode="contained"
+            onPress={() => {
+              navigation.navigate("NewCatalogItemScreen", { term: searchTerm });
+            }}
+          >
+            Add {searchTerm}
+          </Button>
+        </View>
+      )}
     </SearchResultWrapper>
   );
 };

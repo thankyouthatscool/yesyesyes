@@ -73,7 +73,7 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
           alignItems: "center",
           flexDirection: "row",
           padding: defaultAppPadding,
-          paddingBottom: defaultAppPadding - 2,
+          paddingBottom: defaultAppPadding,
         }}
       >
         <Searchbar
@@ -93,7 +93,7 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
           icon="plus"
           mode="contained"
           onPress={() => {
-            navigation.navigate("NewCatalogItemScreen");
+            navigation.navigate("NewCatalogItemScreen", { term: null });
           }}
           size={30}
         />

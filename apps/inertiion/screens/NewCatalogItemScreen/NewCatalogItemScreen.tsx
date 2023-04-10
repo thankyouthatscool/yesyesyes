@@ -13,7 +13,12 @@ import { ButtonWrapper } from "./Styled";
 
 export const NewCatalogItemScreen: FC<NewCatalogItemScreenNavProps> = ({
   navigation,
+  route: {
+    params: { term },
+  },
 }) => {
+  console.log(term);
+
   const dispatch = useAppDispatch();
 
   const { databaseInstance: db } = useAppSelector(({ app }) => ({ ...app }));

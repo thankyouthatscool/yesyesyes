@@ -14,7 +14,7 @@ export type HomeScreenNavStackProps = {
   CatalogItemScreen: { itemId: string };
   HomeScreen: undefined;
   ItemQueueScreen: undefined;
-  NewCatalogItemScreen: undefined;
+  NewCatalogItemScreen: { term: string | null };
 };
 
 export type CatalogItemScreenNavProps = NativeStackScreenProps<
