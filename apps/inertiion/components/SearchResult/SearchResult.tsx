@@ -103,7 +103,7 @@ export const SearchResult: FC<{ navigation: HomeScreenNav }> = ({
             }
           }}
           style={{
-            marginTop: !idx ? 0 : defaultAppPadding,
+            marginTop: !idx ? 2 : defaultAppPadding,
           }}
         >
           <Card.Content

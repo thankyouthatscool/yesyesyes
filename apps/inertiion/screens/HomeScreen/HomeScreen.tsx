@@ -73,6 +73,7 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
           alignItems: "center",
           flexDirection: "row",
           padding: defaultAppPadding,
+          paddingBottom: defaultAppPadding - 2,
         }}
       >
         <Searchbar
