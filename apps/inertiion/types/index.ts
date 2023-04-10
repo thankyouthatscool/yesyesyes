@@ -76,7 +76,7 @@ export enum AsyncStorageReturnStatus {
   ERROR = 500,
 }
 
-export type DatabaseItem = [
+export type DatabaseItemInput = [
   // Code
   string,
   // Color
@@ -91,8 +91,8 @@ export type DatabaseItem = [
   string | null
 ];
 
-export type DatabaseItemWithId = [
+export type DatabaseItemInputWithId = [
   // ID
   string,
-  ...DatabaseItem
+  ...DatabaseItemInput
 ];
