@@ -4,6 +4,8 @@ import { Text, TextInput, ToastAndroid, View } from "react-native";
 import { Chip, FAB, IconButton, Searchbar } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
+
 import { SearchResult } from "@components/SearchResult";
 import { useAppDispatch, useAppSelector } from "@hooks";
 import { clearItemQueue, setSearchTerm } from "@store";
@@ -67,90 +69,100 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
   }, [searchTerm]);
 
   return (
-    <SafeAreaView style={{ height: "100%" }}>
-      <View
-        style={{
-          alignItems: "center",
-          flexDirection: "row",
-          padding: defaultAppPadding,
-          paddingBottom: defaultAppPadding,
-        }}
-      >
-        <Searchbar
-          autoCapitalize="characters"
-          elevation={isFocus ? 3 : 0}
-          onBlur={() => setIsFocus(() => false)}
-          onChangeText={(newSearchTerm) => {
-            dispatch(setSearchTerm(newSearchTerm));
-          }}
-          onFocus={() => setIsFocus(() => true)}
-          placeholder="Search item or location"
-          ref={searchBarRef}
-          style={{ flex: 1 }}
-          value={searchTerm || ""}
-        />
-        <IconButton
-          icon="plus"
-          mode="contained"
-          onPress={() => {
-            navigation.navigate("NewCatalogItemScreen", { term: null });
-          }}
-          size={30}
-        />
-      </View>
-      {searchTerm.length < 3 && (
+    <GestureDetector
+      gesture={Gesture.Pan()
+        .onStart(() => {
+          console.log("Start");
+        })
+        .onEnd(() => {
+          console.log("End");
+        })}
+    >
+      <SafeAreaView style={{ height: "100%" }}>
         <View
           style={{
+            alignItems: "center",
             flexDirection: "row",
-            paddingHorizontal: defaultAppPadding,
+            padding: defaultAppPadding,
+            paddingBottom: defaultAppPadding,
           }}
         >
-          {lastSearchTerms?.map((term) => (
-            <Chip
-              key={term}
-              onPress={() => {
-                searchBarRef.current?.focus();
-
-                dispatch(setSearchTerm(term));
-              }}
-              onLongPress={() => {
-                setLastSearchTerms((lastSearchTerms) => {
-                  if (!!lastSearchTerms) {
-                    return lastSearchTerms.filter((t) => t !== term);
-                  } else {
-                  }
-                  return [];
-                });
-              }}
-              style={{ marginRight: defaultAppPadding / 2 }}
-            >
-              {term}
-            </Chip>
-          ))}
+          <Searchbar
+            autoCapitalize="characters"
+            elevation={isFocus ? 3 : 0}
+            onBlur={() => setIsFocus(() => false)}
+            onChangeText={(newSearchTerm) => {
+              dispatch(setSearchTerm(newSearchTerm));
+            }}
+            onFocus={() => setIsFocus(() => true)}
+            placeholder="Search item or location"
+            ref={searchBarRef}
+            style={{ flex: 1 }}
+            value={searchTerm || ""}
+          />
+          <IconButton
+            icon="plus"
+            mode="contained"
+            onPress={() => {
+              navigation.navigate("NewCatalogItemScreen", { term: null });
+            }}
+            size={30}
+          />
         </View>
-      )}
-      {!!searchTerm && <SearchResult navigation={navigation} />}
-      {!!itemQueue.length && (
-        <FAB
-          icon="pickaxe"
-          label={`${itemQueue.length} item(s) in queue`}
-          onPress={() => {
-            navigation.navigate("ItemQueueScreen");
-          }}
-          onLongPress={async () => {
-            ToastAndroid.show("Item queue cleared!", ToastAndroid.LONG);
+        {searchTerm.length < 3 && (
+          <View
+            style={{
+              flexDirection: "row",
+              paddingHorizontal: defaultAppPadding,
+            }}
+          >
+            {lastSearchTerms?.map((term) => (
+              <Chip
+                key={term}
+                onPress={() => {
+                  searchBarRef.current?.focus();
 
-            await localStorageSetItemQueue([]);
+                  dispatch(setSearchTerm(term));
+                }}
+                onLongPress={() => {
+                  setLastSearchTerms((lastSearchTerms) => {
+                    if (!!lastSearchTerms) {
+                      return lastSearchTerms.filter((t) => t !== term);
+                    } else {
+                    }
+                    return [];
+                  });
+                }}
+                style={{ marginRight: defaultAppPadding / 2 }}
+              >
+                {term}
+              </Chip>
+            ))}
+          </View>
+        )}
+        {!!searchTerm && <SearchResult navigation={navigation} />}
+        {!!itemQueue.length && (
+          <FAB
+            icon="pickaxe"
+            label={`${itemQueue.length} item(s) in queue`}
+            onPress={() => {
+              navigation.navigate("ItemQueueScreen");
+            }}
+            onLongPress={async () => {
+              ToastAndroid.show("Item queue cleared!", ToastAndroid.LONG);
 
-            dispatch(clearItemQueue());
-          }}
-          style={{
-            position: "absolute",
-            bottom: defaultAppPadding * 2,
-            right: defaultAppPadding * 2,
-          }}
-        />
-      )}
-    </SafeAreaView>
+              await localStorageSetItemQueue([]);
+
+              dispatch(clearItemQueue());
+            }}
+            style={{
+              position: "absolute",
+              bottom: defaultAppPadding * 2,
+              right: defaultAppPadding * 2,
+            }}
+          />
+        )}
+      </SafeAreaView>
+    </GestureDetector>
   );
 };

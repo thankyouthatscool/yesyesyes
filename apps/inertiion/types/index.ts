@@ -86,9 +86,7 @@ export type DatabaseItemInput = [
   // Description
   string | null,
   // Location
-  string,
-  // Storage
-  string | null
+  string
 ];
 
 export type DatabaseItemInputWithId = [
