@@ -8,7 +8,11 @@ import { HomeScreenRoot } from "@screens/HomeScreen";
 import { SettingsScreen } from "@screens/SettingsScreen";
 import { setItemQueue } from "@store";
 import { AsyncStorageReturnStatus, RootDrawerNavigationProps } from "@types";
-import { localStorageGetItemQueue, sqlStatementCreateItemsTable } from "@utils";
+import {
+  localStorageGetItemQueue,
+  sqlStatementCreateItemsTable,
+  sqlStatementCreateStorageTable,
+} from "@utils";
 
 const RootDrawer = createDrawerNavigator<RootDrawerNavigationProps>();
 
@@ -21,11 +25,15 @@ export const AppRoot = () => {
     db.transaction(
       (tx) => {
         tx.executeSql(sqlStatementCreateItemsTable, [], () => {
-          ToastAndroid.show("Database OK", ToastAndroid.SHORT);
+          ToastAndroid.show("Items Table OK", ToastAndroid.SHORT);
+        });
+
+        tx.executeSql(sqlStatementCreateStorageTable, [], () => {
+          ToastAndroid.show("Storage Table OK", ToastAndroid.SHORT);
         });
 
         tx.executeSql("SELECT * FROM items", [], (_, { rows: { _array } }) => {
-          console.log(_array);
+          console.log(_array.length);
         });
       },
       (err) => {

@@ -1,4 +1,5 @@
 import { DrawerScreenProps } from "@react-navigation/drawer";
+import { CompositeScreenProps } from "@react-navigation/native";
 import {
   NativeStackScreenProps,
   NativeStackNavigationProp,
@@ -22,9 +23,9 @@ export type CatalogItemScreenNavProps = NativeStackScreenProps<
   "CatalogItemScreen"
 >;
 
-export type HomeScreenNavProps = NativeStackScreenProps<
-  HomeScreenNavStackProps,
-  "HomeScreen"
+export type HomeScreenNavProps = CompositeScreenProps<
+  NativeStackScreenProps<HomeScreenNavStackProps, "HomeScreen">,
+  DrawerScreenProps<RootDrawerNavigationProps>
 >;
 
 export type HomeScreenNav = NativeStackNavigationProp<

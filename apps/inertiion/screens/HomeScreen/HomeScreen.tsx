@@ -1,10 +1,10 @@
 import _debounce from "lodash.debounce";
 import { FC, useCallback, useEffect, useRef, useState } from "react";
 import { Text, TextInput, ToastAndroid, View } from "react-native";
-import { Chip, FAB, IconButton, Searchbar } from "react-native-paper";
-import { SafeAreaView } from "react-native-safe-area-context";
-
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { Chip, FAB, IconButton, Searchbar } from "react-native-paper";
+import { runOnJS } from "react-native-reanimated";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { SearchResult } from "@components/SearchResult";
 import { useAppDispatch, useAppSelector } from "@hooks";
@@ -70,13 +70,15 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
 
   return (
     <GestureDetector
-      gesture={Gesture.Pan()
-        .onStart(() => {
-          console.log("Start");
-        })
-        .onEnd(() => {
-          console.log("End");
-        })}
+      gesture={Gesture.Pan().onEnd(({ translationX }) => {
+        if (translationX > 100) {
+          (() => {
+            "worklet";
+
+            runOnJS(navigation.openDrawer)();
+          })();
+        }
+      })}
     >
       <SafeAreaView style={{ height: "100%" }}>
         <View

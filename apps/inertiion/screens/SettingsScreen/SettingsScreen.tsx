@@ -6,6 +6,7 @@ import { useAppSelector } from "@hooks";
 import {
   databaseItems,
   sqlStatementCreateItemsTable,
+  sqlStatementCreateStorageTable,
   sqlStatementSeedItemsTable,
 } from "@utils";
 
@@ -22,21 +23,37 @@ export const SettingsScreen = () => {
           buttonColor="red"
           mode="contained"
           onPress={() => {
-            db.transaction((tx) => {
-              tx.executeSql(
-                "DROP TABLE items",
-                [],
-                (_, { rows, rowsAffected }) => {
+            db.transaction(
+              (tx) => {
+                tx.executeSql(
+                  "DROP TABLE items",
+                  [],
+                  (_, { rows, rowsAffected }) => {
+                    console.log(rows);
+                    console.log(rowsAffected);
+
+                    console.log("Items table dropped");
+
+                    ToastAndroid.show(
+                      "Items table dropped!",
+                      ToastAndroid.LONG
+                    );
+                  }
+                );
+
+                tx.executeSql("DROP TABLE storage", [], (_, { rows }) => {
                   console.log(rows);
-                  console.log(rowsAffected);
+
+                  console.log("Storage table dropped");
 
                   ToastAndroid.show(
-                    "Local catalog.db dropped",
+                    "Storage table dropped!",
                     ToastAndroid.LONG
                   );
-                }
-              );
-            });
+                });
+              },
+              (err) => console.log(err)
+            );
           }}
         >
           Drop Database
@@ -47,6 +64,7 @@ export const SettingsScreen = () => {
             db.transaction(
               (tx) => {
                 tx.executeSql(sqlStatementCreateItemsTable);
+                tx.executeSql(sqlStatementCreateStorageTable);
 
                 tx.executeSql(
                   sqlStatementSeedItemsTable,

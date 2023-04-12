@@ -7,6 +7,9 @@ export const items: DatabaseItemInput[] = [
   ["AH230", "BLACK", null, "Heavy Brushed Cotton Cap", "21B12"],
   ["AH230", "NAVY", null, "Heavy Brushed Cotton Cap", "21B11"],
 
+  // AH295
+  ["AH295", "BLACK", null, "Polymesh Trucker Cap", "11M11"],
+
   // AH317
   ["AH317", "MARBLE", null, "JK Cap", "21D31"],
   ["AH317", "ROYAL", null, "JK Cap", "21D31"],
@@ -167,13 +170,15 @@ export const databaseItems = items.map(
 export const sqlStatementCreateItemsTable =
   "CREATE TABLE IF NOT EXISTS items (id TEXT UNIQUE NOT NULL PRIMARY KEY, code TEXT NOT NULL, color TEXT, size TEXT, description TEXT, location TEXT NOT NULL)";
 
-export const sqlStatementCreateNotesTables =
-  "CREATE TABLE IF NOT EXIST storage (id TEXT UNIQUE NOT NULL PRIMARY KEY)";
+export const sqlStatementCreateNotesTable =
+  "CREATE TABLE IF NOT EXISTS notes (id TEXT UNIQUE NOT NULL PRIMARY KEY, noteBody TEXT NOT NULL, dateModified TEXT NOT NULL)";
 
 export const sqlStatementCreateStorageTable =
-  "CREATE TABLE IF NOT EXIST notes (id TEXT UNIQUE NOT NULL PRIMARY KEY)";
+  "CREATE TABLE IF NOT EXISTS storage (id TEXT UNIQUE NOT NULL PRIMARY KEY, location TEXT NOT NULL, itemIds TEXT NOT NULL, cartons TEXT NOT NULL, pieces TEXT NOT NULL, dateModified TEXT NOT NULL)";
 
 // Seed Tables
 export const sqlStatementSeedItemsTable = `INSERT INTO items (id, code, color, size, description, location) VALUES ${databaseItems
   .map(() => `(?, ?, ?, ?, ?, ?)`)
   .join(", ")}`;
+
+// Drop Tables
