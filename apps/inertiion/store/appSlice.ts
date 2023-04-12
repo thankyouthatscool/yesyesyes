@@ -27,14 +27,21 @@ export const appSlice = createSlice({
     clearItemQueue: (state) => {
       state.itemQueue = [];
     },
+
     // Search Result
     setSearchResult: (state, { payload }: PayloadAction<CatalogItem[]>) => {
       state.searchResult = payload;
+    },
+    clearSearchResult: (state) => {
+      state.searchResult = [];
     },
 
     // Search term
     setSearchTerm: (state, { payload }: PayloadAction<string>) => {
       state.searchTerm = payload;
+    },
+    clearSearchTerm: (state) => {
+      state.searchTerm = "";
     },
   },
 });
@@ -48,7 +55,9 @@ export const {
 
   // Search Result
   setSearchResult,
+  clearSearchResult,
 
   // Search Term
   setSearchTerm,
+  clearSearchTerm,
 } = appSlice.actions;

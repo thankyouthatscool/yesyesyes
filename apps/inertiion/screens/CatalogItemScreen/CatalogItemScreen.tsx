@@ -253,6 +253,11 @@ export const CatalogItemScreenStorageComponent: FC<{ itemId: string }> = ({
       (err) => console.log(err)
     );
 
+    ToastAndroid.show(
+      "Item storage data updated successfully!",
+      ToastAndroid.LONG
+    );
+
     setIsUpdateNeeded(() => false);
   }, [itemStorageData]);
 
@@ -272,8 +277,6 @@ export const CatalogItemScreenStorageComponent: FC<{ itemId: string }> = ({
                 pieces: number;
                 dateModified: string;
               }[];
-
-              console.log(dbItemStorageData);
 
               setItemStorageData(() => dbItemStorageData);
             }
@@ -349,6 +352,9 @@ export const CatalogItemScreenStorageComponent: FC<{ itemId: string }> = ({
           />
         </View>
       </View>
+      <Text>Summary about items in storage go here.</Text>
+      <Text>Summary about items in storage go here.</Text>
+      <Text>Summary about items in storage go here.</Text>
       {itemStorageData.map((loc, idx) => {
         return (
           <View key={loc.id}>

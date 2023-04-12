@@ -2,7 +2,8 @@ import flattenDeep from "lodash.flattendeep";
 import { ToastAndroid, View } from "react-native";
 import { Button, Text } from "react-native-paper";
 
-import { useAppSelector } from "@hooks";
+import { useAppDispatch, useAppSelector } from "@hooks";
+import { clearItemQueue, clearSearchResult, clearSearchTerm } from "@store";
 import {
   databaseItems,
   sqlStatementCreateItemsTable,
@@ -13,6 +14,8 @@ import {
 import { SettingsScreenWrapper } from "./Styled";
 
 export const SettingsScreen = () => {
+  const dispatch = useAppDispatch();
+
   const { databaseInstance: db } = useAppSelector(({ app }) => ({ ...app }));
 
   return (
@@ -52,8 +55,13 @@ export const SettingsScreen = () => {
                   );
                 });
               },
+
               (err) => console.log(err)
             );
+
+            dispatch(clearItemQueue());
+            dispatch(clearSearchResult());
+            dispatch(clearSearchTerm());
           }}
         >
           Drop Database

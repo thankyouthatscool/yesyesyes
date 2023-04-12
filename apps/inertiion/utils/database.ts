@@ -3,6 +3,14 @@ import * as Crypto from "expo-crypto";
 import { DatabaseItemInput, DatabaseItemInputWithId } from "@types";
 
 export const items: DatabaseItemInput[] = [
+  // AH159
+  ["AH159", "BLACK", null, "CAZAMATAZ Cap", "21D31"],
+  ["AH159", "GREY", null, "CAZAMATAZ Cap", "21D31"],
+  ["AH159", "MARBLE", null, "CAZAMATAZ Cap", "21D31"],
+  ["AH159", "NAVY", null, "CAZAMATAZ Cap", "21D31"],
+  ["AH159", "RED", null, "CAZAMATAZ Cap", "21D31"],
+  ["AH159", "ROYAL", null, "CAZAMATAZ Cap", "21D31"],
+
   // AH230
   ["AH230", "BLACK", null, "Heavy Brushed Cotton Cap", "21B12"],
   ["AH230", "NAVY", null, "Heavy Brushed Cotton Cap", "21B11"],
@@ -152,6 +160,23 @@ export const items: DatabaseItemInput[] = [
   ["ST1333", "NAVY, WHITE", "2XL", "Centaur Polos", "12D52"],
   ["ST1333", "NAVY, WHITE", "3XL", "Centaur Polos", "12D52"],
   ["ST1333", "NAVY, WHITE", "5XL", "Centaur Polos", "12D42"],
+
+  // ST1485
+  ["ST1485", "BLACK", "2XL", "Ashton Tees", "2GU43"],
+  ["ST1485", "BLACK", "L", "Ashton Tees", "2GU33"],
+  ["ST1485", "BLACK", "M", "Ashton Tees", "2GU33"],
+  ["ST1485", "BLACK", "S", "Ashton Tees", "2GU23"],
+  ["ST1485", "BLACK", "XL", "Ashton Tees", "2GU43"],
+  ["ST1485", "NAVY", "2XL", "Ashton Tees", "2GU43"],
+  ["ST1485", "NAVY", "L", "Ashton Tees", "2GU33"],
+  ["ST1485", "NAVY", "M", "Ashton Tees", "2GU33"],
+  ["ST1485", "NAVY", "S", "Ashton Tees", "2GU33"],
+  ["ST1485", "NAVY", "XL", "Ashton Tees", "2GU43"],
+  ["ST1485", "WHITE", "2XL", "Ashton Tees", "2GU43"],
+  ["ST1485", "WHITE", "L", "Ashton Tees", "2GU43"],
+  ["ST1485", "WHITE", "M", "Ashton Tees", "2GU33"],
+  ["ST1485", "WHITE", "S", "Ashton Tees", "2GU33"],
+  ["ST1485", "WHITE", "XL", "Ashton Tees", "2GU43"],
 
   // STS5050
   ["STS5050", "BLACK", "2XL", "Sierra Shorts", "12K41"],

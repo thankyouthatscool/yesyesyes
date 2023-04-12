@@ -5,9 +5,13 @@ import { IconButton, Text, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAppDispatch, useAppSelector } from "@hooks";
-import { addCatalogItem } from "@store";
+import { setSearchResult } from "@store";
 import { defaultAppPadding } from "@theme";
-import { NewCatalogItemInput, NewCatalogItemScreenNavProps } from "@types";
+import {
+  CatalogItem,
+  NewCatalogItemInput,
+  NewCatalogItemScreenNavProps,
+} from "@types";
 
 import { ButtonWrapper } from "./Styled";
 
@@ -17,11 +21,11 @@ export const NewCatalogItemScreen: FC<NewCatalogItemScreenNavProps> = ({
     params: { term },
   },
 }) => {
-  console.log(term);
-
   const dispatch = useAppDispatch();
 
-  const { databaseInstance: db } = useAppSelector(({ app }) => ({ ...app }));
+  const { databaseInstance: db, searchTerm } = useAppSelector(({ app }) => ({
+    ...app,
+  }));
 
   const [isConfirmCancelModalOpen, setIsConfirmCancelModalOpen] =
     useState<boolean>(false);
@@ -52,38 +56,59 @@ export const NewCatalogItemScreen: FC<NewCatalogItemScreenNavProps> = ({
             !!size ? size.toUpperCase() : null,
             !!description ? description : null,
             location.toUpperCase(),
-          ]
+          ],
+          () => {
+            ToastAndroid.show(
+              `Catalog Item ${newCatalogItemData.code} saved!`,
+              ToastAndroid.LONG
+            );
+          }
         );
+
+        if (!!searchTerm) {
+          tx.executeSql(
+            "SELECT * FROM items WHERE code LIKE ? OR location LIKE ?",
+            [`%${searchTerm}%`, `%${searchTerm}%`],
+            (_, { rows: { _array } }) => {
+              const searchResult = _array.map((item) => ({
+                ...item,
+                color: item.color
+                  ?.split(",")
+                  .map((color: string) => color.trim()),
+                size: item.size?.split(",").map((size: string) => size.trim()),
+              })) as unknown as CatalogItem[];
+
+              dispatch(setSearchResult(searchResult));
+            }
+          );
+        } else {
+          console.log("there was no search term to update the results for");
+        }
       },
       (err) => console.log(err),
       () => {
-        dispatch(
-          addCatalogItem({
-            code: code.toUpperCase(),
-            color:
-              color
-                ?.split(",")
-                .map((color) => color.trim().toLowerCase())
-                .filter((color) => !!color) || [],
-            id: newCatalogItemId,
-            location: location.toUpperCase(),
-            size:
-              size
-                ?.split(",")
-                .map((size) => size.trim().toLowerCase())
-                .filter((size) => !!size) || [],
-          })
-        );
-
-        ToastAndroid.show(
-          `Catalog Item ${newCatalogItemData.code} saved!`,
-          ToastAndroid.LONG
-        );
+        // dispatch(
+        //   addCatalogItem({
+        //     code: code.toUpperCase(),
+        //     color:
+        //       color
+        //         ?.split(",")
+        //         .map((color) => color.trim().toLowerCase())
+        //         .filter((color) => !!color) || [],
+        //     id: newCatalogItemId,
+        //     location: location.toUpperCase(),
+        //     size:
+        //       size
+        //         ?.split(",")
+        //         .map((size) => size.trim().toLowerCase())
+        //         .filter((size) => !!size) || [],
+        //   })
+        // );
 
         navigation.navigate("HomeScreen");
       }
     );
-  }, [newCatalogItemData]);
+  }, [newCatalogItemData, searchTerm]);
 
   const handleResetNewCatalogItemForm = useCallback(() => {
     setIsDataUpdated(() => false);
