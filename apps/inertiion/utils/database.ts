@@ -184,7 +184,7 @@ export const sqlStatementCreateNotesTable =
   "CREATE TABLE IF NOT EXISTS notes (id TEXT UNIQUE NOT NULL PRIMARY KEY, noteBody TEXT NOT NULL, dateModified TEXT NOT NULL)";
 
 export const sqlStatementCreateStorageTable =
-  "CREATE TABLE IF NOT EXISTS storage (id TEXT UNIQUE NOT NULL PRIMARY KEY, location TEXT NOT NULL, itemIds TEXT NOT NULL, cartons TEXT NOT NULL, pieces TEXT NOT NULL, dateModified TEXT NOT NULL)";
+  "CREATE TABLE IF NOT EXISTS storage (id TEXT UNIQUE NOT NULL PRIMARY KEY, location TEXT NOT NULL, itemId STRING NOT NULL, cartons INTEGER NOT NULL, pieces INTEGER NOT NULL, dateModified TEXT NOT NULL, FOREIGN KEY (itemId) REFERENCES items (id))";
 
 // Seed Tables
 export const sqlStatementSeedItemsTable = `INSERT INTO items (id, code, color, size, description, location) VALUES ${databaseItems

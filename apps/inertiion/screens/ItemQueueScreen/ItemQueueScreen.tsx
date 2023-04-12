@@ -24,7 +24,7 @@ export const ItemQueueScreen: FC<ItemQueueScreenNavProps> = ({
       (tx) => {
         itemQueue.forEach((itemId) => {
           tx.executeSql(
-            "SELECT * FROM items WHERE id=?",
+            "SELECT * FROM items WHERE id = ?",
             [itemId],
             (_, { rows: { _array } }) => {
               setCatalogData((catalogData) => [...catalogData, _array[0]]);

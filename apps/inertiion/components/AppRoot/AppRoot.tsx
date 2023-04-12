@@ -1,6 +1,6 @@
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { useCallback, useEffect } from "react";
-import { ToastAndroid } from "react-native";
+import { Dimensions, ToastAndroid } from "react-native";
 
 import { CustomDrawer } from "@components/CustomDrawer";
 import { useAppDispatch, useAppSelector } from "@hooks";
@@ -15,6 +15,8 @@ import {
 } from "@utils";
 
 const RootDrawer = createDrawerNavigator<RootDrawerNavigationProps>();
+
+const { width } = Dimensions.get("screen");
 
 export const AppRoot = () => {
   const dispatch = useAppDispatch();
@@ -71,7 +73,7 @@ export const AppRoot = () => {
     <RootDrawer.Navigator
       drawerContent={CustomDrawer}
       initialRouteName="Home"
-      screenOptions={{ headerShown: false }}
+      screenOptions={{ headerShown: false, swipeEdgeWidth: width / 2 }}
     >
       <RootDrawer.Screen component={HomeScreenRoot} name="Home" />
       <RootDrawer.Screen component={SettingsScreen} name="Settings" />

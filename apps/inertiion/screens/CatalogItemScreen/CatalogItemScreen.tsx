@@ -7,6 +7,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppDispatch, useAppSelector } from "@hooks";
 import { setSearchResult, setSearchTerm } from "@store";
 import { defaultAppPadding } from "@theme";
+import { CatalogItem } from "@types";
+
 import {
   CatalogItemScreenNavProps,
   NewCatalogItemInput as CatalogItemInput,
@@ -24,7 +26,9 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
 }) => {
   const dispatch = useAppDispatch();
 
-  const { databaseInstance: db } = useAppSelector(({ app }) => ({ ...app }));
+  const { databaseInstance: db, searchTerm } = useAppSelector(({ app }) => ({
+    ...app,
+  }));
 
   const [isUpdateNeeded, setIsUpdateNeeded] = useState<boolean>(false);
   const [itemData, setItemData] = useState<CatalogItemInputWithId | null>(null);
@@ -63,17 +67,34 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
               id,
             ],
             () => {
-              setIsUpdateNeeded(() => false);
-
-              dispatch(setSearchResult([]));
-              dispatch(setSearchTerm(""));
-
               ToastAndroid.show(
                 `${itemData.code} updated successfully!`,
                 ToastAndroid.LONG
               );
+            }
+          );
 
-              navigation.goBack();
+          tx.executeSql(
+            "SELECT * FROM items WHERE code LIKE ? OR location LIKE ?",
+            [`%${searchTerm}%`, `%${searchTerm}%`],
+            (_, { rows: { _array } }) => {
+              try {
+                const searchResult = _array.map((item) => ({
+                  ...item,
+                  color: item.color
+                    ?.split(",")
+                    .map((color: string) => color.trim()),
+                  size: item.size
+                    ?.split(",")
+                    .map((size: string) => size.trim()),
+                })) as unknown as CatalogItem[];
+
+                dispatch(setSearchResult(searchResult));
+
+                setIsUpdateNeeded(() => false);
+              } catch (err) {
+                console.log(err);
+              }
             }
           );
         },
@@ -107,15 +128,24 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
             >
               Go Back
             </Button>
-            <IconButton
-              disabled={!isUpdateNeeded}
-              icon="content-save"
-              mode="contained"
-              onPress={() => {
-                handleUpdateItemData();
-              }}
-              size={30}
-            />
+            {!!isUpdateNeeded ? (
+              <IconButton
+                disabled={!isUpdateNeeded}
+                icon="content-save"
+                mode="contained"
+                onPress={() => {
+                  handleUpdateItemData();
+                }}
+                size={30}
+              />
+            ) : (
+              <IconButton
+                containerColor="rgba(0,0,0,0)"
+                iconColor="rgba(0,0,0,0)"
+                icon="content-save"
+                size={30}
+              />
+            )}
           </View>
           <Text variant="headlineSmall">Item Information</Text>
           <TextInput
@@ -194,34 +224,36 @@ export const CatalogItemScreenStorageComponent: FC<{ itemId: string }> = ({
     {
       id: string;
       location: string;
-      itemIds: string[];
-      cartons: number[];
-      pieces: number[];
+      itemId: string;
+      cartons: number;
+      pieces: number;
       dateModified: string;
     }[]
   >([]);
 
   const handleUpdateItemStorageData = useCallback(() => {
-    console.log("handling the update of the storage");
-
-    console.log(itemStorageData);
-
-    const newRows = itemStorageData.filter((item) =>
-      item.id.startsWith("new-")
+    db.transaction(
+      (tx) => {
+        itemStorageData.forEach(
+          ({ id, location, itemId, cartons, pieces, dateModified }) => {
+            tx.executeSql(
+              ` INSERT INTO storage (id, location, itemId, cartons, pieces, dateModified) 
+                VALUES (?, ?, ?, ?, ?, ?) 
+                ON CONFLICT (id) DO UPDATE SET 
+                  location = excluded.location, 
+                  itemId = excluded.itemId,
+                  cartons = excluded.cartons,
+                  pieces = excluded.pieces,
+                  dateModified = excluded.dateModified`,
+              [id, location, itemId, cartons, pieces, dateModified]
+            );
+          }
+        );
+      },
+      (err) => console.log(err)
     );
 
-    console.log(newRows);
-
-    console.log(newRows.map((row) => row.location));
-
-    // Step 1:
-    // Find whether storage locations already exist with those locations names.
-
-    // Step2:
-    // If locations DO NOT EXIST, add the new locations.
-
-    // Step 3:
-    // If DO EXIST, add data to the end of the arrays and modify the last modified date.
+    setIsUpdateNeeded(() => false);
   }, [itemStorageData]);
 
   useEffect(() => {
@@ -229,32 +261,21 @@ export const CatalogItemScreenStorageComponent: FC<{ itemId: string }> = ({
       db.transaction(
         (tx) => {
           tx.executeSql(
-            "SELECT * FROM storage WHERE itemIds LIKE ?",
-            [`%${itemId}%`],
+            "SELECT * FROM storage WHERE itemId = ?",
+            [itemId],
             (_, { rows: { _array } }) => {
               const dbItemStorageData = _array as {
                 id: string;
                 location: string;
-                itemIds: string;
-                cartons: string;
-                pieces: string;
+                itemId: string;
+                cartons: number;
+                pieces: number;
                 dateModified: string;
               }[];
 
-              setItemStorageData(() =>
-                dbItemStorageData.map((item) => ({
-                  ...item,
-                  itemIds: item.itemIds.split(",").map((id) => id.trim()),
-                  cartons: item.cartons
-                    .split(",")
-                    .map((ctn) => ctn.trim())
-                    .map((ctn) => parseInt(ctn)),
-                  pieces: item.pieces
-                    .split(",")
-                    .map((pcs) => pcs.trim())
-                    .map((pcs) => parseInt(pcs)),
-                }))
-              );
+              console.log(dbItemStorageData);
+
+              setItemStorageData(() => dbItemStorageData);
             }
           );
         },
@@ -317,10 +338,10 @@ export const CatalogItemScreenStorageComponent: FC<{ itemId: string }> = ({
                 {
                   location: "",
                   dateModified: new Date().toISOString(),
-                  cartons: [],
-                  id: `new-${Crypto.randomUUID()}`,
-                  itemIds: [itemId],
-                  pieces: [],
+                  cartons: 0,
+                  id: Crypto.randomUUID(),
+                  itemId,
+                  pieces: 0,
                 },
               ]);
             }}
@@ -329,8 +350,6 @@ export const CatalogItemScreenStorageComponent: FC<{ itemId: string }> = ({
         </View>
       </View>
       {itemStorageData.map((loc, idx) => {
-        const currentItemIndex = loc.itemIds.indexOf(itemId);
-
         return (
           <View key={loc.id}>
             <TextInput
@@ -353,7 +372,7 @@ export const CatalogItemScreenStorageComponent: FC<{ itemId: string }> = ({
                 flexDirection: "row",
               }}
             >
-              <TextInput
+              {/* <TextInput
                 keyboardType="number-pad"
                 label="Cartons"
                 mode="outlined"
@@ -380,8 +399,8 @@ export const CatalogItemScreenStorageComponent: FC<{ itemId: string }> = ({
                 }}
                 style={{ flex: 1, marginRight: defaultAppPadding / 2 }}
                 value={loc.cartons[currentItemIndex]?.toString() || ""}
-              />
-              <TextInput
+              /> */}
+              {/* <TextInput
                 keyboardType="number-pad"
                 label="Pieces"
                 mode="outlined"
@@ -408,6 +427,44 @@ export const CatalogItemScreenStorageComponent: FC<{ itemId: string }> = ({
                 }}
                 style={{ flex: 1, marginLeft: defaultAppPadding / 2 }}
                 value={loc.pieces[currentItemIndex]?.toString() || ""}
+              /> */}
+              <TextInput
+                keyboardType="number-pad"
+                label="Cartons"
+                mode="outlined"
+                onChangeText={(newNumberOfCartons) => {
+                  setIsUpdateNeeded(() => true);
+
+                  setItemStorageData((itemStorageData) => [
+                    ...itemStorageData.slice(0, idx),
+                    {
+                      ...itemStorageData[idx],
+                      cartons: parseInt(newNumberOfCartons),
+                    },
+                    ...itemStorageData.slice(idx + 1),
+                  ]);
+                }}
+                value={!!loc.cartons ? loc.cartons.toString() : ""}
+                style={{ flex: 1, marginRight: defaultAppPadding / 2 }}
+              />
+              <TextInput
+                keyboardType="number-pad"
+                label="Pieces"
+                mode="outlined"
+                onChangeText={(newNumberOfPieces) => {
+                  setIsUpdateNeeded(() => true);
+
+                  setItemStorageData((itemStorageData) => [
+                    ...itemStorageData.slice(0, idx),
+                    {
+                      ...itemStorageData[idx],
+                      pieces: parseInt(newNumberOfPieces),
+                    },
+                    ...itemStorageData.slice(idx + 1),
+                  ]);
+                }}
+                value={!!loc.pieces ? loc.pieces?.toString() : ""}
+                style={{ flex: 1, marginLeft: defaultAppPadding / 2 }}
               />
               <IconButton
                 iconColor="red"
