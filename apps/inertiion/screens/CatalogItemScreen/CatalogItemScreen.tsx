@@ -189,6 +189,7 @@ export const CatalogItemScreenStorageComponent: FC<{ itemId: string }> = ({
 }) => {
   const { databaseInstance: db } = useAppSelector(({ app }) => ({ ...app }));
 
+  const [isUpdateNeeded, setIsUpdateNeeded] = useState<boolean>(false);
   const [itemStorageData, setItemStorageData] = useState<
     {
       id: string;
@@ -199,6 +200,29 @@ export const CatalogItemScreenStorageComponent: FC<{ itemId: string }> = ({
       dateModified: string;
     }[]
   >([]);
+
+  const handleUpdateItemStorageData = useCallback(() => {
+    console.log("handling the update of the storage");
+
+    console.log(itemStorageData);
+
+    const newRows = itemStorageData.filter((item) =>
+      item.id.startsWith("new-")
+    );
+
+    console.log(newRows);
+
+    console.log(newRows.map((row) => row.location));
+
+    // Step 1:
+    // Find whether storage locations already exist with those locations names.
+
+    // Step2:
+    // If locations DO NOT EXIST, add the new locations.
+
+    // Step 3:
+    // If DO EXIST, add data to the end of the arrays and modify the last modified date.
+  }, [itemStorageData]);
 
   useEffect(() => {
     if (itemId) {
@@ -251,45 +275,147 @@ export const CatalogItemScreenStorageComponent: FC<{ itemId: string }> = ({
         }}
       >
         <Text variant="headlineSmall">Storage</Text>
-        <IconButton
-          icon="plus"
-          mode="contained"
-          onPress={() => {
-            db.transaction(
-              (tx) => {
-                tx.executeSql(
-                  "INSERT INTO storage (id, location, itemIds, cartons, pieces, dateModified) VALUES (?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?)",
-                  [
-                    Crypto.randomUUID(),
-                    "09-3-2",
-                    `${itemId}, ${Crypto.randomUUID()}, ${Crypto.randomUUID()}`,
-                    "16, 2, 1",
-                    "2400, 300, 150",
-                    new Date().toISOString(),
-                    Crypto.randomUUID(),
-                    "22-3-3",
-                    `${Crypto.randomUUID()}, ${Crypto.randomUUID()}, ${itemId}`,
-                    "20, 2, 1",
-                    "3000, 300, 150",
-                    new Date().toISOString(),
-                  ]
-                );
-              },
-              (err) => console.log(err)
-            );
-          }}
-          size={20}
-        />
+        <View style={{ flexDirection: "row" }}>
+          {!!isUpdateNeeded && (
+            <IconButton
+              icon="content-save"
+              mode="contained"
+              onPress={handleUpdateItemStorageData}
+              size={20}
+            />
+          )}
+          <IconButton
+            icon="plus"
+            mode="contained"
+            // onPress={() => {
+            //   db.transaction(
+            //     (tx) => {
+            //       tx.executeSql(
+            //         "INSERT INTO storage (id, location, itemIds, cartons, pieces, dateModified) VALUES (?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?)",
+            //         [
+            //           Crypto.randomUUID(),
+            //           "09-3-2",
+            //           `${itemId}, ${Crypto.randomUUID()}, ${Crypto.randomUUID()}`,
+            //           "16, 2, 1",
+            //           "2400, 300, 150",
+            //           new Date().toISOString(),
+            //           Crypto.randomUUID(),
+            //           "22-3-3",
+            //           `${Crypto.randomUUID()}, ${Crypto.randomUUID()}, ${itemId}`,
+            //           "20, 2, 1",
+            //           "3000, 300, 150",
+            //           new Date().toISOString(),
+            //         ]
+            //       );
+            //     },
+            //     (err) => console.log(err)
+            //   );
+            // }}
+            onPress={() => {
+              setItemStorageData((itemStorageData) => [
+                ...itemStorageData,
+                {
+                  location: "",
+                  dateModified: new Date().toISOString(),
+                  cartons: [],
+                  id: `new-${Crypto.randomUUID()}`,
+                  itemIds: [itemId],
+                  pieces: [],
+                },
+              ]);
+            }}
+            size={20}
+          />
+        </View>
       </View>
-      {itemStorageData.map((loc) => {
+      {itemStorageData.map((loc, idx) => {
         const currentItemIndex = loc.itemIds.indexOf(itemId);
 
         return (
           <View key={loc.id}>
-            <Text variant="titleSmall">{loc.location}</Text>
-            <Text>{loc.cartons[currentItemIndex]}</Text>
-            <Text>{loc.pieces[currentItemIndex]}</Text>
-            <Text>{loc.dateModified}</Text>
+            <TextInput
+              label="Location"
+              mode="outlined"
+              onChangeText={(newLocation) => {
+                setIsUpdateNeeded(() => true);
+
+                setItemStorageData((itemStorageData) => [
+                  ...itemStorageData.slice(0, idx),
+                  { ...itemStorageData[idx], location: newLocation },
+                  ...itemStorageData.slice(idx + 1),
+                ]);
+              }}
+              value={loc.location}
+            />
+            <View
+              style={{
+                alignItems: "center",
+                flexDirection: "row",
+              }}
+            >
+              <TextInput
+                keyboardType="number-pad"
+                label="Cartons"
+                mode="outlined"
+                onChangeText={(newNumberOfCartons) => {
+                  setIsUpdateNeeded(() => true);
+
+                  setItemStorageData((itemStorageData) => [
+                    ...itemStorageData.slice(0, idx),
+                    {
+                      ...itemStorageData[idx],
+                      cartons: [
+                        ...itemStorageData[idx].cartons.slice(
+                          0,
+                          currentItemIndex
+                        ),
+                        parseInt(newNumberOfCartons),
+                        ...itemStorageData[idx].cartons.slice(
+                          currentItemIndex + 1
+                        ),
+                      ],
+                    },
+                    ...itemStorageData.slice(idx + 1),
+                  ]);
+                }}
+                style={{ flex: 1, marginRight: defaultAppPadding / 2 }}
+                value={loc.cartons[currentItemIndex]?.toString() || ""}
+              />
+              <TextInput
+                keyboardType="number-pad"
+                label="Pieces"
+                mode="outlined"
+                onChangeText={(newNumberOfPieces) => {
+                  setIsUpdateNeeded(() => true);
+
+                  setItemStorageData((itemStorageData) => [
+                    ...itemStorageData.slice(0, idx),
+                    {
+                      ...itemStorageData[idx],
+                      pieces: [
+                        ...itemStorageData[idx].pieces.slice(
+                          0,
+                          currentItemIndex
+                        ),
+                        parseInt(newNumberOfPieces),
+                        ...itemStorageData[idx].pieces.slice(
+                          currentItemIndex + 1
+                        ),
+                      ],
+                    },
+                    ...itemStorageData.slice(idx + 1),
+                  ]);
+                }}
+                style={{ flex: 1, marginLeft: defaultAppPadding / 2 }}
+                value={loc.pieces[currentItemIndex]?.toString() || ""}
+              />
+              <IconButton
+                iconColor="red"
+                icon="trash-can"
+                mode="contained"
+                size={20}
+              />
+            </View>
           </View>
         );
       })}

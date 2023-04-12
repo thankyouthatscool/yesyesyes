@@ -39,6 +39,16 @@ export const items: DatabaseItemInput[] = [
   ["AH711", "ROYAL", "59cm", "School Foam Hat", "Bay 5-2/6-2"],
   ["AH711", "ROYAL", "61cm", "School Foam Hat", "Bay 3-2"],
 
+  // AH718
+  ["AH718", "DARK NAVY", "55cm", "Microfibre Surf Hat", "11R11"],
+  ["AH718", "DARK NAVY", "57cm", "Microfibre Surf Hat", "11Q11"],
+  ["AH718", "DARK NAVY", "59cm", "Microfibre Surf Hat", "11Q21"],
+  ["AH718", "DARK NAVY", "61cm", "Microfibre Surf Hat", "11Q21"],
+  ["AH718", "NATURAL", "55cm", "Microfibre Surf Hat", "11Q11"],
+  ["AH718", "NATURAL", "57cm", "Microfibre Surf Hat", "11Q11"],
+  ["AH718", "NATURAL", "59cm", "Microfibre Surf Hat", "11Q21"],
+  ["AH718", "NATURAL", "61cm", "Microfibre Surf Hat", "11Q21"],
+
   // AH776
   ["AH776", "NAVY", null, "Wrist Band 5 Inch", "1GW42"],
   ["AH776", "YELLOW", null, "Wrist Band 5 Inch", "1GW42"],
