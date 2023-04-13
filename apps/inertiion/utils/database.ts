@@ -81,11 +81,44 @@ export const items: DatabaseItemInput[] = [
   ["AH777", "ORANGE", null, "Headband", "1GW52"],
   ["AH777", "PINK", null, "Headband", "1GW52"],
 
+  // G1250
+  ["G1250", "BLACK", null, "Team Bag", "1GD41"],
+  ["G1250", "NAVY", null, "Team Bag", "1GD51"],
+  ["G1250", "ORANGE, BLACK", null, "Team Bag", "1GD41/51"],
+  ["G1250", "RED, BLACK", null, "Team Bag", "1GD31/41"],
+  ["G1250", "ROYAL", null, "Team Bag", "1GD21/31"],
+  ["G1250", "ROYAL, BLACK", null, "Team Bag", "1GD11"],
+  ["G1250", "YELLOW, BLACK", null, "Team Bag", "1GD11/21"],
+
+  // G1365
+  ["G1365", "BLACK, WHITE", null, "Hurtley", "1GO31"],
+  ["G1365", "NAVY, WHITE", null, "Hurtley", "1GO31"],
+
+  // G1602
+  ["G1602", "BLACK, WHITE, BLACK", null, "Precinct Backpack", "1GE22"],
+  ["G1602", "GOLD, WHITE, BOTTLE", null, "Precinct Backpack", "1GE12"],
+  ["G1602", "RED, WHITE, BLACK", null, "Precinct Backpack", "1GE32"],
+  ["G1602", "ROYAL, GREY, BLACK", null, "Precinct Backpack", "1GE22"],
+  ["G1602", "SKY, WHITE, NAVY", null, "Precinct Backpack", "1GE32"],
+
   // G2000
   ["G2000", "BLACK", null, "Large Sports Bag", "1GE52"],
   ["G2000", "NAVY", null, "Large Sports Bag", "1GE52"],
   ["G2000", "RED, BLACK", null, "Large Sports Bag", "1GE42"],
   ["G2000", "ROYAL, BLACK", null, "Large Sports Bag", "1GE42"],
+
+  // G2002
+  ["G2002", "BLACK", null, "Trolley Travel Bag", "1GX32"],
+
+  // G2143
+  ["G2143", "BLACK", null, "Vibe", "1GQ41"],
+
+  // G2155
+  ["G2155", "BLACK, WHITE, BLACK", null, "Backpack", "1GAA31/41"],
+  ["G2155", "BLACK, WHITE, ROYAL", null, "Backpack", "1GAA41"],
+
+  // G2195
+  ["G2195", "BLACK", null, "Boxy", "1GQ31"],
 
   // G2209
   ["G2209", "BLACK", null, "Belroy Backpack", "1GO11"],
@@ -93,6 +126,19 @@ export const items: DatabaseItemInput[] = [
 
   // G3475
   ["G3475", "BLACK", null, "Shoe Bag", "1GO12"],
+
+  // G3620
+  ["G3620", "BLACK", null, "Casual Backpack", "1GI52"],
+  ["G3620", "MAROON", null, "Casual Backpack", "1GI52"],
+  ["G3620", "NAVY", null, "Casual Backpack", "1GI32"],
+  ["G3620", "ROYAL", null, "Casual Backpack", "1GI42"],
+  ["G3620", "YELLOW", null, "Casual Backpack", "1GI32/42"],
+
+  // G4688
+  ["G4688", "BLACK", null, "Edge Cooler Bag", "1GL31"],
+  ["G4688", "BOTTLE", null, "Edge Cooler Bag", "1GL11"],
+  ["G4688", "NAVY", null, "Edge Cooler Bag", "1GL41"],
+  ["G4688", "ROYAL", null, "Edge Cooler Bag", "1GL21"],
 
   // G5222
   ["G5222", "BLACK, BLACK", null, "Casual Sports Bag", "1GV11"],

@@ -261,6 +261,28 @@ export const CatalogItemScreenStorageComponent: FC<{ itemId: string }> = ({
     setIsUpdateNeeded(() => false);
   }, [itemStorageData]);
 
+  const handleDeleteItemStorageRow = useCallback((id: string) => {
+    db.transaction(
+      (tx) => {
+        tx.executeSql("DELETE FROM storage WHERE id = ?", [id], () => {
+          setItemStorageData((itemStorageData) =>
+            itemStorageData.filter((item) => item.id !== id)
+          );
+
+          ToastAndroid.show("Storage Row removed!", ToastAndroid.LONG);
+        });
+      },
+      (err) => {
+        console.log(err);
+
+        ToastAndroid.show(
+          "Something went wrong! Please try again later.",
+          ToastAndroid.LONG
+        );
+      }
+    );
+  }, []);
+
   useEffect(() => {
     if (itemId) {
       db.transaction(
@@ -311,30 +333,6 @@ export const CatalogItemScreenStorageComponent: FC<{ itemId: string }> = ({
           <IconButton
             icon="plus"
             mode="contained"
-            // onPress={() => {
-            //   db.transaction(
-            //     (tx) => {
-            //       tx.executeSql(
-            //         "INSERT INTO storage (id, location, itemIds, cartons, pieces, dateModified) VALUES (?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?)",
-            //         [
-            //           Crypto.randomUUID(),
-            //           "09-3-2",
-            //           `${itemId}, ${Crypto.randomUUID()}, ${Crypto.randomUUID()}`,
-            //           "16, 2, 1",
-            //           "2400, 300, 150",
-            //           new Date().toISOString(),
-            //           Crypto.randomUUID(),
-            //           "22-3-3",
-            //           `${Crypto.randomUUID()}, ${Crypto.randomUUID()}, ${itemId}`,
-            //           "20, 2, 1",
-            //           "3000, 300, 150",
-            //           new Date().toISOString(),
-            //         ]
-            //       );
-            //     },
-            //     (err) => console.log(err)
-            //   );
-            // }}
             onPress={() => {
               setItemStorageData((itemStorageData) => [
                 ...itemStorageData,
@@ -378,62 +376,6 @@ export const CatalogItemScreenStorageComponent: FC<{ itemId: string }> = ({
                 flexDirection: "row",
               }}
             >
-              {/* <TextInput
-                keyboardType="number-pad"
-                label="Cartons"
-                mode="outlined"
-                onChangeText={(newNumberOfCartons) => {
-                  setIsUpdateNeeded(() => true);
-
-                  setItemStorageData((itemStorageData) => [
-                    ...itemStorageData.slice(0, idx),
-                    {
-                      ...itemStorageData[idx],
-                      cartons: [
-                        ...itemStorageData[idx].cartons.slice(
-                          0,
-                          currentItemIndex
-                        ),
-                        parseInt(newNumberOfCartons),
-                        ...itemStorageData[idx].cartons.slice(
-                          currentItemIndex + 1
-                        ),
-                      ],
-                    },
-                    ...itemStorageData.slice(idx + 1),
-                  ]);
-                }}
-                style={{ flex: 1, marginRight: defaultAppPadding / 2 }}
-                value={loc.cartons[currentItemIndex]?.toString() || ""}
-              /> */}
-              {/* <TextInput
-                keyboardType="number-pad"
-                label="Pieces"
-                mode="outlined"
-                onChangeText={(newNumberOfPieces) => {
-                  setIsUpdateNeeded(() => true);
-
-                  setItemStorageData((itemStorageData) => [
-                    ...itemStorageData.slice(0, idx),
-                    {
-                      ...itemStorageData[idx],
-                      pieces: [
-                        ...itemStorageData[idx].pieces.slice(
-                          0,
-                          currentItemIndex
-                        ),
-                        parseInt(newNumberOfPieces),
-                        ...itemStorageData[idx].pieces.slice(
-                          currentItemIndex + 1
-                        ),
-                      ],
-                    },
-                    ...itemStorageData.slice(idx + 1),
-                  ]);
-                }}
-                style={{ flex: 1, marginLeft: defaultAppPadding / 2 }}
-                value={loc.pieces[currentItemIndex]?.toString() || ""}
-              /> */}
               <TextInput
                 keyboardType="number-pad"
                 label="Cartons"
@@ -476,6 +418,7 @@ export const CatalogItemScreenStorageComponent: FC<{ itemId: string }> = ({
                 iconColor="red"
                 icon="trash-can"
                 mode="contained"
+                onPress={() => handleDeleteItemStorageRow(loc.id)}
                 size={20}
               />
             </View>
