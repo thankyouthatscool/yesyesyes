@@ -37,8 +37,23 @@ export const localStorageGetCheckedItems = () => {};
 export const localStorageSetCheckedItems = () => {};
 
 // Search Term
-export const localStorageSetSearchTerm = async (searchTerm: string) => {
-  await AsyncStorage.setItem("searchTerm", JSON.stringify(searchTerm));
+export const localStorageSetSearchTerm = async (newSearchTerm: string) => {
+  console.log("newSearchTerm", newSearchTerm);
+
+  if (!!newSearchTerm) {
+    const resString = await AsyncStorage.getItem("searchTerm");
+
+    if (!!resString) {
+      const searchTerms = JSON.parse(resString) as string[];
+
+      await AsyncStorage.setItem(
+        "searchTerm",
+        JSON.stringify(
+          Array.from(new Set([newSearchTerm, ...searchTerms])).slice(0, 5)
+        )
+      );
+    }
+  }
 };
 
 export const localStorageGetSearchTerm = async () => {
@@ -46,13 +61,26 @@ export const localStorageGetSearchTerm = async () => {
     const resString = await AsyncStorage.getItem("searchTerm");
 
     if (!!resString) {
-      const searchTerm = JSON.parse(resString) as string;
+      const searchTerms = JSON.parse(resString) as string[];
 
-      return { searchTerm, status: AsyncStorageReturnStatus.OK };
+      return { searchTerms, status: AsyncStorageReturnStatus.OK };
     } else {
-      return { searchTerm: null, status: AsyncStorageReturnStatus.NOT_FOUND };
+      return { searchTerms: null, status: AsyncStorageReturnStatus.NOT_FOUND };
     }
   } catch {
-    return { searchTerm: null, status: AsyncStorageReturnStatus.ERROR };
+    return { searchTerms: null, status: AsyncStorageReturnStatus.ERROR };
+  }
+};
+
+export const localStorageRemoveSearchTerm = async (term: string) => {
+  const resString = await AsyncStorage.getItem("searchTerm");
+
+  if (!!resString) {
+    const searchTerms = JSON.parse(resString) as string[];
+
+    await AsyncStorage.setItem(
+      "searchTerm",
+      JSON.stringify(searchTerms.filter((oldTerm) => oldTerm !== term))
+    );
   }
 };

@@ -1,9 +1,7 @@
 import _debounce from "lodash.debounce";
 import { FC, useCallback, useEffect, useRef, useState } from "react";
-import { Text, TextInput, ToastAndroid, View } from "react-native";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { TextInput, ToastAndroid, View } from "react-native";
 import { Chip, FAB, IconButton, Searchbar } from "react-native-paper";
-import { runOnJS } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { SearchResult } from "@components/SearchResult";
@@ -13,6 +11,7 @@ import { defaultAppPadding } from "@theme";
 import { AsyncStorageReturnStatus, HomeScreenNavProps } from "@types";
 import {
   localStorageGetSearchTerm,
+  localStorageRemoveSearchTerm,
   localStorageSetItemQueue,
   localStorageSetSearchTerm,
 } from "@utils";
@@ -30,25 +29,30 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
   const searchBarRef = useRef<TextInput>(null);
 
   const _handleSetLastSearchTerm = useCallback(
-    _debounce((searchTerm: string) => {
+    _debounce((searchTerms: string[]) => {
       setLastSearchTerms((lastSearchTerms) =>
         !!lastSearchTerms
           ? Array.from(
-              new Set([searchTerm!.toUpperCase(), ...lastSearchTerms!])
+              new Set([
+                ...searchTerms.map((term) => term.toUpperCase()),
+                ...lastSearchTerms!,
+              ])
             ).slice(0, 5)
-          : [searchTerm!.toUpperCase()]
+          : Array.from(
+              new Set([...searchTerms.map((term) => term.toUpperCase())])
+            )
       );
     }, 500),
     []
   );
 
   const handleLocalStorageSearchTerm = useCallback(async () => {
-    const { searchTerm, status } = await localStorageGetSearchTerm();
+    const { searchTerms, status } = await localStorageGetSearchTerm();
 
     if (status === AsyncStorageReturnStatus.OK) {
-      _handleSetLastSearchTerm(searchTerm!);
+      _handleSetLastSearchTerm(searchTerms!);
     }
-  }, []);
+  }, [searchTerm]);
 
   useEffect(() => {
     if (!!searchBarRef.current) {
@@ -61,7 +65,7 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    if (searchTerm.length > 2) {
+    if (searchTerm.length > 3) {
       localStorageSetSearchTerm(searchTerm);
 
       handleLocalStorageSearchTerm();
@@ -69,17 +73,6 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
   }, [searchTerm]);
 
   return (
-    // <GestureDetector
-    //   gesture={Gesture.Pan().onEnd(({ translationX }) => {
-    //     if (translationX > 100) {
-    //       (() => {
-    //         "worklet";
-
-    //         runOnJS(navigation.openDrawer)();
-    //       })();
-    //     }
-    //   })}
-    // >
     <SafeAreaView style={{ height: "100%" }}>
       <View
         style={{
@@ -122,18 +115,20 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
           {lastSearchTerms?.map((term) => (
             <Chip
               key={term}
-              onPress={() => {
+              onPress={async () => {
                 searchBarRef.current?.focus();
 
                 dispatch(setSearchTerm(term));
               }}
               onLongPress={() => {
+                localStorageRemoveSearchTerm(term);
+
                 setLastSearchTerms((lastSearchTerms) => {
                   if (!!lastSearchTerms) {
                     return lastSearchTerms.filter((t) => t !== term);
                   } else {
+                    return [];
                   }
-                  return [];
                 });
               }}
               style={{ marginRight: defaultAppPadding / 2 }}
@@ -166,6 +161,5 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
         />
       )}
     </SafeAreaView>
-    // </GestureDetector>
   );
 };

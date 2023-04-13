@@ -1,13 +1,13 @@
 import * as Crypto from "expo-crypto";
 import { FC, useCallback, useEffect, useState } from "react";
-import { ScrollView, ToastAndroid, View } from "react-native";
+import { Pressable, ScrollView, ToastAndroid, View } from "react-native";
 import { Button, IconButton, Text, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAppDispatch, useAppSelector } from "@hooks";
 import { setSearchResult, setSearchTerm } from "@store";
 import { defaultAppPadding } from "@theme";
-import { CatalogItem } from "@types";
+import { CatalogItem, StorageComponentNav } from "@types";
 
 import {
   CatalogItemScreenNavProps,
@@ -206,7 +206,10 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
             }}
             value={itemData.location}
           />
-          <CatalogItemScreenStorageComponent itemId={itemData.id} />
+          <CatalogItemScreenStorageComponent
+            itemId={itemData.id}
+            navigation={navigation}
+          />
           <Text variant="headlineSmall">Notes</Text>
         </ScrollView>
       )}
@@ -214,9 +217,10 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
   );
 };
 
-export const CatalogItemScreenStorageComponent: FC<{ itemId: string }> = ({
-  itemId,
-}) => {
+export const CatalogItemScreenStorageComponent: FC<{
+  itemId: string;
+  navigation: StorageComponentNav;
+}> = ({ itemId, navigation }) => {
   const { databaseInstance: db } = useAppSelector(({ app }) => ({ ...app }));
 
   const [isUpdateNeeded, setIsUpdateNeeded] = useState<boolean>(false);
@@ -320,7 +324,15 @@ export const CatalogItemScreenStorageComponent: FC<{ itemId: string }> = ({
           justifyContent: "space-between",
         }}
       >
-        <Text variant="headlineSmall">Storage</Text>
+        <Pressable
+          onPress={() => {
+            console.log("navigating to the storage screen");
+
+            navigation.navigate("HomeScreen");
+          }}
+        >
+          <Text variant="headlineSmall">Storage</Text>
+        </Pressable>
         <View style={{ flexDirection: "row" }}>
           {!!isUpdateNeeded && (
             <IconButton
@@ -350,9 +362,20 @@ export const CatalogItemScreenStorageComponent: FC<{ itemId: string }> = ({
           />
         </View>
       </View>
-      <Text>Summary about items in storage go here.</Text>
-      <Text>Summary about items in storage go here.</Text>
-      <Text>Summary about items in storage go here.</Text>
+      <Text variant="titleMedium">
+        Total Cartons:{" "}
+        <Text style={{ color: "green", fontWeight: "700" }}>
+          {itemStorageData.reduce((acc, { cartons }) => {
+            return acc + cartons;
+          }, 0)}
+        </Text>{" "}
+        / Total Pieces:{" "}
+        <Text style={{ color: "green", fontWeight: "700" }}>
+          {itemStorageData.reduce((acc, { pieces }) => {
+            return acc + pieces;
+          }, 0)}
+        </Text>
+      </Text>
       {itemStorageData.map((loc, idx) => {
         return (
           <View key={loc.id}>

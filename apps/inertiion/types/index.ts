@@ -33,6 +33,11 @@ export type HomeScreenNav = NativeStackNavigationProp<
   "HomeScreen"
 >;
 
+export type StorageComponentNav = NativeStackNavigationProp<
+  HomeScreenNavStackProps,
+  "CatalogItemScreen"
+>;
+
 export type ItemQueueScreenNavProps = NativeStackScreenProps<
   HomeScreenNavStackProps,
   "ItemQueueScreen"
