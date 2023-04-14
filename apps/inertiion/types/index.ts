@@ -51,6 +51,7 @@ export type NewCatalogItemScreenNavProps = NativeStackScreenProps<
 export type AppState = {
   databaseInstance: SQLite.WebSQLDatabase;
   itemQueue: string[];
+  itemQueueChecked: string[];
   searchResult: CatalogItem[];
   searchTerm: string;
 };

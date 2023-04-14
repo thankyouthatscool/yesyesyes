@@ -6,12 +6,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { SearchResult } from "@components/SearchResult";
 import { useAppDispatch, useAppSelector } from "@hooks";
-import { clearItemQueue, setSearchTerm } from "@store";
+import { clearItemQueue, setItemQueueChecked, setSearchTerm } from "@store";
 import { defaultAppPadding } from "@theme";
 import { AsyncStorageReturnStatus, HomeScreenNavProps } from "@types";
 import {
   localStorageGetSearchTerm,
   localStorageRemoveSearchTerm,
+  localStorageSetCheckedItemQueue,
   localStorageSetItemQueue,
   localStorageSetSearchTerm,
 } from "@utils";
@@ -65,11 +66,13 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    if (searchTerm.length > 3) {
+    if (searchTerm.length > 2) {
       localStorageSetSearchTerm(searchTerm);
 
       handleLocalStorageSearchTerm();
     }
+
+    handleLocalStorageSearchTerm();
   }, [searchTerm]);
 
   return (
@@ -149,9 +152,14 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
           onLongPress={async () => {
             ToastAndroid.show("Item queue cleared!", ToastAndroid.LONG);
 
-            await localStorageSetItemQueue([]);
+            await Promise.all(
+              [localStorageSetItemQueue, localStorageSetCheckedItemQueue].map(
+                async (fun) => await fun([])
+              )
+            );
 
             dispatch(clearItemQueue());
+            dispatch(setItemQueueChecked([]));
           }}
           style={{
             position: "absolute",

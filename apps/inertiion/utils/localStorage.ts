@@ -2,9 +2,15 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { AsyncStorageReturnStatus } from "@types";
 
+enum LocalStorageKeys {
+  CHECKED_ITEM_QUEUE = "checkedItemQueue",
+  ITEM_QUEUE = "itemQueue",
+  SEARCH_TERM = "searchTerm",
+}
+
 // Item Queue
 export const localStorageGetItemQueue = async () => {
-  const resString = await AsyncStorage.getItem("itemQueue");
+  const resString = await AsyncStorage.getItem(LocalStorageKeys.ITEM_QUEUE);
 
   try {
     if (!!resString) {
@@ -22,7 +28,7 @@ export const localStorageGetItemQueue = async () => {
 export const localStorageSetItemQueue = async (itemQueue: string[]) => {
   try {
     await AsyncStorage.setItem(
-      "itemQueue",
+      LocalStorageKeys.ITEM_QUEUE,
       JSON.stringify(Array.from(new Set(itemQueue)))
     );
 
@@ -32,14 +38,47 @@ export const localStorageSetItemQueue = async (itemQueue: string[]) => {
   }
 };
 
-export const localStorageGetCheckedItems = () => {};
+export const localStorageGetCheckedItemQueue = async () => {
+  const resString = await AsyncStorage.getItem(
+    LocalStorageKeys.CHECKED_ITEM_QUEUE
+  );
 
-export const localStorageSetCheckedItems = () => {};
+  try {
+    if (!!resString) {
+      const checkedItemQueue = JSON.parse(resString) as string[];
+
+      return {
+        checkedItemQueue: checkedItemQueue,
+        status: AsyncStorageReturnStatus.OK,
+      };
+    } else {
+      return {
+        checkedItemQueue: [],
+        status: AsyncStorageReturnStatus.NOT_FOUND,
+      };
+    }
+  } catch {
+    return { checkedItemQueue: [], status: AsyncStorageReturnStatus.ERROR };
+  }
+};
+
+export const localStorageSetCheckedItemQueue = async (
+  checkedItemQueue: string[]
+) => {
+  try {
+    await AsyncStorage.setItem(
+      LocalStorageKeys.CHECKED_ITEM_QUEUE,
+      JSON.stringify([...checkedItemQueue])
+    );
+
+    return { status: AsyncStorageReturnStatus.OK };
+  } catch {
+    return { status: AsyncStorageReturnStatus.ERROR };
+  }
+};
 
 // Search Term
 export const localStorageSetSearchTerm = async (newSearchTerm: string) => {
-  console.log("newSearchTerm", newSearchTerm);
-
   if (!!newSearchTerm) {
     const resString = await AsyncStorage.getItem("searchTerm");
 
@@ -47,10 +86,15 @@ export const localStorageSetSearchTerm = async (newSearchTerm: string) => {
       const searchTerms = JSON.parse(resString) as string[];
 
       await AsyncStorage.setItem(
-        "searchTerm",
+        LocalStorageKeys.SEARCH_TERM,
         JSON.stringify(
           Array.from(new Set([newSearchTerm, ...searchTerms])).slice(0, 5)
         )
+      );
+    } else {
+      await AsyncStorage.setItem(
+        LocalStorageKeys.SEARCH_TERM,
+        JSON.stringify([newSearchTerm])
       );
     }
   }
@@ -58,7 +102,7 @@ export const localStorageSetSearchTerm = async (newSearchTerm: string) => {
 
 export const localStorageGetSearchTerm = async () => {
   try {
-    const resString = await AsyncStorage.getItem("searchTerm");
+    const resString = await AsyncStorage.getItem(LocalStorageKeys.SEARCH_TERM);
 
     if (!!resString) {
       const searchTerms = JSON.parse(resString) as string[];
@@ -73,7 +117,7 @@ export const localStorageGetSearchTerm = async () => {
 };
 
 export const localStorageRemoveSearchTerm = async (term: string) => {
-  const resString = await AsyncStorage.getItem("searchTerm");
+  const resString = await AsyncStorage.getItem(LocalStorageKeys.SEARCH_TERM);
 
   if (!!resString) {
     const searchTerms = JSON.parse(resString) as string[];

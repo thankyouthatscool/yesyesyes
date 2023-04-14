@@ -72,7 +72,6 @@ export const SearchResult: FC<{ navigation: HomeScreenNav }> = ({
     <SearchResultWrapper>
       {searchResult.map((item, idx) => (
         <Card
-          delayLongPress={200}
           key={item.id}
           onPress={() => {
             navigation.navigate("CatalogItemScreen", { itemId: item.id });

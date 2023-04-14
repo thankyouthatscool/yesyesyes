@@ -3,6 +3,14 @@ import * as Crypto from "expo-crypto";
 import { DatabaseItemInput, DatabaseItemInputWithId } from "@types";
 
 export const items: DatabaseItemInput[] = [
+  // AH130
+  ["AH130", "BLACK", null, "Enzyme Washed Cap", "11X31/41"],
+  ["AH130", "BOTTLE", null, "Enzyme Washed Cap", "11X31"],
+  ["AH130", "KHAKI", null, "Enzyme Washed Cap", "11X41"],
+  ["AH130", "NAVY", null, "Enzyme Washed Cap", "11X41"],
+  ["AH130", "ORANGE", null, "Enzyme Washed Cap", "11X41"],
+  ["AH130", "RED", null, "Enzyme Washed Cap", "11X41"],
+
   // AH159
   ["AH159", "BLACK", null, "CAZAMATAZ Cap", "21D31"],
   ["AH159", "GREY", null, "CAZAMATAZ Cap", "21D31"],
@@ -11,9 +19,23 @@ export const items: DatabaseItemInput[] = [
   ["AH159", "RED", null, "CAZAMATAZ Cap", "21D31"],
   ["AH159", "ROYAL", null, "CAZAMATAZ Cap", "21D31"],
 
+  // AH163
+  ["AH163", "BLACK", null, "Reflex Cap", "11H21"],
+  ["AH163", "CHARCOAL", null, "Reflex Cap", "11H21"],
+  ["AH163", "NAVY", null, "Reflex Cap", "11H21"],
+  ["AH163", "WHITE", null, "Reflex Cap", "11H21"],
+
+  // AH165
+  ["AH165", "BEIGE", null, "Visor", "11O22"],
+
   // AH230
   ["AH230", "BLACK", null, "Heavy Brushed Cotton Cap", "21B12"],
   ["AH230", "NAVY", null, "Heavy Brushed Cotton Cap", "21B11"],
+
+  // AH238
+  ["AH238", "BLACK", null, "Cotton Back Coolde Cap", "11V31"],
+  ["AH238", "NAVY", null, "Cotton Back Coolde Cap", "11V21/31"],
+  ["AH238", "WHITE", null, "Cotton Back Coolde Cap", "11V31"],
 
   // AH295
   ["AH295", "BLACK", null, "Polymesh Trucker Cap", "11M11"],
@@ -25,9 +47,41 @@ export const items: DatabaseItemInput[] = [
   ["AH317", "MAROON", null, "JK Cap", "21D31"],
   ["AH317", "BOTTLE", null, "JK Cap", "21D31"],
 
+  // AH331
+  ["AH331", "BLACK", null, "D-Lux 5 Panel Cap", "11T32"],
+  ["AH331", "CHARCOAL", null, "D-Lux 5 Panel Cap", "11T42"],
+  ["AH331", "MAROON", null, "D-Lux 5 Panel Cap", "11T42"],
+  ["AH331", "NAVY", null, "D-Lux 5 Panel Cap", "11T32"],
+  ["AH331", "OLIVE", null, "D-Lux 5 Panel Cap", "11T42"],
+  ["AH331", "RED", null, "D-Lux 5 Panel Cap", "11T42"],
+
+  // AH525
+  ["AH525", "BLACK, WHITE, RED", null, "Adventure Cap", "11H41"],
+  ["AH525", "BOTTLE, WHITE, RED", null, "Adventure Cap", "11H42"],
+  ["AH525", "MAROON, WHITE, NAVY", null, "Adventure Cap", "11H42"],
+  ["AH525", "NAVY, WHITE, GREY", null, "Adventure Cap", "11H41"],
+  ["AH525", "NAVY, WHITE, RED", null, "Adventure Cap", "11H42"],
+  ["AH525", "NAVY, WHITE, SKY BLUE", null, "Adventure Cap", "11H42"],
+  ["AH525", "ROYAL, WHITE, BLACK", null, "Adventure Cap", "11H42"],
+  ["AH525", "WHITE, RED, BLACK", null, "Adventure Cap", "11H42"],
+
   // AH695
   ["AH695", "CHARCOAL, BLACK", "S/M", "HBC Sandwich Bucket Hat", "21M11"],
   ["AH695", "BLACK, RED", "S/M", "HBC Sandwich Bucket Hat", "21M11"],
+
+  // AH708
+  ["AH708", "BOTTLE", "L/XL", "Polyviscose School Hat", "11Y31"],
+  ["AH708", "BOTTLE", "S/M", "Polyviscose School Hat", "11Y31"],
+  ["AH708", "BOTTLE", "S/S", "Polyviscose School Hat", "11Y41"],
+  ["AH708", "MAROON", "L/XL", "Polyviscose School Hat", "11Y31"],
+  ["AH708", "MAROON", "S/M", "Polyviscose School Hat", "11Y41"],
+  ["AH708", "MAROON", "S/S", "Polyviscose School Hat", "11Y41"],
+  ["AH708", "NAVY", "L/XL", "Polyviscose School Hat", "11Y31"],
+  ["AH708", "NAVY", "S/M", "Polyviscose School Hat", "11Y41"],
+  ["AH708", "NAVY", "S/S", "Polyviscose School Hat", "11Y41"],
+  ["AH708", "ROYAL", "L/XL", "Polyviscose School Hat", "11Y31"],
+  ["AH708", "ROYAL", "S/M", "Polyviscose School Hat", "11Y31"],
+  ["AH708", "ROYAL", "S/S", "Polyviscose School Hat", "11Y41"],
 
   // AH711
   ["AH711", "BOTTLE", "55cm", "School Foam Hat", "Bay 4-1/5-1"],
@@ -46,6 +100,41 @@ export const items: DatabaseItemInput[] = [
   ["AH711", "ROYAL", "57cm", "School Foam Hat", "Bay 7-1"],
   ["AH711", "ROYAL", "59cm", "School Foam Hat", "Bay 5-2/6-2"],
   ["AH711", "ROYAL", "61cm", "School Foam Hat", "Bay 3-2"],
+
+  // AH715
+  ["AH715", "BLACK", "L/XL", "Bucket Hat", "21J31"],
+  ["AH715", "BLACK", "S/M", "Bucket Hat", "21J32"],
+  ["AH715", "BLACK", "S/S", "Bucket Hat", "21K12"],
+  ["AH715", "BOTTLE", "L/XL", "Bucket Hat", "21K21"],
+  ["AH715", "BOTTLE", "S/M", "Bucket Hat", "21K22"],
+  ["AH715", "BOTTLE", "S/S", "Bucket Hat", "21J12"],
+  ["AH715", "BROWN", "L/XL", "Bucket Hat", "21K31"],
+  ["AH715", "BROWN", "S/M", "Bucket Hat", "21K32"],
+  ["AH715", "BROWN", "S/S", "Bucket Hat", "21K11"],
+  ["AH715", "HOT PINK", "L/XL", "Bucket Hat", "21K21"],
+  ["AH715", "HOT PINK", "S/M", "Bucket Hat", "21K22"],
+  ["AH715", "HOT PINK", "S/S", "Bucket Hat", "21K22"],
+  ["AH715", "KHAKI", "L/XL", "Bucket Hat", "21K31"],
+  ["AH715", "KHAKI", "S/M", "Bucket Hat", "21K32"],
+  ["AH715", "KHAKI", "S/S", "Bucket Hat", "21K11"],
+  ["AH715", "MAROON", "L/XL", "Bucket Hat", "21J21"],
+  ["AH715", "MAROON", "S/M", "Bucket Hat", "21J22"],
+  ["AH715", "MAROON", "S/S", "Bucket Hat", "21K12"],
+  ["AH715", "NAVY", "L/XL", "Bucket Hat", "21J21"],
+  ["AH715", "NAVY", "S/M", "Bucket Hat", "21J22"],
+  ["AH715", "NAVY", "S/S", "Bucket Hat", "21J12"],
+  ["AH715", "RED", "L/XL", "Bucket Hat", "21J21"],
+  ["AH715", "RED", "S/M", "Bucket Hat", "21J22"],
+  ["AH715", "RED", "S/S", "Bucket Hat", "21K11"],
+  ["AH715", "ROYAL", "L/XL", "Bucket Hat", "21J31"],
+  ["AH715", "ROYAL", "S/M", "Bucket Hat", "21J32"],
+  ["AH715", "ROYAL", "S/S", "Bucket Hat", "21K12"],
+  ["AH715", "WHITE", "L/XL", "Bucket Hat", "21K31"],
+  ["AH715", "WHITE", "S/M", "Bucket Hat", "21K32"],
+  ["AH715", "WHITE", "S/S", "Bucket Hat", "21J12"],
+  ["AH715", "YELLOW", "L/XL", "Bucket Hat", "21J31"],
+  ["AH715", "YELLOW", "S/M", "Bucket Hat", "21J32"],
+  ["AH715", "YELLOW", "S/S", "Bucket Hat", "21K21"],
 
   // AH718
   ["AH718", "DARK NAVY", "55cm", "Microfibre Surf Hat", "11R11"],
@@ -106,6 +195,9 @@ export const items: DatabaseItemInput[] = [
   ["G2000", "NAVY", null, "Large Sports Bag", "1GE52"],
   ["G2000", "RED, BLACK", null, "Large Sports Bag", "1GE42"],
   ["G2000", "ROYAL, BLACK", null, "Large Sports Bag", "1GE42"],
+
+  // AH2195
+  ["AH2195", "BLACK", null, "Boxy Backpack", "1GQ31"],
 
   // G2002
   ["G2002", "BLACK", null, "Trolley Travel Bag", "1GX32"],

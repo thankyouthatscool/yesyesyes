@@ -3,22 +3,43 @@ import { FC, useCallback, useEffect, useState } from "react";
 import { View } from "react-native";
 import { Card, Text } from "react-native-paper";
 
-import { useAppSelector } from "@hooks";
+import { useAppDispatch, useAppSelector } from "@hooks";
+import { setItemQueueChecked } from "@store";
 import { defaultAppPadding } from "@theme";
-import { CatalogItem, ItemQueueScreenNavProps } from "@types";
+import {
+  AsyncStorageReturnStatus,
+  CatalogItem,
+  ItemQueueScreenNavProps,
+} from "@types";
+import {
+  localStorageGetCheckedItemQueue,
+  localStorageSetCheckedItemQueue,
+} from "@utils";
 
 import { ItemQueueScreenWrapper } from "./Styled";
 
 export const ItemQueueScreen: FC<ItemQueueScreenNavProps> = ({
   navigation,
 }) => {
-  const { databaseInstance: db, itemQueue } = useAppSelector(({ app }) => app);
+  const dispatch = useAppDispatch();
+
+  const {
+    databaseInstance: db,
+    itemQueue,
+    itemQueueChecked,
+  } = useAppSelector(({ app }) => app);
 
   const [catalogData, setCatalogData] = useState<CatalogItem[]>([]);
-  const [checkedItems, setCheckedItems] = useState<string[]>([]);
 
-  const handleItemDataLoad = useCallback(() => {
+  const handleItemDataLoad = useCallback(async () => {
     setCatalogData(() => []);
+
+    const { checkedItemQueue, status } =
+      await localStorageGetCheckedItemQueue();
+
+    if (status === AsyncStorageReturnStatus.OK) {
+      dispatch(setItemQueueChecked(checkedItemQueue));
+    }
 
     db.transaction(
       (tx) => {
@@ -36,15 +57,6 @@ export const ItemQueueScreen: FC<ItemQueueScreenNavProps> = ({
     );
   }, [itemQueue]);
 
-  const sortQueue = useCallback(
-    (itemQueue: string[]) => {
-      const unCheckedItems = itemQueue.filter((i) => !checkedItems.includes(i));
-
-      return [...unCheckedItems, ...checkedItems];
-    },
-    [checkedItems]
-  );
-
   useEffect(() => {
     handleItemDataLoad();
   }, []);
@@ -52,11 +64,11 @@ export const ItemQueueScreen: FC<ItemQueueScreenNavProps> = ({
   return (
     <ItemQueueScreenWrapper>
       <Text variant="headlineLarge">Item Queue</Text>
-      {[...sortQueue(itemQueue)].map((item, idx) => {
+      {itemQueue.map((item, idx) => {
         return (
           <Card
             key={item}
-            onPress={() => {
+            onLongPress={() => {
               navigation.navigate("CatalogItemScreen", { itemId: item });
             }}
             style={{ marginTop: !!idx ? defaultAppPadding : 0 }}
@@ -87,14 +99,31 @@ export const ItemQueueScreen: FC<ItemQueueScreenNavProps> = ({
               <Checkbox
                 onValueChange={(e) => {
                   if (!!e) {
-                    setCheckedItems((checkedItems) => [...checkedItems, item]);
-                  } else {
-                    setCheckedItems((checkedItems) =>
-                      checkedItems.filter((i) => i !== item)
+                    dispatch(setItemQueueChecked([...itemQueueChecked, item]));
+
+                    localStorageSetCheckedItemQueue([
+                      ...itemQueueChecked,
+                      item,
+                    ]);
+
+                    return;
+                  }
+
+                  if (!e) {
+                    dispatch(
+                      setItemQueueChecked(
+                        itemQueueChecked.filter((i) => i !== item)
+                      )
                     );
+
+                    localStorageSetCheckedItemQueue(
+                      itemQueueChecked.filter((i) => i !== item)
+                    );
+
+                    return;
                   }
                 }}
-                value={checkedItems.includes(item)}
+                value={itemQueueChecked.includes(item)}
               />
             </Card.Content>
           </Card>

@@ -6,6 +6,7 @@ import { AppState, CatalogItem } from "@types";
 const initialState: AppState = {
   databaseInstance: SQLite.openDatabase("catalog.db"),
   itemQueue: [],
+  itemQueueChecked: [],
   searchResult: [],
   searchTerm: "",
 };
@@ -17,6 +18,9 @@ export const appSlice = createSlice({
     // Item queue
     setItemQueue: (state, { payload }: PayloadAction<string[]>) => {
       state.itemQueue = payload;
+    },
+    setItemQueueChecked: (state, { payload }: PayloadAction<string[]>) => {
+      state.itemQueueChecked = payload;
     },
     addToItemQueue: (state, { payload }: PayloadAction<string>) => {
       state.itemQueue = Array.from(new Set([...state.itemQueue, payload]));
@@ -49,6 +53,7 @@ export const appSlice = createSlice({
 export const {
   // Item Queue
   setItemQueue,
+  setItemQueueChecked,
   addToItemQueue,
   removeFromItemQueue,
   clearItemQueue,
