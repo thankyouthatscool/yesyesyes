@@ -180,8 +180,8 @@ export const items: DatabaseItemInput[] = [
   ["G1250", "YELLOW, BLACK", null, "Team Bag", "1GD11/21"],
 
   // G1365
-  ["G1365", "BLACK, WHITE", null, "Hurtley", "1GO31"],
-  ["G1365", "NAVY, WHITE", null, "Hurtley", "1GO31"],
+  ["G1365", "BLACK, WHITE", null, "Hurley Sports Bag", "1GO31"],
+  ["G1365", "NAVY, WHITE", null, "Hurley Sports Bag", "1GO31"],
 
   // G1602
   ["G1602", "BLACK, WHITE, BLACK", null, "Precinct Backpack", "1GE22"],
@@ -196,21 +196,18 @@ export const items: DatabaseItemInput[] = [
   ["G2000", "RED, BLACK", null, "Large Sports Bag", "1GE42"],
   ["G2000", "ROYAL, BLACK", null, "Large Sports Bag", "1GE42"],
 
-  // AH2195
-  ["AH2195", "BLACK", null, "Boxy Backpack", "1GQ31"],
-
   // G2002
   ["G2002", "BLACK", null, "Trolley Travel Bag", "1GX32"],
 
   // G2143
-  ["G2143", "BLACK", null, "Vibe", "1GQ41"],
+  ["G2143", "BLACK", null, "Vibe Backpack", "1GQ41"],
 
   // G2155
   ["G2155", "BLACK, WHITE, BLACK", null, "Backpack", "1GAA31/41"],
   ["G2155", "BLACK, WHITE, ROYAL", null, "Backpack", "1GAA41"],
 
   // G2195
-  ["G2195", "BLACK", null, "Boxy", "1GQ31"],
+  ["G2195", "BLACK", null, "Boxy Backpack", "1GQ31"],
 
   // G2209
   ["G2209", "BLACK", null, "Belroy Backpack", "1GO11"],

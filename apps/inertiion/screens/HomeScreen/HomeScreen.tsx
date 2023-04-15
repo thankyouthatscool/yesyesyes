@@ -20,9 +20,11 @@ import {
 export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
   const dispatch = useAppDispatch();
 
-  const { itemQueue, searchTerm } = useAppSelector(({ app }) => ({
-    ...app,
-  }));
+  const { itemQueue, isFABCollapsed, searchTerm } = useAppSelector(
+    ({ app }) => ({
+      ...app,
+    })
+  );
 
   const [isFocus, setIsFocus] = useState<boolean>(false);
   const [lastSearchTerms, setLastSearchTerms] = useState<string[] | null>(null);
@@ -145,7 +147,9 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
       {!!itemQueue.length && (
         <FAB
           icon="pickaxe"
-          label={`${itemQueue.length} item(s) in queue`}
+          {...(isFABCollapsed && {
+            label: `${itemQueue.length} item(s) in queue`,
+          })}
           onPress={() => {
             navigation.navigate("ItemQueueScreen");
           }}
@@ -162,8 +166,9 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
             dispatch(setItemQueueChecked([]));
           }}
           style={{
-            position: "absolute",
             bottom: defaultAppPadding * 2,
+            opacity: isFABCollapsed ? 1 : 0.75,
+            position: "absolute",
             right: defaultAppPadding * 2,
           }}
         />

@@ -5,7 +5,12 @@ import { ToastAndroid, View } from "react-native";
 import { Button, Card, Text } from "react-native-paper";
 
 import { useAppDispatch, useAppSelector } from "@hooks";
-import { addToItemQueue, removeFromItemQueue, setSearchResult } from "@store";
+import {
+  addToItemQueue,
+  removeFromItemQueue,
+  setFABState,
+  setSearchResult,
+} from "@store";
 import { defaultAppPadding } from "@theme";
 import { CatalogItem, HomeScreenNav } from "@types";
 import { localStorageSetItemQueue } from "@utils";
@@ -69,7 +74,11 @@ export const SearchResult: FC<{ navigation: HomeScreenNav }> = ({
   }, [itemQueue]);
 
   return (
-    <SearchResultWrapper>
+    <SearchResultWrapper
+      onScrollCallback={(dir) => {
+        dispatch(setFABState(!dir));
+      }}
+    >
       {searchResult.map((item, idx) => (
         <Card
           key={item.id}

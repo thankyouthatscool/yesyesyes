@@ -52,6 +52,7 @@ export type AppState = {
   databaseInstance: SQLite.WebSQLDatabase;
   itemQueue: string[];
   itemQueueChecked: string[];
+  isFABCollapsed: boolean;
   searchResult: CatalogItem[];
   searchTerm: string;
 };

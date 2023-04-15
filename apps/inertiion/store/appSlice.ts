@@ -7,6 +7,7 @@ const initialState: AppState = {
   databaseInstance: SQLite.openDatabase("catalog.db"),
   itemQueue: [],
   itemQueueChecked: [],
+  isFABCollapsed: false,
   searchResult: [],
   searchTerm: "",
 };
@@ -15,6 +16,11 @@ export const appSlice = createSlice({
   name: "recipes",
   initialState,
   reducers: {
+    // FAB
+    setFABState: (state, { payload }: PayloadAction<boolean>) => {
+      state.isFABCollapsed = payload;
+    },
+
     // Item queue
     setItemQueue: (state, { payload }: PayloadAction<string[]>) => {
       state.itemQueue = payload;
@@ -51,6 +57,9 @@ export const appSlice = createSlice({
 });
 
 export const {
+  // FAB
+  setFABState,
+
   // Item Queue
   setItemQueue,
   setItemQueueChecked,

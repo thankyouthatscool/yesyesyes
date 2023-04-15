@@ -1,7 +1,7 @@
 import Checkbox from "expo-checkbox";
 import { FC, useCallback, useEffect, useState } from "react";
 import { View } from "react-native";
-import { Card, Text } from "react-native-paper";
+import { Card, IconButton, Text } from "react-native-paper";
 
 import { useAppDispatch, useAppSelector } from "@hooks";
 import { setItemQueueChecked } from "@store";
@@ -30,6 +30,7 @@ export const ItemQueueScreen: FC<ItemQueueScreenNavProps> = ({
   } = useAppSelector(({ app }) => app);
 
   const [catalogData, setCatalogData] = useState<CatalogItem[]>([]);
+  const [isHiddenChecked, setIsHiddenChecked] = useState<boolean>(false);
 
   const handleItemDataLoad = useCallback(async () => {
     setCatalogData(() => []);
@@ -63,7 +64,23 @@ export const ItemQueueScreen: FC<ItemQueueScreenNavProps> = ({
 
   return (
     <ItemQueueScreenWrapper>
-      <Text variant="headlineLarge">Item Queue</Text>
+      <View
+        style={{
+          alignItems: "center",
+          flexDirection: "row",
+          justifyContent: "space-between",
+        }}
+      >
+        <Text variant="headlineLarge">Queue</Text>
+        <IconButton
+          icon={isHiddenChecked ? "eye" : "eye-off"}
+          mode="contained"
+          onPress={() => {
+            setIsHiddenChecked((isHiddenChecked) => !isHiddenChecked);
+          }}
+        />
+      </View>
+
       {itemQueue.map((item, idx) => {
         return (
           <Card
@@ -71,7 +88,13 @@ export const ItemQueueScreen: FC<ItemQueueScreenNavProps> = ({
             onLongPress={() => {
               navigation.navigate("CatalogItemScreen", { itemId: item });
             }}
-            style={{ marginTop: !!idx ? defaultAppPadding : 0 }}
+            style={{
+              marginTop: !!idx ? defaultAppPadding : 0,
+              display:
+                itemQueueChecked.includes(item) && !!isHiddenChecked
+                  ? "none"
+                  : "flex",
+            }}
           >
             <Card.Content
               style={{
