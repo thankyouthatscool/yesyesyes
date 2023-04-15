@@ -89,16 +89,16 @@ export const ItemQueueScreen: FC<ItemQueueScreenNavProps> = ({
               navigation.navigate("CatalogItemScreen", { itemId: item });
             }}
             style={{
-              marginTop: !!idx ? defaultAppPadding : 0,
               display:
                 itemQueueChecked.includes(item) && !!isHiddenChecked
                   ? "none"
                   : "flex",
+              marginTop: !!idx ? defaultAppPadding : 0,
             }}
           >
             <Card.Content
               style={{
-                alignItems: "flex-start",
+                alignItems: "center",
                 flexDirection: "row",
                 justifyContent: "space-between",
               }}
@@ -119,35 +119,53 @@ export const ItemQueueScreen: FC<ItemQueueScreenNavProps> = ({
                   {catalogData.find((i) => i.id === item)?.location}
                 </Text>
               </View>
-              <Checkbox
-                onValueChange={(e) => {
-                  if (!!e) {
-                    dispatch(setItemQueueChecked([...itemQueueChecked, item]));
-
-                    localStorageSetCheckedItemQueue([
-                      ...itemQueueChecked,
-                      item,
-                    ]);
-
-                    return;
-                  }
-
-                  if (!e) {
-                    dispatch(
-                      setItemQueueChecked(
-                        itemQueueChecked.filter((i) => i !== item)
-                      )
-                    );
-
-                    localStorageSetCheckedItemQueue(
-                      itemQueueChecked.filter((i) => i !== item)
-                    );
-
-                    return;
-                  }
+              <View
+                style={{
+                  alignItems: "center",
+                  flexDirection: "row",
+                  justifyContent: "center",
                 }}
-                value={itemQueueChecked.includes(item)}
-              />
+              >
+                <Checkbox
+                  onValueChange={(e) => {
+                    if (!!e) {
+                      dispatch(
+                        setItemQueueChecked([...itemQueueChecked, item])
+                      );
+
+                      localStorageSetCheckedItemQueue([
+                        ...itemQueueChecked,
+                        item,
+                      ]);
+
+                      return;
+                    }
+
+                    if (!e) {
+                      dispatch(
+                        setItemQueueChecked(
+                          itemQueueChecked.filter((i) => i !== item)
+                        )
+                      );
+
+                      localStorageSetCheckedItemQueue(
+                        itemQueueChecked.filter((i) => i !== item)
+                      );
+
+                      return;
+                    }
+                  }}
+                  value={itemQueueChecked.includes(item)}
+                />
+                <IconButton
+                  iconColor="red"
+                  icon="close"
+                  mode="contained-tonal"
+                  onPress={() => console.log(`Removing ${item} from queue`)}
+                  size={20}
+                  style={{ marginLeft: defaultAppPadding * 3 }}
+                />
+              </View>
             </Card.Content>
           </Card>
         );

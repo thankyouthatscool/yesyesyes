@@ -72,7 +72,7 @@ export const AppRoot = () => {
   return (
     <RootDrawer.Navigator
       drawerContent={CustomDrawer}
-      initialRouteName="Home"
+      initialRouteName="Settings"
       screenOptions={{ headerShown: false, swipeEdgeWidth: width / 2 }}
     >
       <RootDrawer.Screen component={HomeScreenRoot} name="Home" />
