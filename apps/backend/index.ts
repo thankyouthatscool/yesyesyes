@@ -5,12 +5,13 @@ import express from "express";
 
 import { BackendStatusCodes } from "./types";
 
+const PORT = process.env.PORT ? parseInt(process.env.PORT) : 5000;
+
 const app = express();
+
 app.use(bodyParser.json());
 
 app.get("/", (_, res) => {
-  console.log("EEE");
-
   return res.status(200).json({ status: BackendStatusCodes.OK });
 });
 
@@ -18,13 +19,13 @@ app.post("/catalogBackup", (req, res) => {
   console.log(JSON.stringify(req.body).length);
 
   writeFileSync(
-    resolve("./data", `${Date.now().toString()}-catalogData.txt`),
+    resolve("./data", `${Date.now().toString()}-catalogData.json`),
     JSON.stringify(req.body)
   );
 
   return res.status(200).json({});
 });
 
-app.listen(5000, "0.0.0.0", () => {
-  console.log("Server is listening on port 5000...");
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server is listening on port ${PORT}...`);
 });
