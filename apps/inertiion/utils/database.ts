@@ -3,6 +3,12 @@ import * as Crypto from "expo-crypto";
 import { DatabaseItemInput, DatabaseItemInputWithId } from "@types";
 
 export const items: DatabaseItemInput[] = [
+  // AH129
+  ["AH129", "BLACK, KHAKI", null, "Enzyme Washed Cap Sandwich", "11Y31/41"],
+  ["AH129", "KHAKI, NAVY", null, "Enzyme Washed Cap Sandwich", "11Y32"],
+  ["AH129", "NAVY, KHAKI", null, "Enzyme Washed Cap Sandwich", "11Y32"],
+  ["AH129", "RED, NAVY", null, "Enzyme Washed Cap Sandwich", "11Y31"],
+
   // AH130
   ["AH130", "BLACK", null, "Enzyme Washed Cap", "11X31/41"],
   ["AH130", "BOTTLE", null, "Enzyme Washed Cap", "11X31"],
@@ -10,6 +16,28 @@ export const items: DatabaseItemInput[] = [
   ["AH130", "NAVY", null, "Enzyme Washed Cap", "11X41"],
   ["AH130", "ORANGE", null, "Enzyme Washed Cap", "11X41"],
   ["AH130", "RED", null, "Enzyme Washed Cap", "11X41"],
+
+  // AH150
+  ["AH150", "BLACK", null, "Mesh Design Cap", "11S41"],
+  ["AH150", "BLACK, RED", null, "Mesh Design Cap", "11S31"],
+  ["AH150", "FLURO ORANGE", null, "Mesh Design Cap", "11S21"],
+  ["AH150", "FLURO ORANGE, BLACK", null, "Mesh Design Cap", "11S31"],
+  ["AH150", "FLURO YELLOW", null, "Mesh Design Cap", "11S21"],
+  ["AH150", "FLURO YELLOW, BLACK", null, "Mesh Design Cap", "11S31"],
+  ["AH150", "MAROON", null, "Mesh Design Cap", "11S31"],
+  ["AH150", "NAVY", null, "Mesh Design Cap", "11S31/41"],
+  ["AH150", "NAVY, RED", null, "Mesh Design Cap", "11S31"],
+  ["AH150", "NAVY, WHITE", null, "Mesh Design Cap", "11S21"],
+  ["AH150", "RED", null, "Mesh Design Cap", "11S41"],
+  ["AH150", "ROYAL", null, "Mesh Design Cap", "11S41"],
+  ["AH150", "WHITE", null, "Mesh Design Cap", "11S41"],
+
+  // AH152
+  ["AH152", "BEIGE, WHITE, BLACK", null, "Ascent Cap", "11Q32/42"],
+  ["AH152", "BLACK, WHITE, HOT PINK", null, "Ascent Cap", "11Q32"],
+  ["AH152", "CHARCOAL, WHITE, BLACK", null, "Ascent Cap", "11Q32"],
+  ["AH152", "NAVY, WHITE, DARK GREY", null, "Ascent Cap", "11Q32"],
+  ["AH152", "ROYAL, WHITE, GOLD", null, "Ascent Cap", "11Q32"],
 
   // AH159
   ["AH159", "BLACK", null, "CAZAMATAZ Cap", "21D31"],
