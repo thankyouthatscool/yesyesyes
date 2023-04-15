@@ -91,6 +91,25 @@ export const SettingsScreen = () => {
           Seed Database
         </Button>
       </View>
+      <Button
+        mode="contained"
+        onPress={() => {
+          db.transaction(
+            (tx) => {
+              tx.executeSql(
+                "SELECT * FROM items",
+                [],
+                (_, { rows: { _array } }) => {
+                  console.log(_array);
+                }
+              );
+            },
+            (err) => console.log(err)
+          );
+        }}
+      >
+        Export
+      </Button>
     </SettingsScreenWrapper>
   );
 };

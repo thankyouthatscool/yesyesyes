@@ -7,7 +7,7 @@ const initialState: AppState = {
   databaseInstance: SQLite.openDatabase("catalog.db"),
   itemQueue: [],
   itemQueueChecked: [],
-  isFABCollapsed: false,
+  isFABCollapsed: true,
   searchResult: [],
   searchTerm: "",
 };
