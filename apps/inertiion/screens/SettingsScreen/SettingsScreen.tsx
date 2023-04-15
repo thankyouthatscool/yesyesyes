@@ -68,7 +68,7 @@ export const SettingsScreen = () => {
         </Button>
         <Button
           mode="contained"
-          onPress={() => {
+          onPress={async () => {
             db.transaction(
               (tx) => {
                 tx.executeSql(sqlStatementCreateItemsTable);
@@ -93,20 +93,34 @@ export const SettingsScreen = () => {
       </View>
       <Button
         mode="contained"
-        onPress={() => {
-          db.transaction(
-            (tx) => {
-              tx.executeSql(
-                "SELECT * FROM items",
-                [],
-                (_, { rows: { _array } }) => {
-                  console.log(_array);
-                }
-              );
-            },
-            (err) => console.log(err)
-          );
+        onPress={async () => {
+          try {
+            // const res = await fetch("http://192.168.0.2:5000/catalogBackup", {
+            //   body: JSON.stringify({ message: "Hello" }),
+            //   method: "POST",
+            // });
+
+            const res = await fetch("http://192.168.0.2:5000/catalogBackup");
+
+            console.log(res);
+          } catch (err) {
+            console.log(err);
+          }
         }}
+        // onPress={() => {
+        //   db.transaction(
+        //     (tx) => {
+        //       tx.executeSql(
+        //         "SELECT * FROM items",
+        //         [],
+        //         (_, { rows: { _array } }) => {
+        //           console.log(JSON.stringify(_array));
+        //         }
+        //       );
+        //     },
+        //     (err) => console.log(err)
+        //   );
+        // }}
       >
         Export
       </Button>
