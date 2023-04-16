@@ -1,10 +1,11 @@
-import { FC, useCallback, useEffect } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { ScrollView } from "react-native";
-import { Text } from "react-native-paper";
+import { Card, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAppSelector } from "@hooks";
-import { StorageLocationScreenProps } from "@types";
+import { StorageLocationData, StorageLocationScreenProps } from "@types";
+import { defaultAppPadding } from "@theme";
 
 export const StorageLocationScreen: FC<StorageLocationScreenProps> = ({
   navigation,
@@ -13,6 +14,8 @@ export const StorageLocationScreen: FC<StorageLocationScreenProps> = ({
   },
 }) => {
   const { databaseInstance: db } = useAppSelector(({ app }) => ({ ...app }));
+
+  const [locationData, setLocationData] = useState<StorageLocationData[]>([]);
 
   const handleLoadLocationData = useCallback(() => {
     db.transaction(
@@ -27,8 +30,7 @@ export const StorageLocationScreen: FC<StorageLocationScreenProps> = ({
             `,
           [locationName],
           (_, { rows: { _array } }) => {
-            console.log(_array);
-            console.log(_array.length);
+            setLocationData(() => _array);
           }
         );
       },
@@ -45,8 +47,32 @@ export const StorageLocationScreen: FC<StorageLocationScreenProps> = ({
   return (
     <SafeAreaView>
       <ScrollView>
-        <Text>Storage Location Screen</Text>
-        <Text>{locationName}</Text>
+        <Text
+          style={{
+            padding: defaultAppPadding,
+            paddingBottom: defaultAppPadding / 2,
+          }}
+          variant="headlineLarge"
+        >
+          {locationName}
+        </Text>
+        {locationData.map((item) => (
+          <Card
+            key={item.itemId}
+            onPress={() => {
+              navigation.navigate("CatalogItemScreen", { itemId: item.itemId });
+            }}
+            style={{
+              marginHorizontal: defaultAppPadding,
+              marginVertical: defaultAppPadding / 2,
+            }}
+          >
+            <Card.Content>
+              <Text>{item.code}</Text>
+              <Text>{item.description}</Text>
+            </Card.Content>
+          </Card>
+        ))}
       </ScrollView>
     </SafeAreaView>
   );

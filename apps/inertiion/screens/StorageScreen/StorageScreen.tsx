@@ -3,12 +3,21 @@ import { ScrollView, View } from "react-native";
 import { Card, Searchbar, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { useAppSelector } from "@hooks";
+import { useAppDispatch, useAppSelector } from "@hooks";
+import { clearStorageSearchTerm, setStorageSearchTerm } from "@store";
 import { defaultAppPadding } from "@theme";
-import { StorageCardComponentNavProps, StorageScreenProps } from "@types";
+import {
+  StorageCardComponentNavProps,
+  StorageLocationData,
+  StorageScreenProps,
+} from "@types";
 
 export const StorageScreen: FC<StorageScreenProps> = ({ navigation }) => {
-  const { databaseInstance: db } = useAppSelector(({ app }) => ({ ...app }));
+  const dispatch = useAppDispatch();
+
+  const { databaseInstance: db, storageSearchTerm } = useAppSelector(
+    ({ app }) => ({ ...app })
+  );
 
   const [distinctLocations, setDistinctLocations] = useState<string[]>([]);
 
@@ -42,11 +51,17 @@ export const StorageScreen: FC<StorageScreenProps> = ({ navigation }) => {
     <SafeAreaView style={{ flex: 1 }}>
       <Searchbar
         placeholder="Search Storage"
+        onClearIconPress={() => {
+          dispatch(clearStorageSearchTerm());
+        }}
+        onChangeText={(newStorageSearchTerm) => {
+          dispatch(setStorageSearchTerm(newStorageSearchTerm));
+        }}
         style={{
           margin: defaultAppPadding,
           marginBottom: defaultAppPadding / 2,
         }}
-        value=""
+        value={storageSearchTerm}
       />
       <View style={{ flex: 1 }}>
         <ScrollView>
@@ -61,22 +76,13 @@ export const StorageScreen: FC<StorageScreenProps> = ({ navigation }) => {
   );
 };
 
-interface StorageLocationData {
-  cartons: number;
-  code: string;
-  color?: string;
-  dateModified: string;
-  description: string;
-  itemId: string;
-  pieces: number;
-  size?: string;
-}
-
 export const StorageCardComponent: FC<{
   location: string;
   nav: StorageCardComponentNavProps;
 }> = ({ location, nav }) => {
-  const { databaseInstance: db } = useAppSelector(({ app }) => ({ ...app }));
+  const { databaseInstance: db, storageSearchTerm } = useAppSelector(
+    ({ app }) => ({ ...app })
+  );
 
   const [locationData, setLocationData] = useState<StorageLocationData[]>([]);
 
@@ -112,6 +118,14 @@ export const StorageCardComponent: FC<{
         });
       }}
       style={{
+        display: locationData.some((loc) =>
+          `${loc.code} ${loc.description} ${loc.color}`
+            .trim()
+            .toLowerCase()
+            .includes(storageSearchTerm.trim().toLowerCase())
+        )
+          ? "flex"
+          : "none",
         marginHorizontal: defaultAppPadding,
         marginVertical: defaultAppPadding / 2,
       }}
@@ -129,8 +143,13 @@ export const StorageCardComponent: FC<{
                 {!!loc.color ? <Text> - {loc.color}</Text> : ""}
                 {!!loc.size ? ` - ${loc.size}` : ""}{" "}
               </Text>
-              <Text>Cartons</Text>
-              <Text>Pieces</Text>
+              <Text>
+                Cartons:{" "}
+                <Text style={{ fontWeight: "700" }}>{loc.cartons}</Text>
+              </Text>
+              <Text>
+                Pieces: <Text style={{ fontWeight: "700" }}>{loc.pieces}</Text>
+              </Text>
             </View>
           );
         })}

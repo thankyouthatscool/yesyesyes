@@ -10,6 +10,7 @@ const initialState: AppState = {
   isFABCollapsed: true,
   searchResult: [],
   searchTerm: "",
+  storageSearchTerm: "",
 };
 
 export const appSlice = createSlice({
@@ -53,6 +54,12 @@ export const appSlice = createSlice({
     clearSearchTerm: (state) => {
       state.searchTerm = "";
     },
+    setStorageSearchTerm: (state, { payload }: PayloadAction<string>) => {
+      state.storageSearchTerm = payload;
+    },
+    clearStorageSearchTerm: (state) => {
+      state.storageSearchTerm = "";
+    },
   },
 });
 
@@ -74,4 +81,6 @@ export const {
   // Search Term
   setSearchTerm,
   clearSearchTerm,
+  setStorageSearchTerm,
+  clearStorageSearchTerm,
 } = appSlice.actions;

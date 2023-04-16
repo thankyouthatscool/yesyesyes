@@ -48,7 +48,7 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
       },
       (err) => console.log(err)
     );
-  }, []);
+  }, [itemId]);
 
   const handleUpdateItemData = useCallback(() => {
     if (!!itemData) {
@@ -105,7 +105,7 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
 
   useEffect(() => {
     handleGetItemData();
-  }, []);
+  }, [itemId]);
 
   return (
     <SafeAreaView style={{ padding: defaultAppPadding, paddingTop: 0 }}>

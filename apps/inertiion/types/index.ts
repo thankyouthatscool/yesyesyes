@@ -72,6 +72,7 @@ export type AppState = {
   isFABCollapsed: boolean;
   searchResult: CatalogItem[];
   searchTerm: string;
+  storageSearchTerm: string;
 };
 
 export type CatalogItem = {
@@ -127,4 +128,17 @@ export interface StorageLocation {
   cartons: number;
   pieces: number;
   dateModified: string;
+}
+
+export interface StorageLocationData {
+  cartons: number;
+  code: string;
+  color?: string;
+  dateModified: string;
+  description: string;
+  id: string;
+  itemId: string;
+  location: string;
+  pieces: number;
+  size?: string;
 }
