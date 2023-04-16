@@ -16,6 +16,8 @@ export type HomeScreenNavStackProps = {
   HomeScreen: undefined;
   ItemQueueScreen: undefined;
   NewCatalogItemScreen: { term: string | null };
+  StorageScreen: undefined;
+  StorageLocationScreen: { locationName: string };
 };
 
 export type CatalogItemScreenNavProps = NativeStackScreenProps<
@@ -46,6 +48,21 @@ export type ItemQueueScreenNavProps = NativeStackScreenProps<
 export type NewCatalogItemScreenNavProps = NativeStackScreenProps<
   HomeScreenNavStackProps,
   "NewCatalogItemScreen"
+>;
+
+export type StorageScreenProps = NativeStackScreenProps<
+  HomeScreenNavStackProps,
+  "StorageScreen"
+>;
+
+export type StorageLocationScreenProps = NativeStackScreenProps<
+  HomeScreenNavStackProps,
+  "StorageLocationScreen"
+>;
+
+export type StorageCardComponentNavProps = NativeStackNavigationProp<
+  HomeScreenNavStackProps,
+  "StorageScreen"
 >;
 
 export type AppState = {
@@ -102,3 +119,12 @@ export type DatabaseItemInputWithId = [
   string,
   ...DatabaseItemInput
 ];
+
+export interface StorageLocation {
+  id: string;
+  location: string;
+  itemId: string;
+  cartons: number;
+  pieces: number;
+  dateModified: string;
+}

@@ -328,7 +328,7 @@ export const CatalogItemScreenStorageComponent: FC<{
           onPress={() => {
             console.log("navigating to the storage screen");
 
-            navigation.navigate("HomeScreen");
+            navigation.navigate("StorageScreen");
           }}
         >
           <Text variant="headlineSmall">Storage</Text>
@@ -379,20 +379,34 @@ export const CatalogItemScreenStorageComponent: FC<{
       {itemStorageData.map((loc, idx) => {
         return (
           <View key={loc.id}>
-            <TextInput
-              label="Location"
-              mode="outlined"
-              onChangeText={(newLocation) => {
-                setIsUpdateNeeded(() => true);
+            <View style={{ alignItems: "center", flexDirection: "row" }}>
+              <TextInput
+                label="Location"
+                mode="outlined"
+                onChangeText={(newLocation) => {
+                  setIsUpdateNeeded(() => true);
 
-                setItemStorageData((itemStorageData) => [
-                  ...itemStorageData.slice(0, idx),
-                  { ...itemStorageData[idx], location: newLocation },
-                  ...itemStorageData.slice(idx + 1),
-                ]);
-              }}
-              value={loc.location}
-            />
+                  setItemStorageData((itemStorageData) => [
+                    ...itemStorageData.slice(0, idx),
+                    { ...itemStorageData[idx], location: newLocation },
+                    ...itemStorageData.slice(idx + 1),
+                  ]);
+                }}
+                style={{ flex: 1 }}
+                value={loc.location}
+              />
+              <IconButton
+                disabled={!loc.location || isUpdateNeeded}
+                icon="arrow-right"
+                mode="contained"
+                onPress={() => {
+                  navigation.navigate("StorageLocationScreen", {
+                    locationName: loc.location,
+                  });
+                }}
+                size={20}
+              />
+            </View>
             <View
               style={{
                 alignItems: "center",

@@ -81,7 +81,7 @@ export const ItemQueueScreen: FC<ItemQueueScreenNavProps> = ({
         />
       </View>
 
-      {itemQueue.map((item, idx) => {
+      {itemQueue.map((item) => {
         return (
           <Card
             key={item}
@@ -93,7 +93,7 @@ export const ItemQueueScreen: FC<ItemQueueScreenNavProps> = ({
                 itemQueueChecked.includes(item) && !!isHiddenChecked
                   ? "none"
                   : "flex",
-              marginTop: !!idx ? defaultAppPadding : 0,
+              marginVertical: defaultAppPadding / 2,
             }}
           >
             <Card.Content
@@ -173,3 +173,6 @@ export const ItemQueueScreen: FC<ItemQueueScreenNavProps> = ({
     </ItemQueueScreenWrapper>
   );
 };
+
+// StorageScreen
+// StorageLocationScreen
