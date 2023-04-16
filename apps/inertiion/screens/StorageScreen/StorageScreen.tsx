@@ -111,6 +111,8 @@ export const StorageCardComponent: FC<{
   }, [location]);
 
   return (
+    // TODO: Redo these cards, maybe have two columns.
+    // FIXME: ^^Same as the above, just wanted to have some fun with the colors.
     <Card
       onPress={() => {
         nav.navigate("StorageLocationScreen", {
