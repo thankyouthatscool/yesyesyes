@@ -113,6 +113,7 @@ export const StorageCardComponent: FC<{
   return (
     // TODO: Redo these cards, maybe have two columns.
     // FIXME: ^^Same as the above, just wanted to have some fun with the colors.
+    // TODO: Also a good chance that will need to convert to a flat-list for better performance at some stage.
     <Card
       onPress={() => {
         nav.navigate("StorageLocationScreen", {
@@ -121,7 +122,7 @@ export const StorageCardComponent: FC<{
       }}
       style={{
         display: locationData.some((loc) =>
-          `${loc.code} ${loc.description} ${loc.color}`
+          `${loc.code} ${loc.description} ${loc.color} ${loc.location}`
             .trim()
             .toLowerCase()
             .includes(storageSearchTerm.trim().toLowerCase())
@@ -143,7 +144,7 @@ export const StorageCardComponent: FC<{
               <Text variant="titleSmall">
                 {loc.code}
                 {!!loc.color ? <Text> - {loc.color}</Text> : ""}
-                {!!loc.size ? ` - ${loc.size}` : ""}{" "}
+                {!!loc.size ? ` - ${loc.size}` : ""} - {loc.location}
               </Text>
               <Text>
                 Cartons:{" "}

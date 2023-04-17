@@ -1,0 +1,10 @@
+{
+  "tabWidth": 2,
+  "useTabs": false,
+  "overrides": [
+    {
+      "files": "database.ts",
+      "options": { "printWidth": 120 }
+    }
+  ]
+}

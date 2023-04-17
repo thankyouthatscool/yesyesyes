@@ -15,7 +15,9 @@ export type HomeScreenNavStackProps = {
   CatalogItemScreen: { itemId: string };
   HomeScreen: undefined;
   ItemQueueScreen: undefined;
-  NewCatalogItemScreen: { term: string | null };
+  NewCatalogItemScreen: {
+    formData?: { code: string; color: string; location: string; size: string };
+  };
   StorageScreen: undefined;
   StorageLocationScreen: { locationName: string };
 };

@@ -104,7 +104,7 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
           icon="plus"
           mode="contained"
           onPress={() => {
-            navigation.navigate("NewCatalogItemScreen", { term: null });
+            navigation.navigate("NewCatalogItemScreen", {});
           }}
           size={30}
         />

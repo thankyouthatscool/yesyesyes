@@ -1,7 +1,7 @@
 import * as Crypto from "expo-crypto";
 import { FC, useCallback, useEffect, useState } from "react";
 import { Pressable, ScrollView, ToastAndroid, View } from "react-native";
-import { Button, IconButton, Text, TextInput } from "react-native-paper";
+import { Button, IconButton, Menu, Text, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAppDispatch, useAppSelector } from "@hooks";
@@ -30,6 +30,7 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
     ...app,
   }));
 
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isUpdateNeeded, setIsUpdateNeeded] = useState<boolean>(false);
   const [itemData, setItemData] = useState<CatalogItemInputWithId | null>(null);
 
@@ -146,6 +147,37 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
                 size={30}
               />
             )}
+            <Menu
+              anchor={
+                <IconButton
+                  icon="dots-vertical"
+                  mode="contained"
+                  onPress={() => {
+                    setIsMenuOpen(() => true);
+                  }}
+                />
+              }
+              onDismiss={() => setIsMenuOpen(() => false)}
+              visible={isMenuOpen}
+            >
+              <Menu.Item
+                onPress={() => {
+                  setIsMenuOpen(() => false);
+
+                  const { code, color, location, size } = itemData;
+
+                  navigation.navigate("NewCatalogItemScreen", {
+                    formData: {
+                      code,
+                      color: color || "",
+                      location,
+                      size: size || "",
+                    },
+                  });
+                }}
+                title="Duplicate"
+              />
+            </Menu>
           </View>
           <Text variant="headlineSmall">Item Information</Text>
           <TextInput

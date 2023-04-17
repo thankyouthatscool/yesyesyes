@@ -170,9 +170,7 @@ export const SearchResult: FC<{ navigation: HomeScreenNav }> = ({
             icon="plus"
             mode="contained"
             onPress={() => {
-              navigation.navigate("NewCatalogItemScreen", {
-                term: searchTerm,
-              });
+              navigation.navigate("NewCatalogItemScreen", {});
             }}
           >
             Add {searchTerm}

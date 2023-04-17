@@ -18,7 +18,7 @@ import { ButtonWrapper } from "./Styled";
 export const NewCatalogItemScreen: FC<NewCatalogItemScreenNavProps> = ({
   navigation,
   route: {
-    params: { term },
+    params: { formData },
   },
 }) => {
   const dispatch = useAppDispatch();
@@ -31,12 +31,9 @@ export const NewCatalogItemScreen: FC<NewCatalogItemScreenNavProps> = ({
     useState<boolean>(false);
   const [isDataUpdated, setIsDataUpdated] = useState<boolean>(false);
   const [newCatalogItemData, setNewCatalogItemData] =
-    useState<NewCatalogItemInput>({
-      code: "",
-      color: "",
-      location: "",
-      size: "",
-    });
+    useState<NewCatalogItemInput>(
+      () => formData || { code: "", color: "", location: "", size: "" }
+    );
 
   const handleSaveNewCatalogItem = useCallback(() => {
     setIsDataUpdated(() => false);
