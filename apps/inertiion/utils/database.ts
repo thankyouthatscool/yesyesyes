@@ -1,8 +1,8 @@
 import { DatabaseItemInputWithId } from "@types";
 
 export const databaseItems: DatabaseItemInputWithId[] = [
-  ["5b64af45-2785-422e-a179-45d24494a98e", "AH097", "NAVY", null, "Acrylic Two Tone Beanie", "11AA31"],
   ["ab22dc9e-13b9-44b3-945b-aa090dbc249f", "AH097", "BLACK", null, "Acrylic Two Tone Beanie", "11AA31"],
+  ["5b64af45-2785-422e-a179-45d24494a98e", "AH097", "NAVY", null, "Acrylic Two Tone Beanie", "11AA31"],
 
   ["46331e1d-426a-4433-baf0-9234aa17a63a", "AH129", "BLACK, KHAKI", null, "Enzyme Washed Cap Sandwich", "11Y31/41"],
   ["18c652bc-c827-46db-8c47-84e44d9c100d", "AH129", "KHAKI, NAVY", null, "Enzyme Washed Cap Sandwich", "11Y32"],
@@ -62,7 +62,9 @@ export const databaseItems: DatabaseItemInputWithId[] = [
 
   ["f919c180-8152-43bb-9e68-d4efba4d76b3", "AH295", "BLACK", null, "Polymesh Trucker Cap", "11M11"],
   ["eeac0ad5-8155-4472-97c8-6b85b23dc39f", "AH295", "CHARCOAL", null, "Polymesh Trucker Cap", "11M32"],
+  ["53c292a0-833f-4a6e-a585-520b8da1a7e9", "AH295", "NAVY", null, "Polymesh Trucker Cap", "DUNNO"],
   ["bcaf8419-4428-4b08-bc82-4568f8d18f8a", "AH295", "RED", null, "Polymesh Trucker Cap", "DUNNO"],
+  ["8380ee86-7b8b-41e4-9762-16851ba54381", "AH295", "WHITE, NAVY", null, "Polymesh Trucker Cap", "DUNNO"],
 
   ["8fc31e03-0fda-4c78-aeed-e2c4b360b944", "AH317", "MARBLE", null, "JK Cap", "21D31"],
   ["c6461c15-3a01-43fe-b8bc-67a7394df0ec", "AH317", "ROYAL", null, "JK Cap", "21D31"],
@@ -186,14 +188,18 @@ export const databaseItems: DatabaseItemInputWithId[] = [
   ["c2d7aed6-80da-4a85-92ff-79e4a9efd2e9", "AH718", "NATURAL", "59cm", "Microfibre Surf Hat", "11Q21"],
   ["f78d9e1b-1d8e-4c73-ac28-41dc3be4bdeb", "AH718", "NATURAL", "61cm", "Microfibre Surf Hat", "11Q21"],
 
+  ["1c20e764-8167-40bc-8dea-264301154eec", "AH720", "BLACK", null, "Acrylic Beanie", "11BB12"],
   ["d2158e5d-97f0-4425-ab3b-913b7fb08a77", "AH720", "NAVY", null, "Acrylic Beanie", "11BB12"],
 
-  ["5fda5fda-6c1e-44d6-ae13-e7b54a1c3112", "AH731", "ROYAL, WHITE", null, "Acrylic Beanie", "DUNNO"],
-  ["b690a8a3-4837-4bdc-97bc-0b657f1546db", "AH731", "NAVY, WHITE", null, "Acrylic Beanie", "DUNNO"],
-  ["0af41901-8405-42e3-91d9-d4cb7bb92146", "AH731", "NAVY, RED", null, "Acrylic Beanie", "DUNNO"],
+  ["7e329759-09dc-4418-9a3f-ae542af990db", "AH731", "BLACK, GOLD", null, "Acrylic Beanie", "DUNNO"],
+  ["a4a2a5db-7ece-45ea-9f0b-3f3ea202684a", "AH731", "BLACK, RED", null, "Acrylic Beanie", "DUNNO"],
   ["9396427c-250b-471f-9678-e594c344da5e", "AH731", "BLACK, WHITE", null, "Acrylic Beanie", "DUNNO"],
   ["f85f9668-715a-4998-a1a2-4b5db272378b", "AH731", "NAVY, GOLD", null, "Acrylic Beanie", "DUNNO"],
-  ["a4a2a5db-7ece-45ea-9f0b-3f3ea202684a", "AH731", "BLACK, RED", null, "Acrylic Beanie", "DUNNO"],
+  ["0af41901-8405-42e3-91d9-d4cb7bb92146", "AH731", "NAVY, RED", null, "Acrylic Beanie", "DUNNO"],
+  ["b690a8a3-4837-4bdc-97bc-0b657f1546db", "AH731", "NAVY, WHITE", null, "Acrylic Beanie", "DUNNO"],
+  ["7b352e3c-2216-4159-af8d-674cf2baf082", "AH731", "ROYAL, BLACK", null, "Acrylic Beanie", "DUNNO"],
+  ["5fda5fda-6c1e-44d6-ae13-e7b54a1c3112", "AH731", "ROYAL, WHITE", null, "Acrylic Beanie", "DUNNO"],
+  ["c4f430ad-93a9-4266-a63d-c567d58a1c03", "AH731", "SKY, NAVY", null, "Acrylic Beanie", "DUNNO"],
 
   ["a511f643-b967-4e1f-838f-074e293e37b4", "AH733", "BLACK, WHITE", null, "Beanie", "11Y11"],
 
@@ -224,6 +230,13 @@ export const databaseItems: DatabaseItemInputWithId[] = [
   ["b7e89147-9888-4016-a7a9-5fc80afddba6", "AH777", "ROYAL", null, "Headband", "1GW52"],
   ["4e8ece4b-c792-4475-8a49-6dc43eabd66e", "AH777", "ORANGE", null, "Headband", "1GW52"],
   ["d0ab2322-5a54-4d74-85cc-07e0df64ac77", "AH777", "PINK", null, "Headband", "1GW52"],
+
+  ["04a9e8ae-4393-4e8c-9464-2cdf3bd574ed", "AH805", "BLACK, GOLD", null, "Acrylic Scarf", "DUNNO"],
+  ["3ed37e8e-7b90-4b68-8d7f-20435ac57dd6", "AH805", "BOTTLE, GOLD", null, "Acrylic Scarf", "DUNNO"],
+  ["45e3756d-2c26-4682-8a01-5fb651d200c6", "AH805", "MAROON, WHITE", null, "Acrylic Scarf", "DUNNO"],
+  ["f6ad833d-4400-4af3-a904-17aa12c07bff", "AH805", "NAVY, RED", null, "Acrylic Scarf", "DUNNO"],
+  ["24389f67-7af8-4e0b-bc60-995cc255ca17", "AH805", "NAVY, WHITE", null, "Acrylic Scarf", "DUNNO"],
+  ["46a5bcab-c202-4196-a621-dd8168276d07", "AH805", "RED, WHITE", null, "Acrylic Scarf", "DUNNO"],
 
   ["4a089155-50d3-41d0-a835-bb3551f3224f", "AH999", "NATURAL", null, "Straw Hat", "21Z11/12"],
 
@@ -266,13 +279,17 @@ export const databaseItems: DatabaseItemInputWithId[] = [
 
   ["5b1a2975-2532-43b4-b1f0-6ea752685244", "G2002", "BLACK", null, "Trolley Travel Bag", "1GX32"],
 
-  ["b5353455-64c5-4381-ba80-a1b51ffd5801", "G2138", "RED", null, "Rukus Backpack", "DUNNO"],
+  ["f23c0a26-550b-41b0-afcd-70509433567b", "G2138", "GREY", null, "Rukus Backpack", "DUNNO"],
   ["59ab0b17-5b92-4646-8bff-abc15320a07a", "G2138", "NAVY", null, "Rukus Backpack", "DUNNO"],
+  ["b5353455-64c5-4381-ba80-a1b51ffd5801", "G2138", "RED", null, "Rukus Backpack", "DUNNO"],
 
   ["3c298d1b-a243-48cd-8bf1-3df2202664de", "G2143", "BLACK", null, "Vibe Backpack", "1GQ41"],
 
   ["21a27077-8276-4cc1-a6c3-47ebcb987d70", "G2155", "BLACK, WHITE, BLACK", null, "Backpack", "1GAA31/41"],
   ["bfee01e3-6898-48c5-90bb-fdc5c6b08a7a", "G2155", "BLACK, WHITE, ROYAL", null, "Backpack", "1GAA41"],
+
+  ["aaa7c4d2-8cb9-4803-a71b-071a73f2f548", "G2163", "LIME, BLACK", null, "Backpack", "DUNNO"],
+  ["254371c2-a8d9-4f8f-9f3e-46d215dc5b5a", "G2163", "WHITE, BLACK", null, "Backpack", "DUNNO"],
 
   ["4dde5095-9373-4c51-9d8b-bf59a85efcd2", "G2168", "MAROON", null, "Trinity Back Pack", "DUNNO"],
   ["fee59132-de23-4478-b5ae-2aaabd500ff9", "G2168", "BLACK", null, "Trinity Back Pack", "DUNNO"],
@@ -306,6 +323,8 @@ export const databaseItems: DatabaseItemInputWithId[] = [
 
   ["e8d88815-029b-4f61-b3c0-021f3c8ab6f2", "G4001", "BLACK, ORANGE", null, "Arial Carry Bag", "DUNNO"],
 
+  ["6c7c74ea-3fd0-49c9-bfe8-7f55d63cb623", "G4027", "BLACK", null, "DUNNO", "DUNNO"],
+
   ["7fa2ab65-e5c6-4052-a440-ca1351ad11a1", "G4037", "NATURAL", null, "Iconic Shopping Bag", "1GY31"],
   ["69f342a7-fcd7-4322-8fcb-4bd92029b11b", "G4037", "NAVY", null, "Iconic Shopping Bag", "1GY21"],
   ["b06abc50-845f-41a2-9607-1470e92d3702", "G4037", "RED", null, "Iconic Shopping Bag", "1GY31"],
@@ -314,6 +333,9 @@ export const databaseItems: DatabaseItemInputWithId[] = [
   ["f6f5ab2b-cfb5-4762-ad76-084cfd3f337c", "G4037", "BOTTLE", null, "Iconic Shopping Bag", "1GY21"],
   ["9c96114d-b201-4054-b571-b6c41fc1a363", "G4037", "GREY", null, "Iconic Shopping Bag", "1GY31"],
   ["74bea0fa-587c-490a-8f09-00736ca25b8d", "G4037", "LIME", null, "Iconic Shopping Bag", "1GY21"],
+
+  ["48c28a50-fd10-4d02-96e4-aea10679c740", "G4100", "NAVY, GREY, BLACK", null, "Arctic Cooler Bag", "DUNNO"],
+  ["ae1dcd8f-f627-4ded-88c1-1a5df10203d7", "G4100", "ROYAL, GREY, BLACK", null, "Arctic Cooler Bag", "DUNNO"],
 
   ["5f1cc2a9-2e2c-43bc-94fa-8d82442d20c3", "G4388", "BLACK, WHITE, ROYAL", null, "Caddy Cooler Bag", "DUNNO"],
 
@@ -332,6 +354,9 @@ export const databaseItems: DatabaseItemInputWithId[] = [
   ["e5225d7a-c273-454d-a81c-a92fb6a45843", "ST1012", "NAVY, WHITE, RED", "S", "Raymond Polos", "DUNNO"],
   ["1a63c989-4ad2-4399-a10b-77ee65b354ae", "ST1012", "WHITE, NAVY, RED", "S", "Raymond Polos", "DUNNO"],
 
+  ["c9f287bc-094f-4f12-b916-1b10461643b6", "ST1018", "BOTTLE, GOLD", "S", "Titan Polos", "DUNNO"],
+  ["e1df9535-8ab3-4a2a-a87b-042ac9689a37", "ST1018", "STONE, NAVY", "S", "Titan Polos", "DUNNO"],
+
   ["068314e9-60aa-4756-8141-e1b948bb192b", "ST1020", "RED, WHITE", "S", "Eureka Polos", "DUNNO"],
   ["49808511-cc2d-428f-a7bc-7c9fe0b3c770", "ST1020", "ROYAL, WHITE", "S", "Eureka Polos", "DUNNO"],
 
@@ -340,12 +365,16 @@ export const databaseItems: DatabaseItemInputWithId[] = [
   ["1bea6f54-012d-4ab6-9237-e71c0cf3a3fa", "ST1043", "BLACK, RED", "S", "Clifford Polos", "DUNNO"],
   ["1bcdaddb-d329-46ab-9e8e-bfe09d6f8685", "ST1043", "BOTTLE, GOLD", "S", "Clifford Polos", "DUNNO"],
   ["61bb67de-7ffd-4f72-8141-895e431de73e", "ST1043", "BOTTLE, WHITE", "S", "Clifford Polos", "DUNNO"],
+  ["2ff3c93e-447a-48c9-870a-2885fa39cdf6", "ST1043", "NAVY, GOLD", "S", "Clifford Polos", "DUNNO"],
   ["168a5b69-4de4-4a5e-be44-c1ae176d1c58", "ST1043", "NAVY, RED", "S", "Clifford Polos", "DUNNO"],
   ["ced76412-0976-46e0-9912-726dd55aa8cb", "ST1043", "NAVY, WHITE", "S", "Clifford Polos", "DUNNO"],
   ["a77a4f91-7bf3-406a-8218-46c5f41f43fa", "ST1043", "ROYAL, WHITE", "S", "Clifford Polos", "DUNNO"],
+  ["d9507842-b832-4662-a8c3-5219075b3ca3", "ST1043", "STONE, NAVY", "S", "Clifford Polos", "DUNNO"],
   ["e5f0dc61-b2b5-4bc4-8f69-6ea046827b9d", "ST1043", "WHITE, NAVY", "S", "Clifford Polos", "DUNNO"],
 
   ["a0dff6eb-2332-4f87-a541-883d306eb631", "ST1097", "BLACK, RED, GREY", "S", "Corbel Polos", "DUNNO"],
+
+  ["266897bc-8172-4246-a7a2-813cb4112da1", "ST1141", "BLACK, RED, DARK GREY", "S", "Ignite Polos", "DUNNO"],
 
   ["1dc195b6-b722-46d4-a2a0-45c2520bc661", "ST1206", "RED, WHITE", "S", "Avalon Polos", "DUNNO"],
 
@@ -355,11 +384,14 @@ export const databaseItems: DatabaseItemInputWithId[] = [
   ["1f6085fe-14b5-4ab4-b03f-04fce8368dd0", "ST1232", "WHITE, NAVY", "S", "Attune Polos", "DUNNO"],
   ["d10cc15c-1574-4dc1-8746-b1fcbf622e0d", "ST1232", "BLACK, GOLD", "S", "Attune Polos", "DUNNO"],
 
+  ["f30c388d-7adb-4dba-b3d4-302cdfcab63d", "ST1238", "BLACK, WHITE, ORANGE", "S", "Crescent Polos", "DUNNO"],
   ["3fc038a0-33f4-44ca-aaad-74b486dc3e41", "ST1238", "RED, WHITE, BLACK", "S", "Crescent Polos", "DUNNO"],
 
   ["177da811-bb50-46cf-a5d2-fe9e54df19aa", "ST1240", "WHITE, BLACK", "S", "Mossman Polos", "DUNNO"],
 
   ["0e8e9457-fe2a-4024-9bda-0ba8805d9847", "ST1242", "BLACK, HOT PINK", "S", "Meribel Polos", "DUNNO"],
+
+  ["198a449f-0e86-43f6-81a1-949c3d8281cb", "ST1243", "ROYAL, WHITE", "S", "Incline Polos", "DUNNO"],
 
   ["11fc7da3-a7e4-4e75-b690-99a9f0f94a2a", "ST1250", "WHITE, NAVY, RED", "S", "Avanti Polos", "DUNNO"],
 
@@ -368,6 +400,9 @@ export const databaseItems: DatabaseItemInputWithId[] = [
   ["bc06f696-5d3d-448f-b0ea-2a85d9397e1c", "ST1255", "RED, BLACK, WHITE", "S", "Sheridan Polos", "DUNNO"],
 
   ["c8bf22e0-1d13-426f-ae20-870987bf62b9", "ST1261", "BLACK, RED", "S", "Forte Polos", "DUNNO"],
+
+  ["edab9f6b-4a53-4a1a-bee0-a34d81a8fbf7", "ST1270", "BLACK, RED", "S", "Westbury Polos", "DUNNO"],
+  ["25a723aa-51a6-4487-821a-a0b718276b4b", "ST1270", "NAVY, WHITE", "S", "Westbury Polos", "DUNNO"],
 
   ["6262f47c-aace-4687-9e45-37441cea0f6b", "ST1333", "BLACK, APPLE GREEN", "8", "Centaur Polos", "12D41"],
   ["366191bd-4eb6-4084-a2b8-25de495a9944", "ST1333", "BLACK, APPLE GREEN", "10", "Centaur Polos", "12D51"],
@@ -433,7 +468,11 @@ export const databaseItems: DatabaseItemInputWithId[] = [
   ["5d253317-995c-4fec-8d09-5f5d77e01a7c", "ST1431", "HOT PINK, BLACK", "10", "Rochelle Top", "DUNNO"],
 
   ["df0896a5-0853-446c-b174-095159a13a1a", "ST1460", "BLACK", "S", "Eastwood Tees", "DUNNO"],
+  ["88bbacd4-7078-4f4c-bcd7-a240aecd6d9d", "ST1460", "MARBLE", "S", "Eastwood Tees", "DUNNO"],
+  ["a1b8efc6-642b-42d9-8fa4-ed66f59df6ce", "ST1460", "MAROON", "S", "Eastwood Tees", "DUNNO"],
+  ["9f83214e-8962-414f-9b85-ba41d33d8264", "ST1460", "ORANGE", "S", "Eastwood Tees", "DUNNO"],
   ["95c5f12f-4487-40f0-9dbd-f3bc97e5fe30", "ST1460", "SKY", "S", "Eastwood Tees", "DUNNO"],
+  ["04a5a3aa-0437-4a4c-b7dd-6afb59a41cb7", "ST1460", "STONE", "S", "Eastwood Tees", "DUNNO"],
 
   ["4bd6a9e8-318a-4ed7-a16f-86dbfc77b765", "ST1485", "BLACK", "2XL", "Ashton Tees", "2GU43"],
   ["5cd44c42-bc12-4255-8948-3a0777d93032", "ST1485", "BLACK", "L", "Ashton Tees", "2GU33"],
@@ -651,6 +690,91 @@ export const databaseStorageRaw: DatabaseStorageItemWithoutDate[] = [
   ["d2b78625-9709-4df0-bb24-c5c7acff6a4d", "07-2-3", "1876f526-29be-4ef9-9bed-ba3bbc26a9d7", 10, 160],
 
   ["ba474fe9-1bab-445a-b7d6-55cf79042e17", "07-3-1", "f9076bce-353c-4481-bb75-c9e04ead4e2a", 0, 0],
+
+  ["2a6b2cde-9788-47f9-94b3-c0ff8e10ed61", "07-3-2", "254371c2-a8d9-4f8f-9f3e-46d215dc5b5a", 8, 200],
+
+  ["af13703c-416e-4ee7-b323-c2eecb0579f8", "07-3-3", "ab22dc9e-13b9-44b3-945b-aa090dbc249f", 12, 2400],
+
+  ["17aff16f-8fdf-4c5d-a542-ba10208261ff", "08-2-1", "aaa7c4d2-8cb9-4803-a71b-071a73f2f548", 8, 200],
+
+  ["3d98e8f4-eae1-4c1d-85b4-ca227716bc3e", "08-2-2", "a517e2e2-125c-49d7-ad54-28aedd8613e1", 8, 120],
+
+  ["a2a8691f-3a68-48c9-9ad5-bd72cfa48cdc", "08-2-3", "f23c0a26-550b-41b0-afcd-70509433567b", 6, 150],
+
+  ["cb0c77e8-9354-43f7-8056-ebd3debfbd63", "08-3-1", "9f83214e-8962-414f-9b85-ba41d33d8264", 0, 0],
+
+  ["6926095b-82f0-4ef4-a1d1-c9f81864ab06", "08-3-2", "f30c388d-7adb-4dba-b3d4-302cdfcab63d", 8, 562],
+
+  ["09612af5-de88-46f1-8b85-2d168d5b6fe5", "08-3-3", "25cedb22-0265-46f5-8d19-53b5ca87e837", 12, 120],
+
+  ["b7e58f5c-9d81-4914-bc04-eb7f41e81322", "08-4-1", "48c28a50-fd10-4d02-96e4-aea10679c740", 16, 160],
+
+  ["38ac4ae3-2fa7-4de9-a7ac-7d975101b4dd", "08-4-2", "04a9e8ae-4393-4e8c-9464-2cdf3bd574ed", 7, 1050],
+
+  ["cdd9825f-167a-4948-8ed3-7d83562abe6d", "08-4-3", "edab9f6b-4a53-4a1a-bee0-a34d81a8fbf7", 0, 0],
+  ["f38c0fec-2a0e-4d70-8526-2e6499665be5", "08-4-3", "25a723aa-51a6-4487-821a-a0b718276b4b", 0, 0],
+
+  ["9397bb09-d8c3-491d-87b2-f349dbd7c375", "09-1-1", "bcaf8419-4428-4b08-bc82-4568f8d18f8a", 12, 1800],
+
+  ["b80197d0-e035-4c5e-a6ad-bb07ede101b4", "09-1-2", "d2158e5d-97f0-4425-ab3b-913b7fb08a77", 16, 3200],
+
+  ["2c567b93-dcdf-4981-9de2-eb11832eb89d", "09-1-3", "53c292a0-833f-4a6e-a585-520b8da1a7e9", 14, 2100],
+
+  ["2deea22e-34b8-41a3-b63b-a91d710d7839", "09-2-1", "266897bc-8172-4246-a7a2-813cb4112da1", 0, 0],
+
+  ["e7132248-ad20-4f56-8ecf-7c5983289eca", "09-2-2", "ae1dcd8f-f627-4ded-88c1-1a5df10203d7", 8, 80],
+
+  ["5911afdb-b2cc-4d2f-ae9b-6cd0fc63bc55", "09-2-3", "6c7c74ea-3fd0-49c9-bfe8-7f55d63cb623", 24, 1200],
+
+  ["ad7dadc0-d9ab-4c48-a26c-969288363a43", "09-3-1", "88bbacd4-7078-4f4c-bcd7-a240aecd6d9d", 0, 0],
+
+  ["00602359-6029-4ca2-8334-32cb8d2d6d9f", "09-3-2", "f919c180-8152-43bb-9e68-d4efba4d76b3", 16, 2400],
+
+  ["737ded41-baa3-42db-9823-352c893a340c", "09-3-3", "2ff3c93e-447a-48c9-870a-2885fa39cdf6", 0, 0],
+
+  ["2e7c73b2-3e7c-45af-8c7c-2ddda0e79443", "10-1-2", "1c20e764-8167-40bc-8dea-264301154eec", 16, 3200],
+
+  ["20a8783a-cd66-4962-9ca6-18ba31382f28", "10-1-3", "bcaf8419-4428-4b08-bc82-4568f8d18f8a", 7, 1050],
+
+  ["914bd93c-4ae5-4062-abfe-18c346c795ed", "10-2-1", "95c5f12f-4487-40f0-9dbd-f3bc97e5fe30", 0, 0],
+
+  ["9fdc5fdc-8223-40fc-a5f3-47584e0a13cb", "10-2-2", "198a449f-0e86-43f6-81a1-949c3d8281cb", 0, 0],
+
+  ["f640d640-50cd-44d4-ad61-9c17561b3c6d", "10-2-3", "04a5a3aa-0437-4a4c-b7dd-6afb59a41cb7", 0, 0],
+  ["c4eb81d2-24d8-4c00-ab81-94cdcb982105", "10-2-3", "df0896a5-0853-446c-b174-095159a13a1a", 0, 0],
+
+  ["8507c8a9-019c-4016-a84f-5615522eb22a", "10-3-2", "a1b8efc6-642b-42d9-8fa4-ed66f59df6ce", 0, 0],
+
+  ["89c7075e-6883-4f2b-ac84-a2624556537b", "10-3-2", "04a9e8ae-4393-4e8c-9464-2cdf3bd574ed", 6, 600],
+  ["2452fb31-3b5e-41e7-af25-4674e1bc2860", "10-3-2", "45e3756d-2c26-4682-8a01-5fb651d200c6", 4, 400],
+  ["9ce640b9-71fb-4397-865c-792184380b56", "10-3-2", "3ed37e8e-7b90-4b68-8d7f-20435ac57dd6", 3, 300],
+  ["32039605-5a17-40d5-8c08-e1ab4e415d01", "10-3-2", "24389f67-7af8-4e0b-bc60-995cc255ca17", 2, 200],
+  ["6a902880-8060-4406-9f04-534b5a6adf06", "10-3-2", "f6ad833d-4400-4af3-a904-17aa12c07bff", 2, 200],
+  ["7eb45e8a-fa71-4cf1-9046-64eca91ef6c8", "10-3-2", "46a5bcab-c202-4196-a621-dd8168276d07", 1, 100],
+
+  ["a5fa12f5-d904-45a0-afb5-a6467cdae2ca", "10-3-3", "c9f287bc-094f-4f12-b916-1b10461643b6", 0, 0],
+
+  ["e6e2c180-0dad-4d5e-8da4-c66f00d9c4af", "11-1-1", "eeac0ad5-8155-4472-97c8-6b85b23dc39f", 7, 1050],
+
+  ["d53176ae-c25d-44a3-921e-0decaeab1714", "11-1-2", "f919c180-8152-43bb-9e68-d4efba4d76b3", 12, 1800],
+
+  ["bcb0fe25-8928-465c-af56-c71e6a89615b", "11-1-3", "8380ee86-7b8b-41e4-9762-16851ba54381", 10, 1500],
+
+  ["d1472d9f-ce6e-447d-b59b-400d4d353bc9", "11-2-1", "a77a4f91-7bf3-406a-8218-46c5f41f43fa", 0, 0],
+
+  ["17c74418-e1a2-438f-a120-24c7a5335802", "11-2-2", "1bea6f54-012d-4ab6-9237-e71c0cf3a3fa", 0, 0],
+  ["13d2c18a-bfd2-4186-b50a-155819eb2d1e", "11-2-2", "c9f287bc-094f-4f12-b916-1b10461643b6", 0, 0],
+  ["abef3943-d401-4bf2-97b5-194dd3618eb2", "11-2-2", "068314e9-60aa-4756-8141-e1b948bb192b", 0, 0],
+
+  ["faac07eb-457b-4166-b939-29acbeddc6d0", "11-3-1", "e1df9535-8ab3-4a2a-a87b-042ac9689a37", 0, 0],
+
+  ["8c583bb8-e4b1-45de-8610-69a7b6edf0a4", "11-3-2", "d9507842-b832-4662-a8c3-5219075b3ca3", 0, 0],
+
+  ["83eb029a-e2f9-4fa5-8ae1-2b178023ba7d", "11-3-3", "068314e9-60aa-4756-8141-e1b948bb192b", 0, 0],
+
+  ["c87a01b7-d0ef-40c2-a238-d29eac7f0d3e", "12-1-1", "7b352e3c-2216-4159-af8d-674cf2baf082", 0, 0],
+  ["2a05a961-9932-4510-b65e-7e2b8445db8c", "12-1-1", "7e329759-09dc-4418-9a3f-ae542af990db", 0, 0],
+  ["37b1b308-462e-4963-91ff-b5457f734a41", "12-1-1", "c4f430ad-93a9-4266-a63d-c567d58a1c03", 0, 0],
 ];
 
 export const databaseStorageItems: DatabaseStorageItem[] = databaseStorageRaw.map((item) => [...item, Date.now()]);
