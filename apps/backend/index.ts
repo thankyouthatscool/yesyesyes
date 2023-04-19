@@ -16,7 +16,7 @@ app.get("/", (_, res) => {
 });
 
 app.post("/catalogBackup", (req, res) => {
-  console.log(JSON.stringify(req.body).length);
+  console.log(`New catalog backup ${new Date().toLocaleDateString()}`);
 
   writeFileSync(
     resolve("./data", `${Date.now().toString()}-catalogData.json`),
@@ -24,6 +24,15 @@ app.post("/catalogBackup", (req, res) => {
   );
 
   return res.status(200).json({});
+});
+
+app.post("/storageBackup", (req, res) => {
+  console.log(`New storage backup ${new Date().toLocaleDateString()}`);
+
+  writeFileSync(
+    resolve("./data", `${Date.now().toString()}-storageData.json`),
+    JSON.stringify(req.body)
+  );
 });
 
 app.listen(PORT, "0.0.0.0", () => {
