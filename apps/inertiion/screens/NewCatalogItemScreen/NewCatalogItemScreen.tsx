@@ -32,7 +32,14 @@ export const NewCatalogItemScreen: FC<NewCatalogItemScreenNavProps> = ({
   const [isDataUpdated, setIsDataUpdated] = useState<boolean>(false);
   const [newCatalogItemData, setNewCatalogItemData] =
     useState<NewCatalogItemInput>(
-      () => formData || { code: "", color: "", location: "", size: "" }
+      () =>
+        formData || {
+          code: "",
+          color: "",
+          description: "",
+          location: "",
+          size: "",
+        }
     );
 
   const handleSaveNewCatalogItem = useCallback(() => {
@@ -167,6 +174,7 @@ export const NewCatalogItemScreen: FC<NewCatalogItemScreenNavProps> = ({
               description: newDescription,
             }));
           }}
+          value={newCatalogItemData.description}
         />
         <TextInput
           label="Location"

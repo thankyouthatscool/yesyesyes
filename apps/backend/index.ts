@@ -5,11 +5,7 @@ import express from "express";
 
 import { BackendStatusCodes } from "./types";
 
-import { catalogItems } from "./data/catalog";
-
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 5000;
-
-console.log(catalogItems);
 
 const app = express();
 

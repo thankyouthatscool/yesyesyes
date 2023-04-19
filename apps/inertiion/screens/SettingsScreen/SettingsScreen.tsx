@@ -8,9 +8,11 @@ import { useAppDispatch, useAppSelector } from "@hooks";
 import { clearItemQueue, clearSearchResult, clearSearchTerm } from "@store";
 import {
   databaseItems,
+  databaseStorageItems,
   sqlStatementCreateItemsTable,
   sqlStatementCreateStorageTable,
   sqlStatementSeedItemsTable,
+  sqlStatementSeedStorageTable,
 } from "@utils";
 
 import { SettingsScreenWrapper } from "./Styled";
@@ -30,11 +32,13 @@ export const SettingsScreen = () => {
       <Card>
         <Card.Title
           left={(props) => <Avatar.Icon {...props} icon="database" />}
-          subtitle="Database Management"
-          subtitleStyle={{ color: "red" }}
-          subtitleVariant="labelLarge"
-          title="Database"
+          title="Database Management"
           titleVariant="titleLarge"
+        />
+        <Card.Title
+          title="Items Table"
+          titleStyle={{ color: "red" }}
+          titleVariant="labelLarge"
         />
         <Card.Content>
           <Button
@@ -81,7 +85,7 @@ export const SettingsScreen = () => {
             }}
             style={{ alignSelf: "flex-start" }}
           >
-            Drop Database
+            Drop Items Table
           </Button>
           <Button
             icon="seed"
@@ -90,7 +94,6 @@ export const SettingsScreen = () => {
               db.transaction(
                 (tx) => {
                   tx.executeSql(sqlStatementCreateItemsTable);
-                  tx.executeSql(sqlStatementCreateStorageTable);
 
                   tx.executeSql(
                     sqlStatementSeedItemsTable,
@@ -110,7 +113,61 @@ export const SettingsScreen = () => {
               marginTop: defaultAppPadding,
             }}
           >
-            Seed Database
+            Seed Items Table
+          </Button>
+        </Card.Content>
+        <Card.Title
+          title="Storage Table"
+          titleStyle={{ color: "red" }}
+          titleVariant="labelLarge"
+        />
+        <Card.Content>
+          <Button
+            buttonColor="red"
+            icon="delete"
+            mode="contained"
+            onPress={() => {
+              db.transaction(
+                (tx) => {
+                  tx.executeSql("DROP TABLE storage");
+                },
+                (err) => {
+                  console.log(err);
+
+                  ToastAndroid.show(err.message, ToastAndroid.LONG);
+                }
+              );
+            }}
+            style={{ alignSelf: "flex-start" }}
+          >
+            Drop Storage Table
+          </Button>
+          <Button
+            icon="seed"
+            mode="contained"
+            onPress={() => {
+              db.transaction(
+                (tx) => {
+                  tx.executeSql(sqlStatementCreateStorageTable);
+
+                  tx.executeSql(
+                    sqlStatementSeedStorageTable,
+                    flattenDeep([databaseStorageItems]),
+                    (_, { rows: { _array } }) => {
+                      console.log(_array.length);
+                    }
+                  );
+                },
+                (err) => {
+                  console.log(err);
+
+                  ToastAndroid.show(err.message, ToastAndroid.LONG);
+                }
+              );
+            }}
+            style={{ alignSelf: "flex-start", marginTop: defaultAppPadding }}
+          >
+            Seed Storage Table
           </Button>
         </Card.Content>
       </Card>

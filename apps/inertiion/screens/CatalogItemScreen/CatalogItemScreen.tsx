@@ -129,55 +129,59 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
             >
               Go Back
             </Button>
-            {!!isUpdateNeeded ? (
-              <IconButton
-                disabled={!isUpdateNeeded}
-                icon="content-save"
-                mode="contained"
-                onPress={() => {
-                  handleUpdateItemData();
-                }}
-                size={30}
-              />
-            ) : (
-              <IconButton
-                containerColor="rgba(0,0,0,0)"
-                iconColor="rgba(0,0,0,0)"
-                icon="content-save"
-                size={30}
-              />
-            )}
-            <Menu
-              anchor={
+            <View style={{ alignItems: "center", flexDirection: "row" }}>
+              {!!isUpdateNeeded ? (
                 <IconButton
-                  icon="dots-vertical"
+                  disabled={!isUpdateNeeded}
+                  icon="content-save"
                   mode="contained"
                   onPress={() => {
-                    setIsMenuOpen(() => true);
+                    handleUpdateItemData();
                   }}
                 />
-              }
-              onDismiss={() => setIsMenuOpen(() => false)}
-              visible={isMenuOpen}
-            >
-              <Menu.Item
-                onPress={() => {
-                  setIsMenuOpen(() => false);
+              ) : (
+                <IconButton
+                  containerColor="rgba(0,0,0,0)"
+                  iconColor="rgba(0,0,0,0)"
+                  icon="content-save"
+                />
+              )}
+              <Menu
+                anchor={
+                  <IconButton
+                    icon="dots-vertical"
+                    mode="contained"
+                    onPress={() => {
+                      setIsMenuOpen(() => true);
+                    }}
+                  />
+                }
+                onDismiss={() => setIsMenuOpen(() => false)}
+                visible={isMenuOpen}
+              >
+                <Menu.Item
+                  onPress={() => {
+                    setIsMenuOpen(() => false);
 
-                  const { code, color, location, size } = itemData;
+                    const { code, color, description, location, size } =
+                      itemData;
 
-                  navigation.navigate("NewCatalogItemScreen", {
-                    formData: {
-                      code,
-                      color: color || "",
-                      location,
-                      size: size || "",
-                    },
-                  });
-                }}
-                title="Duplicate"
-              />
-            </Menu>
+                    console.log(description);
+
+                    navigation.navigate("NewCatalogItemScreen", {
+                      formData: {
+                        code,
+                        color: color || "",
+                        description: description || "",
+                        location,
+                        size: size || "",
+                      },
+                    });
+                  }}
+                  title="Duplicate"
+                />
+              </Menu>
+            </View>
           </View>
           <Text variant="headlineSmall">Item Information</Text>
           <TextInput

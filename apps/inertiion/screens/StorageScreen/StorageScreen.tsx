@@ -1,5 +1,5 @@
 import { FC, useCallback, useEffect, useState } from "react";
-import { ScrollView, View } from "react-native";
+import { BackHandler, ScrollView, View } from "react-native";
 import { Card, Searchbar, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -138,7 +138,7 @@ export const StorageCardComponent: FC<{
         {locationData.map((loc, idx) => {
           return (
             <View
-              key={`${location} -${loc.code}`}
+              key={`${location} - ${loc.id} - ${loc.itemId}`}
               style={{ marginTop: !idx ? 0 : defaultAppPadding }}
             >
               <Text variant="titleSmall">
