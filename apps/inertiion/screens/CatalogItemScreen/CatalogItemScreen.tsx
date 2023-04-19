@@ -263,7 +263,7 @@ export const CatalogItemScreenStorageComponent: FC<{
   const [itemStorageData, setItemStorageData] = useState<
     {
       id: string;
-      location: string;
+      storageLocation: string;
       itemId: string;
       cartons: number;
       pieces: number;
@@ -275,17 +275,17 @@ export const CatalogItemScreenStorageComponent: FC<{
     db.transaction(
       (tx) => {
         itemStorageData.forEach(
-          ({ id, location, itemId, cartons, pieces, dateModified }) => {
+          ({ id, storageLocation, itemId, cartons, pieces, dateModified }) => {
             tx.executeSql(
-              ` INSERT INTO storage (id, location, itemId, cartons, pieces, dateModified) 
+              ` INSERT INTO storage (id, storageLocation, itemId, cartons, pieces, dateModified) 
                 VALUES (?, ?, ?, ?, ?, ?) 
                 ON CONFLICT (id) DO UPDATE SET 
-                  location = excluded.location, 
+                  storageLocation = excluded.storageLocation, 
                   itemId = excluded.itemId,
                   cartons = excluded.cartons,
                   pieces = excluded.pieces,
                   dateModified = excluded.dateModified`,
-              [id, location, itemId, cartons, pieces, dateModified]
+              [id, storageLocation, itemId, cartons, pieces, dateModified]
             );
           }
         );
@@ -333,7 +333,7 @@ export const CatalogItemScreenStorageComponent: FC<{
             (_, { rows: { _array } }) => {
               const dbItemStorageData = _array as {
                 id: string;
-                location: string;
+                storageLocation: string;
                 itemId: string;
                 cartons: number;
                 pieces: number;
@@ -386,6 +386,7 @@ export const CatalogItemScreenStorageComponent: FC<{
                 ...itemStorageData,
                 {
                   location: "",
+                  storageLocation: "",
                   dateModified: new Date().toISOString(),
                   cartons: 0,
                   id: Crypto.randomUUID(),
@@ -424,20 +425,20 @@ export const CatalogItemScreenStorageComponent: FC<{
 
                   setItemStorageData((itemStorageData) => [
                     ...itemStorageData.slice(0, idx),
-                    { ...itemStorageData[idx], location: newLocation },
+                    { ...itemStorageData[idx], storageLocation: newLocation },
                     ...itemStorageData.slice(idx + 1),
                   ]);
                 }}
                 style={{ flex: 1 }}
-                value={loc.location}
+                value={loc.storageLocation}
               />
               <IconButton
-                disabled={!loc.location || isUpdateNeeded}
+                disabled={!loc.storageLocation || isUpdateNeeded}
                 icon="arrow-right"
                 mode="contained"
                 onPress={() => {
                   navigation.navigate("StorageLocationScreen", {
-                    locationName: loc.location,
+                    locationName: loc.storageLocation,
                   });
                 }}
                 size={20}

@@ -1,3 +1,4 @@
+import _debounce from "lodash.debounce";
 import { FC, useCallback, useEffect, useState } from "react";
 import { BackHandler, ScrollView, View } from "react-native";
 import { Card, Searchbar, Text } from "react-native-paper";
@@ -19,20 +20,27 @@ export const StorageScreen: FC<StorageScreenProps> = ({ navigation }) => {
     ({ app }) => ({ ...app })
   );
 
+  const [allLocationData, setAllLocationData] = useState<StorageLocationData[]>(
+    []
+  );
   const [distinctLocations, setDistinctLocations] = useState<string[]>([]);
   const [isFocus, setIsFocus] = useState<boolean>(false);
+  const [isLoadingStorageData, setIsLoadingStorageData] =
+    useState<boolean>(false);
 
   const handleLoadStorageData = useCallback(() => {
+    setIsLoadingStorageData(() => true);
+
     db.transaction(
       (tx) => {
         tx.executeSql(
-          ` SELECT DISTINCT location
+          ` SELECT DISTINCT storageLocation
             FROM storage`,
           [],
           (_, { rows: { _array } }) => {
             setDistinctLocations(() => {
               const distinctStorageLocations = _array.map(
-                (loc) => loc.location
+                (loc) => loc.storageLocation
               ) as string[];
 
               return distinctStorageLocations;
@@ -44,9 +52,37 @@ export const StorageScreen: FC<StorageScreenProps> = ({ navigation }) => {
     );
   }, []);
 
+  const handleLoadAllLocationData = useCallback(() => {
+    db.transaction(
+      (tx) => {
+        tx.executeSql(
+          `
+          SELECT *
+          FROM storage
+          INNER JOIN items
+          WHERE items.id = storage.itemId
+          `,
+          [],
+          (_, { rows: { _array } }) => {
+            setAllLocationData(() => _array);
+
+            setIsLoadingStorageData(() => false);
+          }
+        );
+      },
+      (err) => console.log(err)
+    );
+  }, []);
+
   useEffect(() => {
     handleLoadStorageData();
   }, []);
+
+  useEffect(() => {
+    if (!!distinctLocations.length) {
+      handleLoadAllLocationData();
+    }
+  }, [distinctLocations]);
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -71,20 +107,101 @@ export const StorageScreen: FC<StorageScreenProps> = ({ navigation }) => {
         }}
         value={storageSearchTerm}
       />
-      <View style={{ flex: 1 }}>
+
+      {!isLoadingStorageData && !!distinctLocations.length ? (
         <ScrollView>
-          {distinctLocations
-            .sort((a, b) => a.localeCompare(b))
-            .map((loc) => (
-              <StorageCardComponent key={loc} location={loc} nav={navigation} />
-            ))}
+          {distinctLocations.map((loc) => (
+            <Card
+              key={loc}
+              onPress={() => {
+                navigation.navigate("StorageLocationScreen", {
+                  locationName: loc,
+                });
+              }}
+              style={{
+                display: allLocationData
+                  .filter((ss) => ss.storageLocation === loc)
+                  .some((ls) =>
+                    `${ls.code} ${ls.location}`
+                      .trim()
+                      .toLowerCase()
+                      .includes(storageSearchTerm.trim().toLowerCase())
+                  )
+                  ? "flex"
+                  : "none",
+                marginHorizontal: defaultAppPadding,
+                marginVertical: defaultAppPadding / 2,
+              }}
+            >
+              <Card.Title title={loc} titleVariant="titleLarge" />
+              <Card.Content>
+                {allLocationData
+                  .filter((l) => l.storageLocation === loc)
+                  .map((ls, idx) => (
+                    <View
+                      key={ls.id}
+                      style={{
+                        marginTop: idx !== 0 ? defaultAppPadding : 0,
+                      }}
+                    >
+                      <View style={{ flexDirection: "row" }}>
+                        <Text>{ls.code}</Text>
+                        {!!ls.color && (
+                          <View style={{ flexDirection: "row" }}>
+                            <Text> | </Text>
+                            <Text style={{ fontWeight: "700" }}>
+                              {ls.color}
+                            </Text>
+                          </View>
+                        )}
+                        {!!ls.size && (
+                          <View style={{ flexDirection: "row" }}>
+                            <Text> | </Text>
+                            <Text style={{ fontWeight: "700" }}>{ls.size}</Text>
+                          </View>
+                        )}
+                        <Text> | </Text>
+                        <Text>{ls.location}</Text>
+                      </View>
+                      {!!ls.description && <Text>{ls.description}</Text>}
+                      {/* {!!ls.cartons && <Text>Cartons: {ls.cartons}</Text>} */}
+                      {/* {!!ls.pieces && <Text>Pieces: {ls.pieces}</Text>} */}
+                      {!!ls.cartons && !!ls.pieces && (
+                        <View style={{ flexDirection: "row" }}>
+                          <Text
+                            style={{
+                              color: "green",
+                              flex: 1,
+                              fontWeight: "700",
+                            }}
+                          >
+                            Cartons: {ls.cartons}
+                          </Text>
+                          <Text
+                            style={{
+                              color: "green",
+                              flex: 1,
+                              fontWeight: "700",
+                            }}
+                          >
+                            Pieces: {ls.pieces}
+                          </Text>
+                        </View>
+                      )}
+                    </View>
+                  ))}
+              </Card.Content>
+            </Card>
+          ))}
         </ScrollView>
-      </View>
+      ) : (
+        <Text>Loading</Text>
+      )}
     </SafeAreaView>
   );
 };
 
-export const StorageCardComponent: FC<{
+const StorageCardComponent: FC<{
   location: string;
   nav: StorageCardComponentNavProps;
 }> = ({ location, nav }) => {
@@ -102,7 +219,7 @@ export const StorageCardComponent: FC<{
             FROM storage
             INNER JOIN items
             on items.id = storage.itemId
-            WHERE storage.location = ?`,
+            WHERE storage.storageLocation = ?`,
           [location],
           (_, { rows: { _array } }) =>
             setLocationData(() => _array as StorageLocationData[])

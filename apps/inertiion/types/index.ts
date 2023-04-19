@@ -149,4 +149,5 @@ export interface StorageLocationData {
   location: string;
   pieces: number;
   size?: string;
+  storageLocation: string;
 }

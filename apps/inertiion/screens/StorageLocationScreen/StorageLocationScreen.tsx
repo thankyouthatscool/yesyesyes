@@ -26,7 +26,7 @@ export const StorageLocationScreen: FC<StorageLocationScreenProps> = ({
             FROM storage
             INNER JOIN items
             ON items.id = storage.itemId
-            WHERE storage.location = ?
+            WHERE storage.storageLocation = ?
             `,
           [locationName],
           (_, { rows: { _array } }) => {

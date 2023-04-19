@@ -787,13 +787,13 @@ export const sqlStatementCreateNotesTable =
   "CREATE TABLE IF NOT EXISTS notes (id TEXT UNIQUE NOT NULL PRIMARY KEY, noteBody TEXT NOT NULL, dateModified TEXT NOT NULL)";
 
 export const sqlStatementCreateStorageTable =
-  "CREATE TABLE IF NOT EXISTS storage (id TEXT UNIQUE NOT NULL PRIMARY KEY, location TEXT NOT NULL, itemId STRING NOT NULL, cartons INTEGER NOT NULL, pieces INTEGER NOT NULL, dateModified TEXT NOT NULL, FOREIGN KEY (itemId) REFERENCES items (id))";
+  "CREATE TABLE IF NOT EXISTS storage (id TEXT UNIQUE NOT NULL PRIMARY KEY, storageLocation TEXT NOT NULL, itemId STRING NOT NULL, cartons INTEGER NOT NULL, pieces INTEGER NOT NULL, dateModified TEXT NOT NULL, FOREIGN KEY (itemId) REFERENCES items (id))";
 
 // Seed Tables
 export const sqlStatementSeedItemsTable = `INSERT INTO items (id, code, color, size, description, location) VALUES ${databaseItems
   .map(() => `(?, ?, ?, ?, ?, ?)`)
   .join(", ")}`;
 
-export const sqlStatementSeedStorageTable = `INSERT INTO storage (id, location, itemId, cartons, pieces, dateModified) VALUES ${databaseStorageItems
+export const sqlStatementSeedStorageTable = `INSERT INTO storage (id, storageLocation, itemId, cartons, pieces, dateModified) VALUES ${databaseStorageItems
   .map(() => `(?, ?, ?, ?, ?, ?)`)
   .join(", ")}`;

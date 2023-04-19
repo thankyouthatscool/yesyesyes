@@ -101,7 +101,7 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
           value={searchTerm || ""}
         />
         <IconButton
-          icon="bag-personal"
+          icon="bookshelf"
           mode="contained"
           onPress={() => {
             navigation.navigate("StorageScreen");
