@@ -18,7 +18,8 @@ import {
 import { SettingsScreenWrapper } from "./Styled";
 import { defaultAppPadding } from "@theme";
 
-const API_URL = Constants.expoConfig?.extra?.API_URL!;
+const API_URL =
+  Constants.expoConfig?.extra?.API_URL! || "http://192.168.0.3:5000";
 
 export const SettingsScreen = () => {
   const dispatch = useAppDispatch();
@@ -208,11 +209,10 @@ export const SettingsScreen = () => {
       <Card style={{ marginTop: defaultAppPadding }}>
         <Card.Title
           left={(props) => <Avatar.Icon {...props} icon="cloud-upload" />}
-          subtitle="Backup Catalog Data"
-          subtitleVariant="labelLarge"
           title="Backup"
           titleVariant="titleLarge"
         />
+        <Card.Title title="Backup Catalog Data" titleVariant="labelLarge" />
         <Card.Content>
           <Button
             disabled={isLoading}
@@ -273,7 +273,58 @@ export const SettingsScreen = () => {
             }}
             style={{ alignSelf: "flex-start" }}
           >
-            Upload
+            Upload Catalog Data
+          </Button>
+        </Card.Content>
+        <Card.Title title="Backup Storage Data" titleVariant="labelLarge" />
+        <Card.Content>
+          <Button
+            icon="cloud-upload"
+            mode="contained"
+            onPress={() => {
+              db.transaction(
+                (tx) => {
+                  tx.executeSql(
+                    `
+                    SELECT *
+                    FROM storage
+                    `,
+                    [],
+                    async (_, { rows: { _array } }) => {
+                      try {
+                        const { status } = await fetch(
+                          `${API_URL}/storageBackup`,
+                          {
+                            body: JSON.stringify(_array),
+                            headers: {
+                              Accept: "application/json",
+                              "Content-Type": "application/json",
+                            },
+                            method: "POST",
+                          }
+                        );
+
+                        if (status === 200) {
+                          return ToastAndroid.show("OK", ToastAndroid.LONG);
+                        }
+
+                        throw new Error();
+                      } catch (err) {
+                        console.log(err);
+                      }
+                    }
+                  );
+                },
+                (err) => {
+                  console.log(err);
+
+                  ToastAndroid.show("Something went wrong!", ToastAndroid.LONG);
+                }
+              );
+            }}
+            style={{ alignSelf: "flex-start" }}
+          >
+            Upload Storage Data
           </Button>
         </Card.Content>
       </Card>

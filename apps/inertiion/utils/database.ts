@@ -521,7 +521,7 @@ export const databaseItems: DatabaseItemInputWithId[] = [
 type DatabaseStorageItemWithoutDate = [string, string, string, number, number];
 
 // TODO: Move out of here
-type DatabaseStorageItem = [...DatabaseStorageItemWithoutDate, number];
+type DatabaseStorageItem = [...DatabaseStorageItemWithoutDate, string];
 
 export const databaseStorageRaw: DatabaseStorageItemWithoutDate[] = [
   ["ae02950a-09bc-4f86-a6c8-1f138974ed9b", "01-2-2", "2ddb4418-eb77-407f-904f-e52364cf0a6a", 10, 200],
@@ -777,7 +777,7 @@ export const databaseStorageRaw: DatabaseStorageItemWithoutDate[] = [
   ["37b1b308-462e-4963-91ff-b5457f734a41", "12-1-1", "c4f430ad-93a9-4266-a63d-c567d58a1c03", 0, 0],
 ];
 
-export const databaseStorageItems: DatabaseStorageItem[] = databaseStorageRaw.map((item) => [...item, Date.now()]);
+export const databaseStorageItems: DatabaseStorageItem[] = databaseStorageRaw.map((item) => [...item, Date.now().toString()]);
 
 // Create Tables
 export const sqlStatementCreateItemsTable =

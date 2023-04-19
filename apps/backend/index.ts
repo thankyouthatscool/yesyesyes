@@ -12,6 +12,8 @@ const app = express();
 app.use(bodyParser.json());
 
 app.get("/", (_, res) => {
+  console.log("Client APP test OK!");
+
   return res.status(200).json({ status: BackendStatusCodes.OK });
 });
 
@@ -33,6 +35,8 @@ app.post("/storageBackup", (req, res) => {
     resolve("./data", `${Date.now().toString()}-storageData.json`),
     JSON.stringify(req.body)
   );
+
+  return res.status(200).json({});
 });
 
 app.listen(PORT, "0.0.0.0", () => {
