@@ -1,5 +1,11 @@
-import { createDrawerNavigator } from "@react-navigation/drawer";
-import { useCallback, useEffect } from "react";
+import {
+  createDrawerNavigator,
+  DrawerContentScrollView,
+  DrawerItem,
+  DrawerItemList,
+  DrawerContentComponentProps,
+} from "@react-navigation/drawer";
+import { FC, useCallback, useEffect } from "react";
 import { Dimensions, ToastAndroid } from "react-native";
 
 import { CustomDrawer } from "@components/CustomDrawer";

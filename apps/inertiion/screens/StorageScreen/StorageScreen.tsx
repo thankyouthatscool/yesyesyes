@@ -20,6 +20,7 @@ export const StorageScreen: FC<StorageScreenProps> = ({ navigation }) => {
   );
 
   const [distinctLocations, setDistinctLocations] = useState<string[]>([]);
+  const [isFocus, setIsFocus] = useState<boolean>(false);
 
   const handleLoadStorageData = useCallback(() => {
     db.transaction(
@@ -50,12 +51,19 @@ export const StorageScreen: FC<StorageScreenProps> = ({ navigation }) => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Searchbar
+        elevation={isFocus ? 3 : 0}
         placeholder="Search Storage"
+        onBlur={() => {
+          setIsFocus(() => false);
+        }}
         onClearIconPress={() => {
           dispatch(clearStorageSearchTerm());
         }}
         onChangeText={(newStorageSearchTerm) => {
           dispatch(setStorageSearchTerm(newStorageSearchTerm));
+        }}
+        onFocus={() => {
+          setIsFocus(() => true);
         }}
         style={{
           margin: defaultAppPadding,

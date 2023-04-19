@@ -101,12 +101,18 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
           value={searchTerm || ""}
         />
         <IconButton
+          icon="bag-personal"
+          mode="contained"
+          onPress={() => {
+            navigation.navigate("StorageScreen");
+          }}
+        />
+        <IconButton
           icon="plus"
           mode="contained"
           onPress={() => {
             navigation.navigate("NewCatalogItemScreen", {});
           }}
-          size={30}
         />
       </View>
       {searchTerm.length < 3 && (
