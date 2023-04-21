@@ -262,7 +262,7 @@ export const CatalogItemScreenStorageComponent: FC<{
   const [isUpdateNeeded, setIsUpdateNeeded] = useState<boolean>(false);
   const [itemStorageData, setItemStorageData] = useState<
     {
-      id: string;
+      storageId: string;
       storageLocation: string;
       itemId: string;
       cartons: number;
@@ -275,17 +275,31 @@ export const CatalogItemScreenStorageComponent: FC<{
     db.transaction(
       (tx) => {
         itemStorageData.forEach(
-          ({ id, storageLocation, itemId, cartons, pieces, dateModified }) => {
+          ({
+            storageId,
+            storageLocation,
+            itemId,
+            cartons,
+            pieces,
+            dateModified,
+          }) => {
             tx.executeSql(
-              ` INSERT INTO storage (id, storageLocation, itemId, cartons, pieces, dateModified) 
+              ` INSERT INTO storage (storageId, storageLocation, itemId, cartons, pieces, dateModified) 
                 VALUES (?, ?, ?, ?, ?, ?) 
-                ON CONFLICT (id) DO UPDATE SET 
+                ON CONFLICT (storageId) DO UPDATE SET 
                   storageLocation = excluded.storageLocation, 
                   itemId = excluded.itemId,
                   cartons = excluded.cartons,
                   pieces = excluded.pieces,
                   dateModified = excluded.dateModified`,
-              [id, storageLocation, itemId, cartons, pieces, dateModified]
+              [
+                storageId,
+                storageLocation,
+                itemId,
+                cartons,
+                pieces,
+                dateModified,
+              ]
             );
           }
         );
@@ -304,9 +318,9 @@ export const CatalogItemScreenStorageComponent: FC<{
   const handleDeleteItemStorageRow = useCallback((id: string) => {
     db.transaction(
       (tx) => {
-        tx.executeSql("DELETE FROM storage WHERE id = ?", [id], () => {
+        tx.executeSql("DELETE FROM storage WHERE storageId = ?", [id], () => {
           setItemStorageData((itemStorageData) =>
-            itemStorageData.filter((item) => item.id !== id)
+            itemStorageData.filter((item) => item.storageId !== id)
           );
 
           ToastAndroid.show("Storage Row removed!", ToastAndroid.LONG);
@@ -332,7 +346,7 @@ export const CatalogItemScreenStorageComponent: FC<{
             [itemId],
             (_, { rows: { _array } }) => {
               const dbItemStorageData = _array as {
-                id: string;
+                storageId: string;
                 storageLocation: string;
                 itemId: string;
                 cartons: number;
@@ -389,7 +403,7 @@ export const CatalogItemScreenStorageComponent: FC<{
                   storageLocation: "",
                   dateModified: new Date().toISOString(),
                   cartons: 0,
-                  id: Crypto.randomUUID(),
+                  storageId: Crypto.randomUUID(),
                   itemId,
                   pieces: 0,
                 },
@@ -415,7 +429,7 @@ export const CatalogItemScreenStorageComponent: FC<{
       </Text>
       {itemStorageData.map((loc, idx) => {
         return (
-          <View key={loc.id}>
+          <View key={loc.storageId}>
             <View style={{ alignItems: "center", flexDirection: "row" }}>
               <TextInput
                 label="Location"
@@ -492,7 +506,7 @@ export const CatalogItemScreenStorageComponent: FC<{
                 iconColor="red"
                 icon="trash-can"
                 mode="contained"
-                onPress={() => handleDeleteItemStorageRow(loc.id)}
+                onPress={() => handleDeleteItemStorageRow(loc.storageId)}
                 size={20}
               />
             </View>

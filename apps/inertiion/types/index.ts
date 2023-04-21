@@ -144,10 +144,10 @@ export interface StorageLocationData {
   color?: string;
   dateModified: string;
   description: string;
-  id: string;
   itemId: string;
   location: string;
   pieces: number;
   size?: string;
+  storageId: string;
   storageLocation: string;
 }

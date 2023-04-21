@@ -380,6 +380,7 @@ export const databaseItems: DatabaseItemInputWithId[] = [
   ["c9f287bc-094f-4f12-b916-1b10461643b6", "ST1018", "BOTTLE, GOLD", "S", "Titan Polos", "DUNNO"],
   ["e1df9535-8ab3-4a2a-a87b-042ac9689a37", "ST1018", "STONE, NAVY", "S", "Titan Polos", "DUNNO"],
 
+  ["c2418c79-a667-492c-96ea-5ffc1c9522d5", "ST1020", "NAVY, WHITE", "S", "Eureka Polos", "DUNNO"],
   ["068314e9-60aa-4756-8141-e1b948bb192b", "ST1020", "RED, WHITE", "S", "Eureka Polos", "DUNNO"],
   ["49808511-cc2d-428f-a7bc-7c9fe0b3c770", "ST1020", "ROYAL, WHITE", "S", "Eureka Polos", "DUNNO"],
 
@@ -550,6 +551,8 @@ export const databaseItems: DatabaseItemInputWithId[] = [
   ["66b35316-ee67-4127-9d73-8e7fea7c8462", "RECORDS", "", null, "Records 2014", ""],
 
   ["7216541f-ab35-4e0f-9e4c-6d27b99090c2", "MISC", "", null, "FlexFit Boxes", ""],
+
+  ["15e485e5-bda4-44fc-9893-0c341a9c2262", "Shirt Pallet", "", null, "Shirt Pallet A", ""],
 ];
 
 // TODO: Move out of here
@@ -880,6 +883,17 @@ export const databaseStorageRaw: DatabaseStorageItemWithoutDate[] = [
   ["5ffe71b6-01f5-470b-9e4a-c62ca1089b92", "19-4-2", "99e8ee57-1f88-46e6-aa5e-3b5217667566", 0, 0],
 
   ["0d00ec6f-fca4-4775-a3ee-1f968141b239", "19-5-2", "2566ac01-a2a3-46c7-adc9-d8090e4e0ed6", 28, 224],
+
+  ["1dcfdffa-6a20-4b2c-9708-37c9328c2811", "20-5-1", "15e485e5-bda4-44fc-9893-0c341a9c2262", 17, 0],
+
+  ["4ec38b26-4b5f-4419-aa0b-3f8a3564225a", "20-5-2", "4ee59ee3-ec55-4223-81ac-7c815bd578f5", 11, 1650],
+  ["11380dba-deb6-46b8-8dd2-0b0a1bd02a35", "20-5-2", "574f3249-7e6f-436a-90c2-503b60fee960", 5, 750],
+
+  ["e9835de2-9c32-42ee-9fe4-df5280bf4cf9", "21-4-1", "834be534-247d-4d9a-ab3f-5134d80b54fe", 6, 900],
+  ["5a0e8985-4ff3-44ea-b1c3-97ef47e6e704", "21-4-1", "f5b083ed-0916-471d-9995-125a6fe52ea4", 6, 900],
+
+  ["d8622850-169b-4c40-95c4-1f08d2d08987", "21-4-2", "c2418c79-a667-492c-96ea-5ffc1c9522d5", 11, 0],
+  ["f384fbd4-e43d-44f1-ae50-161001ae8475", "21-4-2", "49808511-cc2d-428f-a7bc-7c9fe0b3c770", 11, 0],
 ];
 
 export const databaseStorageItems: DatabaseStorageItem[] = databaseStorageRaw.map((item) => [...item, Date.now().toString()]);
@@ -892,13 +906,13 @@ export const sqlStatementCreateNotesTable =
   "CREATE TABLE IF NOT EXISTS notes (id TEXT UNIQUE NOT NULL PRIMARY KEY, noteBody TEXT NOT NULL, dateModified TEXT NOT NULL)";
 
 export const sqlStatementCreateStorageTable =
-  "CREATE TABLE IF NOT EXISTS storage (id TEXT UNIQUE NOT NULL PRIMARY KEY, storageLocation TEXT NOT NULL, itemId STRING NOT NULL, cartons INTEGER NOT NULL, pieces INTEGER NOT NULL, dateModified TEXT NOT NULL, FOREIGN KEY (itemId) REFERENCES items (id))";
+  "CREATE TABLE IF NOT EXISTS storage (storageId TEXT UNIQUE NOT NULL PRIMARY KEY, storageLocation TEXT NOT NULL, itemId STRING NOT NULL, cartons INTEGER NOT NULL, pieces INTEGER NOT NULL, dateModified TEXT NOT NULL, FOREIGN KEY (itemId) REFERENCES items (id))";
 
 // Seed Tables
 export const sqlStatementSeedItemsTable = `INSERT INTO items (id, code, color, size, description, location) VALUES ${databaseItems
   .map(() => `(?, ?, ?, ?, ?, ?)`)
   .join(", ")}`;
 
-export const sqlStatementSeedStorageTable = `INSERT INTO storage (id, storageLocation, itemId, cartons, pieces, dateModified) VALUES ${databaseStorageItems
+export const sqlStatementSeedStorageTable = `INSERT INTO storage (storageId, storageLocation, itemId, cartons, pieces, dateModified) VALUES ${databaseStorageItems
   .map(() => `(?, ?, ?, ?, ?, ?)`)
   .join(", ")}`;
