@@ -74,10 +74,12 @@ export type StorageCardComponentNavProps = NativeStackNavigationProp<
 >;
 
 export type AppState = {
+  allLocationData: StorageLocationData[];
   databaseInstance: SQLite.WebSQLDatabase;
   itemQueue: string[];
   itemQueueChecked: string[];
   isFABCollapsed: boolean;
+  locationData: StorageLocationData[];
   searchResult: CatalogItem[];
   searchTerm: string;
   storageSearchTerm: string;

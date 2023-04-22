@@ -2,14 +2,14 @@ import * as Crypto from "expo-crypto";
 import _flattendeep from "lodash.flattendeep";
 import _debounce from "lodash.debounce";
 import { FC, useCallback, useEffect, useState } from "react";
-import { ScrollView, View } from "react-native";
+import { ScrollView, ToastAndroid, View } from "react-native";
 import { Card, IconButton, Text, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { useAppSelector } from "@hooks";
-import { StorageLocationData, StorageLocationScreenProps } from "@types";
+import { useAppDispatch, useAppSelector } from "@hooks";
+import { setAllLocationData, setStorageLocationData } from "@store";
+import { StorageLocationScreenProps } from "@types";
 import { defaultAppPadding } from "@theme";
-import Icon from "react-native-paper/lib/typescript/src/components/Icon";
 
 interface ItemLookupSearchResult {
   code: string;
@@ -26,7 +26,11 @@ export const StorageLocationScreen: FC<StorageLocationScreenProps> = ({
     params: { locationName },
   },
 }) => {
-  const { databaseInstance: db } = useAppSelector(({ app }) => ({ ...app }));
+  const dispatch = useAppDispatch();
+
+  const { databaseInstance: db, locationData } = useAppSelector(({ app }) => ({
+    ...app,
+  }));
 
   const [isItemLookup, setIsItemLookup] = useState<boolean>(false);
   const [isUpdateNeeded, setIsUpdateNeeded] = useState<boolean>(false);
@@ -35,8 +39,6 @@ export const StorageLocationScreen: FC<StorageLocationScreenProps> = ({
     ItemLookupSearchResult[]
   >([]);
   const [itemLookupSearchTerm, setItemLookupSearchTerm] = useState<string>("");
-
-  const [locationData, setLocationData] = useState<StorageLocationData[]>([]);
 
   const handleLoadLocationData = useCallback(() => {
     db.transaction(
@@ -51,7 +53,7 @@ export const StorageLocationScreen: FC<StorageLocationScreenProps> = ({
             `,
           [locationName],
           (_, { rows: { _array } }) => {
-            setLocationData(() => _array);
+            dispatch(setStorageLocationData(_array));
           }
         );
       },
@@ -142,10 +144,25 @@ export const StorageLocationScreen: FC<StorageLocationScreenProps> = ({
                             cartons,
                             pieces,
                             dateModified,
-                          ],
-                          (_, { rows: { _array } }) => {
-                            console.log(_array);
-                          }
+                          ]
+                        );
+                      }
+                    );
+
+                    tx.executeSql(
+                      `
+                      SELECT *
+                      FROM storage
+                      INNER JOIN items
+                      ON items.id = storage.itemId
+                    `,
+                      [],
+                      (_, { rows: { _array } }) => {
+                        dispatch(setAllLocationData(_array));
+
+                        ToastAndroid.show(
+                          `Location ${locationName} updated.`,
+                          ToastAndroid.SHORT
                         );
                       }
                     );
@@ -190,22 +207,24 @@ export const StorageLocationScreen: FC<StorageLocationScreenProps> = ({
               <Card
                 key={item.id}
                 onPress={() => {
-                  setLocationData((locationData) => [
-                    {
-                      code: item.code,
-                      color: item.color,
-                      size: item.size,
-                      itemId: item.id,
-                      cartons: 0,
-                      pieces: 0,
-                      dateModified: Date.now().toString(),
-                      description: item.description,
-                      location: item.location,
-                      storageId: Crypto.randomUUID(),
-                      storageLocation: locationName,
-                    },
-                    ...locationData,
-                  ]);
+                  dispatch(
+                    setStorageLocationData([
+                      {
+                        code: item.code,
+                        color: item.color,
+                        size: item.size,
+                        itemId: item.id,
+                        cartons: 0,
+                        pieces: 0,
+                        dateModified: Date.now().toString(),
+                        description: item.description,
+                        location: item.location,
+                        storageId: Crypto.randomUUID(),
+                        storageLocation: locationName,
+                      },
+                      ...locationData,
+                    ])
+                  );
 
                   setIsItemLookup(() => false);
                   setItemLookupSearchResult(() => []);
@@ -274,14 +293,16 @@ export const StorageLocationScreen: FC<StorageLocationScreenProps> = ({
                     onChangeText={(newCartonCount) => {
                       setIsUpdateNeeded(() => true);
 
-                      setLocationData((locationData) => [
-                        ...locationData.slice(0, idx),
-                        {
-                          ...locationData[idx],
-                          cartons: parseInt(newCartonCount) || 0,
-                        },
-                        ...locationData.slice(idx + 1),
-                      ]);
+                      dispatch(
+                        setStorageLocationData([
+                          ...locationData.slice(0, idx),
+                          {
+                            ...locationData[idx],
+                            cartons: parseInt(newCartonCount) || 0,
+                          },
+                          ...locationData.slice(idx + 1),
+                        ])
+                      );
                     }}
                     style={{ flex: 1, marginRight: defaultAppPadding / 2 }}
                     value={item.cartons.toString()}
@@ -293,14 +314,16 @@ export const StorageLocationScreen: FC<StorageLocationScreenProps> = ({
                     onChangeText={(newPiecesCount) => {
                       setIsUpdateNeeded(() => true);
 
-                      setLocationData((locationData) => [
-                        ...locationData.slice(0, idx),
-                        {
-                          ...locationData[idx],
-                          pieces: parseInt(newPiecesCount) || 0,
-                        },
-                        ...locationData.slice(idx + 1),
-                      ]);
+                      dispatch(
+                        setStorageLocationData([
+                          ...locationData.slice(0, idx),
+                          {
+                            ...locationData[idx],
+                            pieces: parseInt(newPiecesCount) || 0,
+                          },
+                          ...locationData.slice(idx + 1),
+                        ])
+                      );
                     }}
                     style={{ flex: 1, marginLeft: defaultAppPadding / 2 }}
                     value={item.pieces.toString()}

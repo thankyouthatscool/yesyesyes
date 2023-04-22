@@ -1,11 +1,15 @@
 import _debounce from "lodash.debounce";
 import { FC, useCallback, useEffect, useState } from "react";
-import { ScrollView, View } from "react-native";
+import { View } from "react-native";
 import { Card, Searchbar, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAppDispatch, useAppSelector } from "@hooks";
-import { clearStorageSearchTerm, setStorageSearchTerm } from "@store";
+import {
+  clearStorageSearchTerm,
+  setAllLocationData,
+  setStorageSearchTerm,
+} from "@store";
 import { defaultAppPadding } from "@theme";
 import {
   StorageLocationData,
@@ -17,13 +21,12 @@ import { FlatList } from "react-native-gesture-handler";
 export const StorageScreen: FC<StorageScreenProps> = ({ navigation }) => {
   const dispatch = useAppDispatch();
 
-  const { databaseInstance: db, storageSearchTerm } = useAppSelector(
-    ({ app }) => ({ ...app })
-  );
+  const {
+    allLocationData,
+    databaseInstance: db,
+    storageSearchTerm,
+  } = useAppSelector(({ app }) => ({ ...app }));
 
-  const [allLocationData, setAllLocationData] = useState<StorageLocationData[]>(
-    []
-  );
   const [distinctLocations, setDistinctLocations] = useState<string[]>([]);
   const [isFocus, setIsFocus] = useState<boolean>(false);
   const [isLoadingStorageData, setIsLoadingStorageData] =
@@ -66,11 +69,11 @@ export const StorageScreen: FC<StorageScreenProps> = ({ navigation }) => {
           SELECT *
           FROM storage
           INNER JOIN items
-          WHERE items.id = storage.itemId
+          ON items.id = storage.itemId
           `,
           [],
           (_, { rows: { _array } }) => {
-            setAllLocationData(() => _array);
+            dispatch(setAllLocationData(_array));
 
             setIsLoadingStorageData(() => false);
           }
@@ -156,7 +159,7 @@ export const StorageScreen: FC<StorageScreenProps> = ({ navigation }) => {
           <FlatList
             data={Array.from(
               new Set(storageSearchResult.map((res) => res.storageLocation))
-            )}
+            ).sort((a, b) => a.localeCompare(b))}
             renderItem={({ item }) => (
               <LocationCard
                 content={storageSearchResult.filter(
@@ -172,7 +175,7 @@ export const StorageScreen: FC<StorageScreenProps> = ({ navigation }) => {
         <Text>Loading...</Text>
       ) : (
         <FlatList
-          data={distinctLocations}
+          data={distinctLocations.sort((a, b) => a.localeCompare(b))}
           renderItem={({ item }) => (
             <LocationCard
               content={allLocationData.filter(

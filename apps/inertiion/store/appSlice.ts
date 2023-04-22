@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import * as SQLite from "expo-sqlite";
 
-import { AppState, CatalogItem } from "@types";
+import { AppState, CatalogItem, StorageLocationData } from "@types";
 
 const initialState: AppState = {
   databaseInstance: SQLite.openDatabase("catalog.db"),
@@ -11,6 +11,12 @@ const initialState: AppState = {
   searchResult: [],
   searchTerm: "",
   storageSearchTerm: "",
+
+  // Storage Location Screen
+  locationData: [],
+
+  // Storage Screen - All Location Data
+  allLocationData: [],
 };
 
 export const appSlice = createSlice({
@@ -60,6 +66,22 @@ export const appSlice = createSlice({
     clearStorageSearchTerm: (state) => {
       state.storageSearchTerm = "";
     },
+
+    // Storage Location Screen
+    setStorageLocationData: (
+      state,
+      { payload }: PayloadAction<StorageLocationData[]>
+    ) => {
+      state.locationData = payload;
+    },
+
+    // All Location Data
+    setAllLocationData: (
+      state,
+      { payload }: PayloadAction<StorageLocationData[]>
+    ) => {
+      state.allLocationData = payload;
+    },
   },
 });
 
@@ -83,4 +105,10 @@ export const {
   clearSearchTerm,
   setStorageSearchTerm,
   clearStorageSearchTerm,
+
+  // Storage Location Screen
+  setStorageLocationData,
+
+  // All Location Data
+  setAllLocationData,
 } = appSlice.actions;
