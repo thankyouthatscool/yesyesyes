@@ -143,7 +143,7 @@ export interface StorageLocationData {
   code: string;
   color?: string;
   dateModified: string;
-  description: string;
+  description?: string;
   itemId: string;
   location: string;
   pieces: number;
