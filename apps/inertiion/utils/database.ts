@@ -203,6 +203,7 @@ export const databaseItems: DatabaseItemInputWithId[] = [
 
   ["1c20e764-8167-40bc-8dea-264301154eec", "AH720", "BLACK", null, "Acrylic Beanie", "11BB12"],
   ["d2158e5d-97f0-4425-ab3b-913b7fb08a77", "AH720", "NAVY", null, "Acrylic Beanie", "11BB12"],
+  ["5cd1bd49-437c-4ff7-98f2-098524c64ea0", "AH720", "ROYAL", null, "Acrylic Beanie", "11BB12"],
 
   ["7e329759-09dc-4418-9a3f-ae542af990db", "AH731", "BLACK, GOLD", null, "Acrylic Beanie", "DUNNO"],
   ["a4a2a5db-7ece-45ea-9f0b-3f3ea202684a", "AH731", "BLACK, RED", null, "Acrylic Beanie", "DUNNO"],
@@ -393,6 +394,8 @@ export const databaseItems: DatabaseItemInputWithId[] = [
   ["e5225d7a-c273-454d-a81c-a92fb6a45843", "ST1012", "NAVY, WHITE, RED", "S", "Raymond Polos", "DUNNO"],
   ["1a63c989-4ad2-4399-a10b-77ee65b354ae", "ST1012", "WHITE, NAVY, RED", "S", "Raymond Polos", "DUNNO"],
 
+  ["9f714de3-2829-41fd-a1af-cb20a3fa6283", "ST1016", "ROYAL, WHITE", "S", "Blade Polos", "DUNNO"],
+
   ["c9f287bc-094f-4f12-b916-1b10461643b6", "ST1018", "BOTTLE, GOLD", "S", "Titan Polos", "DUNNO"],
   ["e1df9535-8ab3-4a2a-a87b-042ac9689a37", "ST1018", "STONE, NAVY", "S", "Titan Polos", "DUNNO"],
   ["6ea58105-72d3-4faa-89f4-f7dde8147e89", "ST1018", "WHITE, NAVY", "S", "Titan Polos", "DUNNO"],
@@ -408,12 +411,14 @@ export const databaseItems: DatabaseItemInputWithId[] = [
   ["1bea6f54-012d-4ab6-9237-e71c0cf3a3fa", "ST1043", "BLACK, RED", "S", "Clifford Polos", "DUNNO"],
   ["1bcdaddb-d329-46ab-9e8e-bfe09d6f8685", "ST1043", "BOTTLE, GOLD", "S", "Clifford Polos", "DUNNO"],
   ["61bb67de-7ffd-4f72-8141-895e431de73e", "ST1043", "BOTTLE, WHITE", "S", "Clifford Polos", "DUNNO"],
+  ["dc72b748-2602-42d0-aa76-88447f58f3b6", "ST1043", "DARK MAROON, WHITE", "S", "Clifford Polos", "DUNNO"],
   ["2ff3c93e-447a-48c9-870a-2885fa39cdf6", "ST1043", "NAVY, GOLD", "S", "Clifford Polos", "DUNNO"],
   ["168a5b69-4de4-4a5e-be44-c1ae176d1c58", "ST1043", "NAVY, RED", "S", "Clifford Polos", "DUNNO"],
   ["ced76412-0976-46e0-9912-726dd55aa8cb", "ST1043", "NAVY, WHITE", "S", "Clifford Polos", "DUNNO"],
   ["a77a4f91-7bf3-406a-8218-46c5f41f43fa", "ST1043", "ROYAL, WHITE", "S", "Clifford Polos", "DUNNO"],
   ["d9507842-b832-4662-a8c3-5219075b3ca3", "ST1043", "STONE, NAVY", "S", "Clifford Polos", "DUNNO"],
   ["e5f0dc61-b2b5-4bc4-8f69-6ea046827b9d", "ST1043", "WHITE, NAVY", "S", "Clifford Polos", "DUNNO"],
+  ["4ef74554-0d01-4a7c-9d35-9011e7494041", "ST1043", "WHITE, RED", "S", "Clifford Polos", "DUNNO"],
 
   ["a0dff6eb-2332-4f87-a541-883d306eb631", "ST1097", "BLACK, RED, GREY", "S", "Corbel Polos", "DUNNO"],
 
@@ -444,6 +449,8 @@ export const databaseItems: DatabaseItemInputWithId[] = [
   ["d2f4fbed-f0fe-492e-933d-6a742f0b0989", "ST1252", "BLACK", "S", "Greenwich Polos", "DUNNO"],
 
   ["bc06f696-5d3d-448f-b0ea-2a85d9397e1c", "ST1255", "RED, BLACK, WHITE", "S", "Sheridan Polos", "DUNNO"],
+
+  ["22efe9c0-408e-480d-9e51-46e123f6822a", "ST1259", "WHITE, NAVY", "S", "Stride Polos", "DUNNO"],
 
   ["c8bf22e0-1d13-426f-ae20-870987bf62b9", "ST1261", "BLACK, RED", "S", "Forte Polos", "DUNNO"],
 
@@ -522,8 +529,11 @@ export const databaseItems: DatabaseItemInputWithId[] = [
   ["88bbacd4-7078-4f4c-bcd7-a240aecd6d9d", "ST1460", "MARBLE", "S", "Eastwood Tees", "DUNNO"],
   ["a1b8efc6-642b-42d9-8fa4-ed66f59df6ce", "ST1460", "MAROON", "S", "Eastwood Tees", "DUNNO"],
   ["9f83214e-8962-414f-9b85-ba41d33d8264", "ST1460", "ORANGE", "S", "Eastwood Tees", "DUNNO"],
+  ["3b1277f9-c1e9-4f5d-bd44-6db27c448312", "ST1460", "RED", "S", "Eastwood Tees", "DUNNO"],
   ["95c5f12f-4487-40f0-9dbd-f3bc97e5fe30", "ST1460", "SKY", "S", "Eastwood Tees", "DUNNO"],
   ["04a5a3aa-0437-4a4c-b7dd-6afb59a41cb7", "ST1460", "STONE", "S", "Eastwood Tees", "DUNNO"],
+
+  ["8b45d9bb-c6d8-43ec-8715-6ca527e6a6fb", "ST1471", "WHITE", "S", "Amber Tees", "DUNNO"],
 
   ["4bd6a9e8-318a-4ed7-a16f-86dbfc77b765", "ST1485", "BLACK", "2XL", "Ashton Tees", "2GU43"],
   ["5cd44c42-bc12-4255-8948-3a0777d93032", "ST1485", "BLACK", "L", "Ashton Tees", "2GU33"],
@@ -977,6 +987,33 @@ export const databaseStorageRaw: DatabaseStorageItemWithoutDate[] = [
   ["5c92b525-ef36-4214-a0e3-347c0ab35647", "28-4-1", "3a983d6e-1e8a-48ed-b126-2da5ca103038", 0, 0],
 
   ["09c47695-e461-46f3-9d8c-ef1d379ea3b0", "28-4-2", "3a983d6e-1e8a-48ed-b126-2da5ca103038", 9, 630],
+
+  ["720b07a1-6d8d-4b7e-af34-eed960d34ea7", "28-5-1", "08168613-7d98-4b60-af13-d6b310434541", 0, 0],
+
+  ["b4802372-791f-46d0-9b77-86331c402a6f", "25-5-2", "59e4a077-542b-43c8-a3cf-3804973627ba", 20, 200],
+
+  ["dd146e3f-3ae8-4afb-9837-56d45bc57777", "29-4-1", "3b1277f9-c1e9-4f5d-bd44-6db27c448312", 11, 0],
+
+  ["95910b23-e866-4aa5-898b-40db712aaaf3", "29-4-2", "8b45d9bb-c6d8-43ec-8715-6ca527e6a6fb", 0, 0],
+
+  ["45a42dd7-d23c-413c-a794-1adfa2d2fbcf", "29-5-1", "08168613-7d98-4b60-af13-d6b310434541", 0, 0],
+
+  ["8e053f57-454a-4e65-8cfc-776e98ad0e2a", "30-3-1", "9f714de3-2829-41fd-a1af-cb20a3fa6283", 0, 0],
+
+  ["8e9f696a-7fc8-44c2-9ac9-7562da0a0e85", "30-4-1", "ce26b2a5-1204-4e7b-850c-d7b9c66f1d07", 0, 0],
+
+  ["4efcf14a-ec5f-4127-9de9-a856c089444e", "30-4-2", "5cd1bd49-437c-4ff7-98f2-098524c64ea0", 9, 1800],
+
+  ["b30616ad-fbae-4d34-a7f6-20ce873301c3", "31-5-1", "59e4a077-542b-43c8-a3cf-3804973627ba", 20, 200],
+
+  ["2818d83d-a006-485c-a1af-61bef81fa4bf", "32-4-2", "dc72b748-2602-42d0-aa76-88447f58f3b6", 22, 0],
+
+  ["61eb92b5-70b1-4ff4-873c-41ff2d490c95", "32-5-1", "80f29dfe-c5d5-412f-8c44-bdaa3ea4df5d", 0, 0],
+  ["0bdae79d-1996-4698-8758-61535f809318", "32-5-1", "81c617fc-92ab-474c-9ffa-ceeeaa059e25", 0, 0],
+  ["f1dcbeca-1909-407e-a1b4-d0b9b15a7212", "32-5-1", "1bea6f54-012d-4ab6-9237-e71c0cf3a3fa", 0, 0],
+  ["bc739713-d8bd-409a-a9ba-23f69a21a4e2", "32-5-1", "758a4689-ac76-42eb-8398-7b077fc15843", 0, 0],
+
+  ["e029a13c-7402-4363-adbb-48683bc525d3", "32-5-2", "22efe9c0-408e-480d-9e51-46e123f6822a", 0, 0],
 ];
 
 export const databaseStorageItems: DatabaseStorageItem[] = databaseStorageRaw.map((item) => [...item, Date.now().toString()]);
@@ -999,3 +1036,12 @@ export const sqlStatementSeedItemsTable = `INSERT INTO items (id, code, color, s
 export const sqlStatementSeedStorageTable = `INSERT INTO storage (storageId, storageLocation, itemId, cartons, pieces, dateModified) VALUES ${databaseStorageItems
   .map(() => `(?, ?, ?, ?, ?, ?)`)
   .join(", ")}`;
+
+// Database items checks
+if (databaseItems.length !== Array.from(new Set(databaseItems.map((item) => item[0]))).length) {
+  throw new Error("Not all item IDs are unique!");
+}
+
+if (databaseStorageItems.length !== Array.from(new Set(databaseStorageItems.map((item) => item[0]))).length) {
+  throw new Error("Not all storage item IDs are unique!");
+}
