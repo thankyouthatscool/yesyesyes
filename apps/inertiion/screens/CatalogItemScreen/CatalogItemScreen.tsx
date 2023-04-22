@@ -18,6 +18,13 @@ interface CatalogItemInputWithId extends CatalogItemInput {
   id: string;
 }
 
+interface ItemNote {
+  noteId: string;
+  noteBody: string;
+  referenceId: string;
+  dateModified: string;
+}
+
 export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
   navigation,
   route: {
@@ -31,8 +38,11 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
   }));
 
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const [isNotesUpdateNeeded, setIsNotesUpdateNeeded] =
+    useState<boolean>(false);
   const [isUpdateNeeded, setIsUpdateNeeded] = useState<boolean>(false);
   const [itemData, setItemData] = useState<CatalogItemInputWithId | null>(null);
+  const [itemNotes, setItemNotes] = useState<ItemNote[]>([]);
 
   const handleGetItemData = useCallback(() => {
     db.transaction(
@@ -44,6 +54,20 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
             const itemData: CatalogItemInputWithId = _array[0];
 
             setItemData(() => itemData);
+          }
+        );
+
+        tx.executeSql(
+          `
+          SELECT *
+          FROM notes
+          WHERE referenceId = ?
+        `,
+          [itemId],
+          (_, { rows: { _array } }) => {
+            console.log(_array);
+
+            setItemNotes(() => _array);
           }
         );
       },
@@ -109,80 +133,79 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
   }, [itemId]);
 
   return (
-    <SafeAreaView style={{ padding: defaultAppPadding, paddingTop: 0 }}>
+    <SafeAreaView
+      style={{ height: "100%", padding: defaultAppPadding, paddingTop: 0 }}
+    >
+      <View
+        style={{
+          alignItems: "center",
+          flexDirection: "row",
+          justifyContent: "space-between",
+          marginTop: defaultAppPadding,
+        }}
+      >
+        <Button
+          icon="arrow-left"
+          mode="contained-tonal"
+          onPress={() => {
+            navigation.goBack();
+          }}
+        >
+          Go Back
+        </Button>
+        <View style={{ alignItems: "center", flexDirection: "row" }}>
+          {!!isUpdateNeeded ? (
+            <IconButton
+              disabled={!isUpdateNeeded}
+              icon="content-save"
+              mode="contained"
+              onPress={() => {
+                handleUpdateItemData();
+              }}
+            />
+          ) : (
+            <IconButton
+              containerColor="rgba(0,0,0,0)"
+              iconColor="rgba(0,0,0,0)"
+              icon="content-save"
+            />
+          )}
+          <Menu
+            anchor={
+              <IconButton
+                icon="dots-vertical"
+                mode="contained"
+                onPress={() => {
+                  setIsMenuOpen(() => true);
+                }}
+              />
+            }
+            onDismiss={() => setIsMenuOpen(() => false)}
+            visible={isMenuOpen}
+          >
+            <Menu.Item
+              onPress={() => {
+                setIsMenuOpen(() => false);
+
+                const { code, color, description, location, size } = itemData!;
+
+                navigation.navigate("NewCatalogItemScreen", {
+                  formData: {
+                    code,
+                    color: color || "",
+                    description: description || "",
+                    location,
+                    size: size || "",
+                  },
+                });
+              }}
+              title="Duplicate"
+            />
+          </Menu>
+        </View>
+      </View>
       {!!itemData && (
         <ScrollView>
-          <View
-            style={{
-              alignItems: "center",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              marginTop: defaultAppPadding,
-            }}
-          >
-            <Button
-              icon="arrow-left"
-              mode="contained-tonal"
-              onPress={() => {
-                navigation.goBack();
-              }}
-            >
-              Go Back
-            </Button>
-            <View style={{ alignItems: "center", flexDirection: "row" }}>
-              {!!isUpdateNeeded ? (
-                <IconButton
-                  disabled={!isUpdateNeeded}
-                  icon="content-save"
-                  mode="contained"
-                  onPress={() => {
-                    handleUpdateItemData();
-                  }}
-                />
-              ) : (
-                <IconButton
-                  containerColor="rgba(0,0,0,0)"
-                  iconColor="rgba(0,0,0,0)"
-                  icon="content-save"
-                />
-              )}
-              <Menu
-                anchor={
-                  <IconButton
-                    icon="dots-vertical"
-                    mode="contained"
-                    onPress={() => {
-                      setIsMenuOpen(() => true);
-                    }}
-                  />
-                }
-                onDismiss={() => setIsMenuOpen(() => false)}
-                visible={isMenuOpen}
-              >
-                <Menu.Item
-                  onPress={() => {
-                    setIsMenuOpen(() => false);
-
-                    const { code, color, description, location, size } =
-                      itemData;
-
-                    console.log(description);
-
-                    navigation.navigate("NewCatalogItemScreen", {
-                      formData: {
-                        code,
-                        color: color || "",
-                        description: description || "",
-                        location,
-                        size: size || "",
-                      },
-                    });
-                  }}
-                  title="Duplicate"
-                />
-              </Menu>
-            </View>
-          </View>
           <Text variant="headlineSmall">Item Information</Text>
           <TextInput
             label="Code"
@@ -246,7 +269,118 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
             itemId={itemData.id}
             navigation={navigation}
           />
-          <Text variant="headlineSmall">Notes</Text>
+          <View
+            style={{
+              alignItems: "center",
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <Text variant="headlineSmall">Notes</Text>
+            <View style={{ flexDirection: "row" }}>
+              {!!isNotesUpdateNeeded && (
+                <IconButton
+                  disabled={!itemNotes.every((note) => !!note.noteBody)}
+                  icon="content-save"
+                  mode="contained"
+                  onPress={() => {
+                    console.log(itemNotes);
+
+                    db.transaction(
+                      (tx) => {
+                        itemNotes.forEach(
+                          ({ dateModified, noteBody, noteId, referenceId }) => {
+                            tx.executeSql(
+                              `
+                              INSERT INTO notes
+                              VALUES (?, ?, ?, ?)
+                              ON CONFLICT (noteId) DO UPDATE SET
+                                noteBody = excluded.noteBody,
+                                dateModified = excluded.dateModified
+                            `,
+                              [noteId, referenceId, noteBody, dateModified],
+                              () => {}
+                            );
+                          }
+                        );
+                      },
+                      (err) => console.log(err)
+                    );
+
+                    setIsNotesUpdateNeeded(() => false);
+                  }}
+                />
+              )}
+              <IconButton
+                icon="plus"
+                mode="contained"
+                onPress={() => {
+                  setItemNotes((itemNotes) => [
+                    {
+                      noteBody: "",
+                      noteId: Crypto.randomUUID(),
+                      dateModified: Date.now().toString(),
+                      referenceId: itemData.id,
+                    },
+                    ...itemNotes,
+                  ]);
+                }}
+              />
+            </View>
+          </View>
+          {itemNotes.map((note, idx) => (
+            <View key={note.noteId}>
+              <View style={{ alignItems: "flex-end", flexDirection: "row" }}>
+                <TextInput
+                  label="Note"
+                  mode="outlined"
+                  multiline
+                  numberOfLines={4}
+                  onChangeText={(newNoteBody) => {
+                    setIsNotesUpdateNeeded(() => true);
+
+                    setItemNotes((itemNotes) => [
+                      ...itemNotes.slice(0, idx),
+                      { ...itemNotes[idx], noteBody: newNoteBody },
+                      ...itemNotes.slice(idx + 1),
+                    ]);
+                  }}
+                  placeholder="Note body"
+                  style={{ flex: 1 }}
+                  value={note.noteBody}
+                />
+                <IconButton
+                  iconColor="red"
+                  icon="delete"
+                  mode="contained"
+                  onPress={() => {
+                    db.transaction(
+                      (tx) => {
+                        tx.executeSql(
+                          `
+                          DELETE FROM notes
+                          WHERE noteId = ?
+                        `,
+                          [note.noteId],
+                          () => {
+                            setItemNotes((notes) =>
+                              notes.filter((r) => r.noteId !== note.noteId)
+                            );
+                          }
+                        );
+                      },
+                      (err) => console.log(err)
+                    );
+                  }}
+                />
+              </View>
+              <Text style={{ alignSelf: "flex-start" }}>
+                {new Date(parseFloat(note.dateModified)).toDateString()}
+                {" @ "}
+                {new Date(parseFloat(note.dateModified)).toLocaleTimeString()}
+              </Text>
+            </View>
+          ))}
         </ScrollView>
       )}
     </SafeAreaView>

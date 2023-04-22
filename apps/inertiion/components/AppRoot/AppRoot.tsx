@@ -17,6 +17,7 @@ import { AsyncStorageReturnStatus, RootDrawerNavigationProps } from "@types";
 import {
   localStorageGetItemQueue,
   sqlStatementCreateItemsTable,
+  sqlStatementCreateNotesTable,
   sqlStatementCreateStorageTable,
 } from "@utils";
 
@@ -34,6 +35,10 @@ export const AppRoot = () => {
       (tx) => {
         tx.executeSql(sqlStatementCreateItemsTable, [], () => {
           ToastAndroid.show("Items Table OK", ToastAndroid.SHORT);
+        });
+
+        tx.executeSql(sqlStatementCreateNotesTable, [], () => {
+          ToastAndroid.show("Notes Table OK", ToastAndroid.SHORT);
         });
 
         tx.executeSql(sqlStatementCreateStorageTable, [], () => {
