@@ -482,6 +482,8 @@ export const CatalogItemScreenStorageComponent: FC<{
             );
           }
         );
+
+        // tx.executeSql(``, [], () => {});
       },
       (err) => console.log(err)
     );

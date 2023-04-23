@@ -2,7 +2,7 @@ import * as Crypto from "expo-crypto";
 import _flattendeep from "lodash.flattendeep";
 import _debounce from "lodash.debounce";
 import { FC, useCallback, useEffect, useState } from "react";
-import { ScrollView, ToastAndroid, View } from "react-native";
+import { FlatList, ScrollView, ToastAndroid, View } from "react-native";
 import { Card, IconButton, Text, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -33,6 +33,7 @@ export const StorageLocationScreen: FC<StorageLocationScreenProps> = ({
   }));
 
   const [isItemLookup, setIsItemLookup] = useState<boolean>(false);
+  const [isSomethingLoading, setIsSomethingLoading] = useState<boolean>(false);
   const [isUpdateNeeded, setIsUpdateNeeded] = useState<boolean>(false);
 
   const [itemLookupSearchResult, setItemLookupSearchResult] = useState<
@@ -41,6 +42,8 @@ export const StorageLocationScreen: FC<StorageLocationScreenProps> = ({
   const [itemLookupSearchTerm, setItemLookupSearchTerm] = useState<string>("");
 
   const handleLoadLocationData = useCallback(() => {
+    setIsSomethingLoading(() => true);
+
     db.transaction(
       (tx) => {
         tx.executeSql(
@@ -59,6 +62,8 @@ export const StorageLocationScreen: FC<StorageLocationScreenProps> = ({
       },
       (err) => console.log(err)
     );
+
+    setIsSomethingLoading(() => false);
   }, [locationName]);
 
   const handleItemLookup = useCallback(
@@ -200,64 +205,88 @@ export const StorageLocationScreen: FC<StorageLocationScreenProps> = ({
         />
       )}
       <View style={{ flex: 1 }}>
-        <ScrollView style={{ flex: 1 }}>
-          {itemLookupSearchTerm.length > 2 &&
-            !!itemLookupSearchResult.length &&
-            itemLookupSearchResult.map((item) => (
-              <Card
-                key={item.id}
-                onPress={() => {
-                  dispatch(
-                    setStorageLocationData([
-                      {
-                        code: item.code,
-                        color: item.color,
-                        size: item.size,
-                        itemId: item.id,
-                        cartons: 0,
-                        pieces: 0,
-                        dateModified: Date.now().toString(),
-                        description: item.description,
-                        location: item.location,
-                        storageId: Crypto.randomUUID(),
-                        storageLocation: locationName,
-                      },
-                      ...locationData,
-                    ])
-                  );
+        {itemLookupSearchTerm.length > 2 &&
+          !!itemLookupSearchResult.length &&
+          itemLookupSearchResult.map((item) => (
+            <Card
+              key={item.id}
+              onPress={() => {
+                dispatch(
+                  setStorageLocationData([
+                    {
+                      code: item.code,
+                      color: item.color,
+                      size: item.size,
+                      itemId: item.id,
+                      cartons: 0,
+                      pieces: 0,
+                      dateModified: Date.now().toString(),
+                      description: item.description,
+                      location: item.location,
+                      storageId: Crypto.randomUUID(),
+                      storageLocation: locationName,
+                    },
+                    ...locationData,
+                  ])
+                );
 
-                  setIsItemLookup(() => false);
-                  setItemLookupSearchResult(() => []);
-                  setItemLookupSearchTerm(() => "");
-                  setIsUpdateNeeded(() => true);
-                }}
-                style={{
-                  marginHorizontal: defaultAppPadding,
-                  marginVertical: defaultAppPadding / 2,
-                }}
-              >
-                <Card.Content style={{ flexDirection: "row" }}>
-                  <Text>{item.code}</Text>
-                  {!!item.color.length && (
-                    <View style={{ flexDirection: "row" }}>
-                      <Text>{" | "}</Text>
-                      <Text>{item.color}</Text>
-                    </View>
-                  )}
-                  {!!item.size?.length && (
-                    <View style={{ flexDirection: "row" }}>
-                      <Text>{" | "}</Text>
-                      <Text>{item.size}</Text>
-                    </View>
-                  )}
+                setIsItemLookup(() => false);
+                setItemLookupSearchResult(() => []);
+                setItemLookupSearchTerm(() => "");
+                setIsUpdateNeeded(() => true);
+              }}
+              style={{
+                marginHorizontal: defaultAppPadding,
+                marginVertical: defaultAppPadding / 2,
+              }}
+            >
+              <Card.Content style={{ flexDirection: "row" }}>
+                <Text>{item.code}</Text>
+                {!!item.color.length && (
                   <View style={{ flexDirection: "row" }}>
                     <Text>{" | "}</Text>
-                    <Text key={item.id}>{item.location}</Text>
+                    <Text>{item.color}</Text>
                   </View>
-                </Card.Content>
-              </Card>
-            ))}
-          {locationData.map((item, idx) => (
+                )}
+                {!!item.size?.length && (
+                  <View style={{ flexDirection: "row" }}>
+                    <Text>{" | "}</Text>
+                    <Text>{item.size}</Text>
+                  </View>
+                )}
+                <View style={{ flexDirection: "row" }}>
+                  <Text>{" | "}</Text>
+                  <Text key={item.id}>{item.location}</Text>
+                </View>
+              </Card.Content>
+            </Card>
+          ))}
+        <FlatList
+          data={locationData}
+          keyExtractor={(item) => item.itemId}
+          // onRefresh={() => {
+          //   db.transaction(
+          //     (tx) => {
+          //       tx.executeSql(
+          //         `
+          //         SELECT *
+          //         FROM storage
+          //         INNER JOIN items
+          //         ON items.id = storage.itemId
+          //         WHERE storage.storageLocation = ?
+          //       `,
+          //         [locationName],
+          //         (_, { rows: { _array } }) => {
+          //           dispatch(setStorageLocationData(_array));
+          //         }
+          //       );
+          //     },
+          //     (err) => console.log(err)
+          //   );
+          // }}
+          onRefresh={handleLoadLocationData}
+          refreshing={isSomethingLoading}
+          renderItem={({ item, index: idx }) => (
             <Card
               key={item.itemId}
               style={{
@@ -347,8 +376,8 @@ export const StorageLocationScreen: FC<StorageLocationScreenProps> = ({
                 </View>
               </Card.Content>
             </Card>
-          ))}
-        </ScrollView>
+          )}
+        />
       </View>
     </SafeAreaView>
   );

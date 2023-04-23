@@ -1,6 +1,6 @@
 import _debounce from "lodash.debounce";
 import { FC, useCallback, useEffect, useState } from "react";
-import { View } from "react-native";
+import { FlatList, View } from "react-native";
 import { Card, IconButton, Searchbar, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -16,7 +16,6 @@ import {
   StorageScreenProps,
   StorageCardComponentNavProps,
 } from "@types";
-import { FlatList } from "react-native-gesture-handler";
 
 export const StorageScreen: FC<StorageScreenProps> = ({ navigation }) => {
   const dispatch = useAppDispatch();
@@ -170,6 +169,8 @@ export const StorageScreen: FC<StorageScreenProps> = ({ navigation }) => {
             data={Array.from(
               new Set(storageSearchResult.map((res) => res.storageLocation))
             ).sort((a, b) => a.localeCompare(b))}
+            onRefresh={handleLoadAllLocationData}
+            refreshing={false}
             renderItem={({ item }) => (
               <LocationCard
                 content={storageSearchResult.filter(
@@ -186,6 +187,8 @@ export const StorageScreen: FC<StorageScreenProps> = ({ navigation }) => {
       ) : (
         <FlatList
           data={distinctLocations.sort((a, b) => a.localeCompare(b))}
+          onRefresh={handleLoadAllLocationData}
+          refreshing={false}
           renderItem={({ item }) => (
             <LocationCard
               content={allLocationData.filter(
