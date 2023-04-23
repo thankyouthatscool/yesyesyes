@@ -284,7 +284,22 @@ export const StorageLocationScreen: FC<StorageLocationScreenProps> = ({
                     }}
                   />
                 </View>
-
+                <View style={{ flexDirection: "row" }}>
+                  <TextInput
+                    disabled
+                    label="Item Color"
+                    mode="outlined"
+                    style={{ flex: 2, marginRight: defaultAppPadding / 2 }}
+                    value={item.color}
+                  />
+                  <TextInput
+                    disabled
+                    label="Item Size"
+                    mode="outlined"
+                    style={{ flex: 1, marginLeft: defaultAppPadding / 2 }}
+                    value={item.size}
+                  />
+                </View>
                 <View style={{ alignItems: "center", flexDirection: "row" }}>
                   <TextInput
                     keyboardType="numeric"

@@ -91,24 +91,6 @@ export const NewCatalogItemScreen: FC<NewCatalogItemScreenNavProps> = ({
       },
       (err) => console.log(err),
       () => {
-        // dispatch(
-        //   addCatalogItem({
-        //     code: code.toUpperCase(),
-        //     color:
-        //       color
-        //         ?.split(",")
-        //         .map((color) => color.trim().toLowerCase())
-        //         .filter((color) => !!color) || [],
-        //     id: newCatalogItemId,
-        //     location: location.toUpperCase(),
-        //     size:
-        //       size
-        //         ?.split(",")
-        //         .map((size) => size.trim().toLowerCase())
-        //         .filter((size) => !!size) || [],
-        //   })
-        // );
-
         navigation.navigate("HomeScreen");
       }
     );

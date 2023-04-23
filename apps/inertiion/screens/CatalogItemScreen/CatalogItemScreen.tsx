@@ -44,6 +44,12 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
   const [itemData, setItemData] = useState<CatalogItemInputWithId | null>(null);
   const [itemNotes, setItemNotes] = useState<ItemNote[]>([]);
 
+  // Section Toggles
+  const [isItemInformationCollapsed, setIsItemInformationCollapsed] =
+    useState<boolean>(false);
+  const [isNotesSectionCollapsed, setIsNotesSectionCollapsed] =
+    useState<boolean>(true);
+
   const handleGetItemData = useCallback(() => {
     db.transaction(
       (tx) => {
@@ -65,8 +71,6 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
         `,
           [itemId],
           (_, { rows: { _array } }) => {
-            console.log(_array);
-
             setItemNotes(() => _array);
           }
         );
@@ -84,11 +88,11 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
           tx.executeSql(
             `UPDATE items SET code = ?, color = ?, size = ?, description = ?, location = ? WHERE id = ?`,
             [
-              code,
-              color || null,
-              size || null,
+              code.toUpperCase(),
+              color?.toUpperCase() || null,
+              size?.toUpperCase() || null,
               description || null,
-              location,
+              location.toUpperCase(),
               id,
             ],
             () => {
@@ -206,65 +210,89 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
       </View>
       {!!itemData && (
         <ScrollView>
-          <Text variant="headlineSmall">Item Information</Text>
-          <TextInput
-            label="Code"
-            mode="outlined"
-            onChangeText={(newCode) => {
-              setIsUpdateNeeded(() => true);
-
-              setItemData((itemData) => ({ ...itemData!, code: newCode }));
+          <View
+            style={{
+              alignItems: "center",
+              flexDirection: "row",
+              justifyContent: "space-between",
             }}
-            value={itemData.code}
-          />
-          <TextInput
-            label="Color(s)"
-            mode="outlined"
-            onChangeText={(newColor) => {
-              setIsUpdateNeeded(() => true);
+          >
+            <Text variant="headlineSmall">Item Information</Text>
+            <IconButton
+              icon={`chevron-${isItemInformationCollapsed ? "down" : "up"}`}
+              mode="contained"
+              onPress={() => {
+                setIsItemInformationCollapsed(
+                  (isItemInformationCollapsed) => !isItemInformationCollapsed
+                );
+              }}
+            />
+          </View>
+          {!isItemInformationCollapsed && (
+            <View>
+              <TextInput
+                label="Code"
+                mode="outlined"
+                onChangeText={(newCode) => {
+                  setIsUpdateNeeded(() => true);
 
-              setItemData((itemData) => ({ ...itemData!, color: newColor }));
-            }}
-            value={itemData.color || ""}
-          />
-          <TextInput
-            label="Size(s)"
-            mode="outlined"
-            onChangeText={(newSize) => {
-              setIsUpdateNeeded(() => true);
+                  setItemData((itemData) => ({ ...itemData!, code: newCode }));
+                }}
+                value={itemData.code}
+              />
+              <TextInput
+                label="Color(s)"
+                mode="outlined"
+                onChangeText={(newColor) => {
+                  setIsUpdateNeeded(() => true);
 
-              setItemData((itemData) => ({ ...itemData!, size: newSize }));
-            }}
-            value={itemData.size || ""}
-          />
-          <TextInput
-            label="Description"
-            mode="outlined"
-            multiline
-            numberOfLines={4}
-            onChangeText={(newDescription) => {
-              setIsUpdateNeeded(() => true);
+                  setItemData((itemData) => ({
+                    ...itemData!,
+                    color: newColor,
+                  }));
+                }}
+                value={itemData.color || ""}
+              />
+              <TextInput
+                label="Size(s)"
+                mode="outlined"
+                onChangeText={(newSize) => {
+                  setIsUpdateNeeded(() => true);
 
-              setItemData((itemData) => ({
-                ...itemData!,
-                description: newDescription,
-              }));
-            }}
-            value={itemData.description || ""}
-          />
-          <TextInput
-            label="Location"
-            mode="outlined"
-            onChangeText={(newLocation) => {
-              setIsUpdateNeeded(() => true);
+                  setItemData((itemData) => ({ ...itemData!, size: newSize }));
+                }}
+                value={itemData.size || ""}
+              />
+              <TextInput
+                label="Description"
+                mode="outlined"
+                multiline
+                numberOfLines={4}
+                onChangeText={(newDescription) => {
+                  setIsUpdateNeeded(() => true);
 
-              setItemData((itemData) => ({
-                ...itemData!,
-                location: newLocation,
-              }));
-            }}
-            value={itemData.location}
-          />
+                  setItemData((itemData) => ({
+                    ...itemData!,
+                    description: newDescription,
+                  }));
+                }}
+                value={itemData.description || ""}
+              />
+              <TextInput
+                label="Location"
+                mode="outlined"
+                onChangeText={(newLocation) => {
+                  setIsUpdateNeeded(() => true);
+
+                  setItemData((itemData) => ({
+                    ...itemData!,
+                    location: newLocation,
+                  }));
+                }}
+                value={itemData.location}
+              />
+            </View>
+          )}
           <CatalogItemScreenStorageComponent
             itemId={itemData.id}
             navigation={navigation}
@@ -284,8 +312,6 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
                   icon="content-save"
                   mode="contained"
                   onPress={() => {
-                    console.log(itemNotes);
-
                     db.transaction(
                       (tx) => {
                         itemNotes.forEach(
@@ -298,8 +324,7 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
                                 noteBody = excluded.noteBody,
                                 dateModified = excluded.dateModified
                             `,
-                              [noteId, referenceId, noteBody, dateModified],
-                              () => {}
+                              [noteId, referenceId, noteBody, dateModified]
                             );
                           }
                         );
@@ -315,6 +340,8 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
                 icon="plus"
                 mode="contained"
                 onPress={() => {
+                  setIsNotesSectionCollapsed(() => false);
+
                   setItemNotes((itemNotes) => [
                     {
                       noteBody: "",
@@ -326,61 +353,76 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
                   ]);
                 }}
               />
+              <IconButton
+                icon={`chevron-${isNotesSectionCollapsed ? "down" : "up"}`}
+                mode="contained"
+                onPress={() => {
+                  setIsNotesSectionCollapsed(
+                    (isNotesSectionCollapsed) => !isNotesSectionCollapsed
+                  );
+                }}
+              />
             </View>
           </View>
-          {itemNotes.map((note, idx) => (
-            <View key={note.noteId}>
-              <View style={{ alignItems: "flex-end", flexDirection: "row" }}>
-                <TextInput
-                  label="Note"
-                  mode="outlined"
-                  multiline
-                  numberOfLines={4}
-                  onChangeText={(newNoteBody) => {
-                    setIsNotesUpdateNeeded(() => true);
+          {!isNotesSectionCollapsed &&
+            itemNotes.map((note, idx) => (
+              <View key={note.noteId}>
+                <View style={{ alignItems: "flex-end", flexDirection: "row" }}>
+                  <TextInput
+                    label="Note"
+                    mode="outlined"
+                    multiline
+                    numberOfLines={4}
+                    onChangeText={(newNoteBody) => {
+                      setIsNotesUpdateNeeded(() => true);
 
-                    setItemNotes((itemNotes) => [
-                      ...itemNotes.slice(0, idx),
-                      { ...itemNotes[idx], noteBody: newNoteBody },
-                      ...itemNotes.slice(idx + 1),
-                    ]);
-                  }}
-                  placeholder="Note body"
-                  style={{ flex: 1 }}
-                  value={note.noteBody}
-                />
-                <IconButton
-                  iconColor="red"
-                  icon="delete"
-                  mode="contained"
-                  onPress={() => {
-                    db.transaction(
-                      (tx) => {
-                        tx.executeSql(
-                          `
+                      setItemNotes((itemNotes) => [
+                        ...itemNotes.slice(0, idx),
+                        { ...itemNotes[idx], noteBody: newNoteBody },
+                        ...itemNotes.slice(idx + 1),
+                      ]);
+                    }}
+                    placeholder="Note body"
+                    style={{ flex: 1 }}
+                    value={note.noteBody}
+                  />
+                  <View
+                    style={{ alignItems: "center", justifyContent: "center" }}
+                  >
+                    <IconButton icon="dots-vertical" mode="contained" />
+                    <IconButton
+                      iconColor="red"
+                      icon="delete"
+                      mode="contained"
+                      onPress={() => {
+                        db.transaction(
+                          (tx) => {
+                            tx.executeSql(
+                              `
                           DELETE FROM notes
                           WHERE noteId = ?
                         `,
-                          [note.noteId],
-                          () => {
-                            setItemNotes((notes) =>
-                              notes.filter((r) => r.noteId !== note.noteId)
+                              [note.noteId],
+                              () => {
+                                setItemNotes((notes) =>
+                                  notes.filter((r) => r.noteId !== note.noteId)
+                                );
+                              }
                             );
-                          }
+                          },
+                          (err) => console.log(err)
                         );
-                      },
-                      (err) => console.log(err)
-                    );
-                  }}
-                />
+                      }}
+                    />
+                  </View>
+                </View>
+                <Text style={{ alignSelf: "flex-start" }}>
+                  {new Date(parseFloat(note.dateModified)).toDateString()}
+                  {" @ "}
+                  {new Date(parseFloat(note.dateModified)).toLocaleTimeString()}
+                </Text>
               </View>
-              <Text style={{ alignSelf: "flex-start" }}>
-                {new Date(parseFloat(note.dateModified)).toDateString()}
-                {" @ "}
-                {new Date(parseFloat(note.dateModified)).toLocaleTimeString()}
-              </Text>
-            </View>
-          ))}
+            ))}
         </ScrollView>
       )}
     </SafeAreaView>
@@ -404,6 +446,9 @@ export const CatalogItemScreenStorageComponent: FC<{
       dateModified: string;
     }[]
   >([]);
+
+  // Section Toggles
+  const [isStorageCollapsed, setIsStorageCollapsed] = useState<boolean>(false);
 
   const handleUpdateItemStorageData = useCallback(() => {
     db.transaction(
@@ -517,7 +562,7 @@ export const CatalogItemScreenStorageComponent: FC<{
         >
           <Text variant="headlineSmall">Storage</Text>
         </Pressable>
-        <View style={{ flexDirection: "row" }}>
+        <View style={{ alignItems: "center", flexDirection: "row" }}>
           {!!isUpdateNeeded && (
             <IconButton
               icon="content-save"
@@ -543,110 +588,125 @@ export const CatalogItemScreenStorageComponent: FC<{
                 },
               ]);
             }}
-            size={20}
+          />
+          <IconButton
+            icon={`chevron-${isStorageCollapsed ? "down" : "up"}`}
+            mode="contained"
+            onPress={() => {
+              setIsStorageCollapsed(
+                (isStorageCollapsed) => !isStorageCollapsed
+              );
+            }}
           />
         </View>
       </View>
-      <Text variant="titleMedium">
-        Total Cartons:{" "}
-        <Text style={{ color: "green", fontWeight: "700" }}>
-          {itemStorageData.reduce((acc, { cartons }) => {
-            return acc + cartons;
-          }, 0)}
-        </Text>{" "}
-        / Total Pieces:{" "}
-        <Text style={{ color: "green", fontWeight: "700" }}>
-          {itemStorageData.reduce((acc, { pieces }) => {
-            return acc + pieces;
-          }, 0)}
-        </Text>
-      </Text>
-      {itemStorageData.map((loc, idx) => {
-        return (
-          <View key={loc.storageId}>
-            <View style={{ alignItems: "center", flexDirection: "row" }}>
-              <TextInput
-                label="Location"
-                mode="outlined"
-                onChangeText={(newLocation) => {
-                  setIsUpdateNeeded(() => true);
+      {!isStorageCollapsed && (
+        <View>
+          <Text variant="titleMedium">
+            Total Cartons:{" "}
+            <Text style={{ color: "green", fontWeight: "700" }}>
+              {itemStorageData.reduce((acc, { cartons }) => {
+                return acc + cartons;
+              }, 0)}
+            </Text>{" "}
+            / Total Pieces:{" "}
+            <Text style={{ color: "green", fontWeight: "700" }}>
+              {itemStorageData.reduce((acc, { pieces }) => {
+                return acc + pieces;
+              }, 0)}
+            </Text>
+          </Text>
+          {itemStorageData.map((loc, idx) => {
+            return (
+              <View key={loc.storageId}>
+                <View style={{ alignItems: "center", flexDirection: "row" }}>
+                  <TextInput
+                    label="Location"
+                    mode="outlined"
+                    onChangeText={(newLocation) => {
+                      setIsUpdateNeeded(() => true);
 
-                  setItemStorageData((itemStorageData) => [
-                    ...itemStorageData.slice(0, idx),
-                    { ...itemStorageData[idx], storageLocation: newLocation },
-                    ...itemStorageData.slice(idx + 1),
-                  ]);
-                }}
-                style={{ flex: 1 }}
-                value={loc.storageLocation}
-              />
-              <IconButton
-                disabled={!loc.storageLocation || isUpdateNeeded}
-                icon="arrow-right"
-                mode="contained"
-                onPress={() => {
-                  navigation.navigate("StorageLocationScreen", {
-                    locationName: loc.storageLocation,
-                  });
-                }}
-                size={20}
-              />
-            </View>
-            <View
-              style={{
-                alignItems: "center",
-                flexDirection: "row",
-              }}
-            >
-              <TextInput
-                keyboardType="number-pad"
-                label="Cartons"
-                mode="outlined"
-                onChangeText={(newNumberOfCartons) => {
-                  setIsUpdateNeeded(() => true);
+                      setItemStorageData((itemStorageData) => [
+                        ...itemStorageData.slice(0, idx),
+                        {
+                          ...itemStorageData[idx],
+                          storageLocation: newLocation,
+                        },
+                        ...itemStorageData.slice(idx + 1),
+                      ]);
+                    }}
+                    style={{ flex: 1 }}
+                    value={loc.storageLocation}
+                  />
+                  <IconButton
+                    disabled={!loc.storageLocation || isUpdateNeeded}
+                    icon="arrow-right"
+                    mode="contained"
+                    onPress={() => {
+                      navigation.navigate("StorageLocationScreen", {
+                        locationName: loc.storageLocation,
+                      });
+                    }}
+                    size={20}
+                  />
+                </View>
+                <View
+                  style={{
+                    alignItems: "center",
+                    flexDirection: "row",
+                  }}
+                >
+                  <TextInput
+                    keyboardType="number-pad"
+                    label="Cartons"
+                    mode="outlined"
+                    onChangeText={(newNumberOfCartons) => {
+                      setIsUpdateNeeded(() => true);
 
-                  setItemStorageData((itemStorageData) => [
-                    ...itemStorageData.slice(0, idx),
-                    {
-                      ...itemStorageData[idx],
-                      cartons: parseInt(newNumberOfCartons),
-                    },
-                    ...itemStorageData.slice(idx + 1),
-                  ]);
-                }}
-                value={!!loc.cartons ? loc.cartons.toString() : ""}
-                style={{ flex: 1, marginRight: defaultAppPadding / 2 }}
-              />
-              <TextInput
-                keyboardType="number-pad"
-                label="Pieces"
-                mode="outlined"
-                onChangeText={(newNumberOfPieces) => {
-                  setIsUpdateNeeded(() => true);
+                      setItemStorageData((itemStorageData) => [
+                        ...itemStorageData.slice(0, idx),
+                        {
+                          ...itemStorageData[idx],
+                          cartons: parseInt(newNumberOfCartons),
+                        },
+                        ...itemStorageData.slice(idx + 1),
+                      ]);
+                    }}
+                    value={!!loc.cartons ? loc.cartons.toString() : ""}
+                    style={{ flex: 1, marginRight: defaultAppPadding / 2 }}
+                  />
+                  <TextInput
+                    keyboardType="number-pad"
+                    label="Pieces"
+                    mode="outlined"
+                    onChangeText={(newNumberOfPieces) => {
+                      setIsUpdateNeeded(() => true);
 
-                  setItemStorageData((itemStorageData) => [
-                    ...itemStorageData.slice(0, idx),
-                    {
-                      ...itemStorageData[idx],
-                      pieces: parseInt(newNumberOfPieces),
-                    },
-                    ...itemStorageData.slice(idx + 1),
-                  ]);
-                }}
-                value={!!loc.pieces ? loc.pieces?.toString() : ""}
-                style={{ flex: 1, marginLeft: defaultAppPadding / 2 }}
-              />
-              <IconButton
-                iconColor="red"
-                icon="trash-can"
-                mode="contained"
-                onPress={() => handleDeleteItemStorageRow(loc.storageId)}
-                size={20}
-              />
-            </View>
-          </View>
-        );
-      })}
+                      setItemStorageData((itemStorageData) => [
+                        ...itemStorageData.slice(0, idx),
+                        {
+                          ...itemStorageData[idx],
+                          pieces: parseInt(newNumberOfPieces),
+                        },
+                        ...itemStorageData.slice(idx + 1),
+                      ]);
+                    }}
+                    value={!!loc.pieces ? loc.pieces?.toString() : ""}
+                    style={{ flex: 1, marginLeft: defaultAppPadding / 2 }}
+                  />
+                  <IconButton
+                    iconColor="red"
+                    icon="trash-can"
+                    mode="contained"
+                    onPress={() => handleDeleteItemStorageRow(loc.storageId)}
+                    size={20}
+                  />
+                </View>
+              </View>
+            );
+          })}
+        </View>
+      )}
     </View>
   );
 };

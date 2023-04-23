@@ -1,7 +1,7 @@
 import _debounce from "lodash.debounce";
 import { FC, useCallback, useEffect, useState } from "react";
 import { View } from "react-native";
-import { Card, Searchbar, Text } from "react-native-paper";
+import { Card, IconButton, Searchbar, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAppDispatch, useAppSelector } from "@hooks";
@@ -131,27 +131,37 @@ export const StorageScreen: FC<StorageScreenProps> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <Searchbar
-        elevation={isFocus ? 3 : 0}
-        placeholder="Search Storage"
-        onBlur={() => {
-          setIsFocus(() => false);
-        }}
-        onClearIconPress={() => {
-          dispatch(clearStorageSearchTerm());
-        }}
-        onChangeText={(newStorageSearchTerm) => {
-          dispatch(setStorageSearchTerm(newStorageSearchTerm));
-        }}
-        onFocus={() => {
-          setIsFocus(() => true);
-        }}
-        style={{
-          margin: defaultAppPadding,
-          marginBottom: defaultAppPadding / 2,
-        }}
-        value={storageSearchTerm}
-      />
+      <View style={{ alignItems: "center", flexDirection: "row" }}>
+        <IconButton
+          icon="arrow-left"
+          mode="contained"
+          onPress={() => {
+            navigation.navigate("HomeScreen");
+          }}
+        />
+        <Searchbar
+          elevation={isFocus ? 3 : 0}
+          placeholder="Search Storage"
+          onBlur={() => {
+            setIsFocus(() => false);
+          }}
+          onClearIconPress={() => {
+            dispatch(clearStorageSearchTerm());
+          }}
+          onChangeText={(newStorageSearchTerm) => {
+            dispatch(setStorageSearchTerm(newStorageSearchTerm));
+          }}
+          onFocus={() => {
+            setIsFocus(() => true);
+          }}
+          style={{
+            flex: 1,
+            margin: defaultAppPadding,
+            marginBottom: defaultAppPadding / 2,
+          }}
+          value={storageSearchTerm}
+        />
+      </View>
       {storageSearchTerm.length > 2 ? (
         isLoadingSearchResults ? (
           <Text>Loading...</Text>
