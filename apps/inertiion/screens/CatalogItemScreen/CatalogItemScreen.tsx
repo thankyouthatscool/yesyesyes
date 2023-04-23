@@ -1,5 +1,12 @@
 import * as Crypto from "expo-crypto";
-import { FC, useCallback, useEffect, useState } from "react";
+import {
+  Dispatch,
+  FC,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { Pressable, ScrollView, ToastAndroid, View } from "react-native";
 import { Button, IconButton, Menu, Text, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -366,62 +373,12 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
           </View>
           {!isNotesSectionCollapsed &&
             itemNotes.map((note, idx) => (
-              <View key={note.noteId}>
-                <View style={{ alignItems: "flex-end", flexDirection: "row" }}>
-                  <TextInput
-                    label="Note"
-                    mode="outlined"
-                    multiline
-                    numberOfLines={4}
-                    onChangeText={(newNoteBody) => {
-                      setIsNotesUpdateNeeded(() => true);
-
-                      setItemNotes((itemNotes) => [
-                        ...itemNotes.slice(0, idx),
-                        { ...itemNotes[idx], noteBody: newNoteBody },
-                        ...itemNotes.slice(idx + 1),
-                      ]);
-                    }}
-                    placeholder="Note body"
-                    style={{ flex: 1 }}
-                    value={note.noteBody}
-                  />
-                  <View
-                    style={{ alignItems: "center", justifyContent: "center" }}
-                  >
-                    <IconButton icon="dots-vertical" mode="contained" />
-                    <IconButton
-                      iconColor="red"
-                      icon="delete"
-                      mode="contained"
-                      onPress={() => {
-                        db.transaction(
-                          (tx) => {
-                            tx.executeSql(
-                              `
-                          DELETE FROM notes
-                          WHERE noteId = ?
-                        `,
-                              [note.noteId],
-                              () => {
-                                setItemNotes((notes) =>
-                                  notes.filter((r) => r.noteId !== note.noteId)
-                                );
-                              }
-                            );
-                          },
-                          (err) => console.log(err)
-                        );
-                      }}
-                    />
-                  </View>
-                </View>
-                <Text style={{ alignSelf: "flex-start" }}>
-                  {new Date(parseFloat(note.dateModified)).toDateString()}
-                  {" @ "}
-                  {new Date(parseFloat(note.dateModified)).toLocaleTimeString()}
-                </Text>
-              </View>
+              <NoteComponent
+                idx={idx}
+                key={note.noteId}
+                note={note}
+                onUpdate={{ setIsNotesUpdateNeeded, setItemNotes }}
+              />
             ))}
         </ScrollView>
       )}
@@ -482,8 +439,6 @@ export const CatalogItemScreenStorageComponent: FC<{
             );
           }
         );
-
-        // tx.executeSql(``, [], () => {});
       },
       (err) => console.log(err)
     );
@@ -709,6 +664,100 @@ export const CatalogItemScreenStorageComponent: FC<{
           })}
         </View>
       )}
+    </View>
+  );
+};
+
+export const NoteComponent: FC<{
+  idx: number;
+  note: ItemNote;
+  onUpdate: {
+    setIsNotesUpdateNeeded: Dispatch<SetStateAction<boolean>>;
+    setItemNotes: Dispatch<SetStateAction<ItemNote[]>>;
+  };
+}> = ({ idx, note, onUpdate: { setIsNotesUpdateNeeded, setItemNotes } }) => {
+  const { databaseInstance: db } = useAppSelector(({ app }) => ({ ...app }));
+
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+
+  return (
+    <View>
+      <TextInput
+        label="Note"
+        mode="outlined"
+        multiline
+        numberOfLines={4}
+        onChangeText={(newNoteBody) => {
+          setIsNotesUpdateNeeded(() => true);
+
+          setItemNotes((itemNotes) => [
+            ...itemNotes.slice(0, idx),
+            { ...itemNotes[idx], noteBody: newNoteBody },
+            ...itemNotes.slice(idx + 1),
+          ]);
+        }}
+        placeholder="Note body"
+        style={{ flex: 1 }}
+        value={note.noteBody}
+      />
+      <View
+        style={{
+          alignItems: "center",
+          flexDirection: "row",
+          justifyContent: "space-between",
+        }}
+      >
+        <Text>
+          {new Date(parseFloat(note.dateModified)).toDateString()}
+          {" @ "}
+          {new Date(parseFloat(note.dateModified)).toLocaleTimeString()}
+        </Text>
+        <Menu
+          anchor={
+            <IconButton
+              icon="dots-vertical"
+              mode="contained"
+              onPress={() => {
+                setIsMenuOpen(() => true);
+              }}
+            />
+          }
+          onDismiss={() => {
+            setIsMenuOpen(() => false);
+          }}
+          visible={isMenuOpen}
+        >
+          <Menu.Item leadingIcon="file-move" title="Move" />
+          <Menu.Item leadingIcon="content-duplicate" title="Duplicate" />
+          <Menu.Item
+            leadingIcon="delete"
+            onPress={() => {
+              db.transaction(
+                (tx) => {
+                  tx.executeSql(
+                    `DELETE FROM notes WHERE noteId = ?`,
+                    [note.noteId],
+                    () => {
+                      setItemNotes((notes) =>
+                        notes.filter((r) => r.noteId !== note.noteId)
+                      );
+                    }
+                  );
+                },
+                (err) => {
+                  ToastAndroid.show(
+                    "Something went wrong! Please try again later!",
+                    ToastAndroid.SHORT
+                  );
+
+                  console.log(err);
+                }
+              );
+            }}
+            title="Delete"
+          />
+        </Menu>
+      </View>
     </View>
   );
 };
