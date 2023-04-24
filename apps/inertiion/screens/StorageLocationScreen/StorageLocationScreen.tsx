@@ -264,26 +264,6 @@ export const StorageLocationScreen: FC<StorageLocationScreenProps> = ({
         <FlatList
           data={locationData}
           keyExtractor={(item) => item.itemId}
-          // onRefresh={() => {
-          //   db.transaction(
-          //     (tx) => {
-          //       tx.executeSql(
-          //         `
-          //         SELECT *
-          //         FROM storage
-          //         INNER JOIN items
-          //         ON items.id = storage.itemId
-          //         WHERE storage.storageLocation = ?
-          //       `,
-          //         [locationName],
-          //         (_, { rows: { _array } }) => {
-          //           dispatch(setStorageLocationData(_array));
-          //         }
-          //       );
-          //     },
-          //     (err) => console.log(err)
-          //   );
-          // }}
           onRefresh={handleLoadLocationData}
           refreshing={isSomethingLoading}
           renderItem={({ item, index: idx }) => (

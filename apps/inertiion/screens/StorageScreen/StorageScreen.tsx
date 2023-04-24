@@ -160,6 +160,13 @@ export const StorageScreen: FC<StorageScreenProps> = ({ navigation }) => {
           }}
           value={storageSearchTerm}
         />
+        <IconButton
+          icon="plus"
+          mode="contained"
+          onPress={() => {
+            console.log("Navigating to some other shit");
+          }}
+        />
       </View>
       {storageSearchTerm.length > 2 ? (
         isLoadingSearchResults ? (
@@ -169,7 +176,9 @@ export const StorageScreen: FC<StorageScreenProps> = ({ navigation }) => {
             data={Array.from(
               new Set(storageSearchResult.map((res) => res.storageLocation))
             ).sort((a, b) => a.localeCompare(b))}
-            onRefresh={handleLoadAllLocationData}
+            onRefresh={() => {
+              handleStorageSearch(storageSearchTerm);
+            }}
             refreshing={false}
             renderItem={({ item }) => (
               <LocationCard
