@@ -164,7 +164,7 @@ export const StorageScreen: FC<StorageScreenProps> = ({ navigation }) => {
           icon="plus"
           mode="contained"
           onPress={() => {
-            console.log("Navigating to some other shit");
+            navigation.navigate("NewStorageLocationScreen");
           }}
         />
       </View>

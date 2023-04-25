@@ -108,16 +108,29 @@ export const StorageLocationScreen: FC<StorageLocationScreenProps> = ({
 
   return (
     <SafeAreaView style={{ height: "100%" }}>
-      <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-        <Text
-          style={{
-            padding: defaultAppPadding,
-            paddingBottom: defaultAppPadding / 2,
-          }}
-          variant="headlineLarge"
-        >
-          {locationName}
-        </Text>
+      <View
+        style={{
+          alignItems: "center",
+          flexDirection: "row",
+          justifyContent: "space-between",
+        }}
+      >
+        <View style={{ alignItems: "center", flexDirection: "row" }}>
+          <IconButton
+            icon="arrow-left"
+            mode="contained"
+            onPress={() => navigation.navigate("StorageScreen")}
+          />
+          <Text
+            style={{
+              padding: defaultAppPadding,
+              paddingBottom: defaultAppPadding / 2,
+            }}
+            variant="headlineLarge"
+          >
+            {locationName}
+          </Text>
+        </View>
         <View style={{ flexDirection: "row" }}>
           {!!isUpdateNeeded && (
             <IconButton

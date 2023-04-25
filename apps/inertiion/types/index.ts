@@ -24,6 +24,7 @@ export type HomeScreenNavStackProps = {
       size: string;
     };
   };
+  NewStorageLocationScreen: undefined;
   StorageScreen: undefined;
   StorageLocationScreen: { locationName: string };
 };
@@ -56,6 +57,11 @@ export type ItemQueueScreenNavProps = NativeStackScreenProps<
 export type NewCatalogItemScreenNavProps = NativeStackScreenProps<
   HomeScreenNavStackProps,
   "NewCatalogItemScreen"
+>;
+
+export type NewStorageLocationScreenNavProps = NativeStackScreenProps<
+  HomeScreenNavStackProps,
+  "NewStorageLocationScreen"
 >;
 
 export type StorageScreenProps = NativeStackScreenProps<
