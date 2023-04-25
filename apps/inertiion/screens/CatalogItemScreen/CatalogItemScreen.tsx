@@ -8,7 +8,14 @@ import {
   useState,
 } from "react";
 import { Pressable, ScrollView, ToastAndroid, View } from "react-native";
-import { Button, IconButton, Menu, Text, TextInput } from "react-native-paper";
+import {
+  Avatar,
+  Button,
+  IconButton,
+  Menu,
+  Text,
+  TextInput,
+} from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAppDispatch, useAppSelector } from "@hooks";
@@ -311,7 +318,23 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
               justifyContent: "space-between",
             }}
           >
-            <Text variant="headlineSmall">Notes</Text>
+            <View
+              style={{
+                alignItems: "center",
+                flex: 1,
+                flexDirection: "row",
+              }}
+            >
+              <Text
+                variant="headlineSmall"
+                style={{ paddingRight: defaultAppPadding }}
+              >
+                Notes
+              </Text>
+              {!!itemNotes.length && (
+                <Avatar.Text label={itemNotes.length.toString()} size={24} />
+              )}
+            </View>
             <View style={{ flexDirection: "row" }}>
               {!!isNotesUpdateNeeded && (
                 <IconButton
@@ -557,22 +580,22 @@ export const CatalogItemScreenStorageComponent: FC<{
           />
         </View>
       </View>
+      <Text variant="titleMedium">
+        Total Cartons:{" "}
+        <Text style={{ color: "green", fontWeight: "700" }}>
+          {itemStorageData.reduce((acc, { cartons }) => {
+            return acc + cartons;
+          }, 0)}
+        </Text>{" "}
+        / Total Pieces:{" "}
+        <Text style={{ color: "green", fontWeight: "700" }}>
+          {itemStorageData.reduce((acc, { pieces }) => {
+            return acc + pieces;
+          }, 0)}
+        </Text>
+      </Text>
       {!isStorageCollapsed && (
         <View>
-          <Text variant="titleMedium">
-            Total Cartons:{" "}
-            <Text style={{ color: "green", fontWeight: "700" }}>
-              {itemStorageData.reduce((acc, { cartons }) => {
-                return acc + cartons;
-              }, 0)}
-            </Text>{" "}
-            / Total Pieces:{" "}
-            <Text style={{ color: "green", fontWeight: "700" }}>
-              {itemStorageData.reduce((acc, { pieces }) => {
-                return acc + pieces;
-              }, 0)}
-            </Text>
-          </Text>
           {itemStorageData.map((loc, idx) => {
             return (
               <View key={loc.storageId}>

@@ -65,16 +65,6 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
 
   useEffect(() => {
     handleLocalStorageSearchTerm();
-  }, []);
-
-  useEffect(() => {
-    if (searchTerm.length > 2) {
-      localStorageSetSearchTerm(searchTerm);
-
-      handleLocalStorageSearchTerm();
-    }
-
-    handleLocalStorageSearchTerm();
   }, [searchTerm]);
 
   return (
