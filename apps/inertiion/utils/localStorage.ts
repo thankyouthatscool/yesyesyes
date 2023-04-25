@@ -88,7 +88,7 @@ export const localStorageSetSearchTerm = async (newSearchTerm: string) => {
       await AsyncStorage.setItem(
         LocalStorageKeys.SEARCH_TERM,
         JSON.stringify(
-          Array.from(new Set([newSearchTerm, ...searchTerms])).slice(0, 5)
+          Array.from(new Set([newSearchTerm, ...searchTerms])).slice(0, 4)
         )
       );
     } else {

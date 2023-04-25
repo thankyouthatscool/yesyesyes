@@ -3,7 +3,7 @@ import _flattendeep from "lodash.flattendeep";
 import _debounce from "lodash.debounce";
 import { FC, useCallback, useEffect, useState } from "react";
 import { FlatList, ScrollView, ToastAndroid, View } from "react-native";
-import { Card, IconButton, Text, TextInput } from "react-native-paper";
+import { Avatar, Card, IconButton, Text, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAppDispatch, useAppSelector } from "@hooks";

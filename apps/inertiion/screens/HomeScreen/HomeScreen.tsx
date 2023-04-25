@@ -1,6 +1,6 @@
 import _debounce from "lodash.debounce";
 import { FC, useCallback, useEffect, useRef, useState } from "react";
-import { TextInput, ToastAndroid, View } from "react-native";
+import { Keyboard, TextInput, ToastAndroid, View } from "react-native";
 import { Chip, FAB, IconButton, Searchbar } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -31,23 +31,20 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
 
   const searchBarRef = useRef<TextInput>(null);
 
-  const _handleSetLastSearchTerm = useCallback(
-    _debounce((searchTerms: string[]) => {
-      setLastSearchTerms((lastSearchTerms) =>
-        !!lastSearchTerms
-          ? Array.from(
-              new Set([
-                ...searchTerms.map((term) => term.toUpperCase()),
-                ...lastSearchTerms!,
-              ])
-            ).slice(0, 5)
-          : Array.from(
-              new Set([...searchTerms.map((term) => term.toUpperCase())])
-            )
-      );
-    }, 500),
-    []
-  );
+  const _handleSetLastSearchTerm = useCallback((searchTerms: string[]) => {
+    setLastSearchTerms((lastSearchTerms) =>
+      !!lastSearchTerms
+        ? Array.from(
+            new Set([
+              ...searchTerms.map((term) => term.toUpperCase()),
+              ...lastSearchTerms!,
+            ])
+          ).slice(0, 4)
+        : Array.from(
+            new Set([...searchTerms.map((term) => term.toUpperCase())])
+          ).slice(0, 4)
+    );
+  }, []);
 
   const handleLocalStorageSearchTerm = useCallback(async () => {
     const { searchTerms, status } = await localStorageGetSearchTerm();
@@ -57,15 +54,38 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
     }
   }, [searchTerm]);
 
-  useEffect(() => {
-    if (!!searchBarRef.current) {
-      searchBarRef.current.focus();
-    }
-  }, [searchBarRef]);
+  const handleLatestSearchTerms = useCallback(
+    _debounce(
+      async (searchTerm: string) => {
+        console.log(searchTerm);
+
+        await localStorageSetSearchTerm(searchTerm);
+
+        const { searchTerms, status } = await localStorageGetSearchTerm();
+
+        if (status === AsyncStorageReturnStatus.OK) {
+          _handleSetLastSearchTerm(searchTerms!);
+        }
+      },
+      1000,
+      { leading: false }
+    ),
+    []
+  );
 
   useEffect(() => {
     handleLocalStorageSearchTerm();
+  }, []);
+
+  useEffect(() => {
+    if (searchTerm.length > 2) {
+      handleLatestSearchTerms(searchTerm);
+    }
   }, [searchTerm]);
+
+  useEffect(() => {
+    console.log(lastSearchTerms);
+  }, [lastSearchTerms]);
 
   return (
     <SafeAreaView style={{ height: "100%" }}>
@@ -79,6 +99,7 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
       >
         <Searchbar
           autoCapitalize="characters"
+          autoFocus
           elevation={isFocus ? 3 : 0}
           onBlur={() => setIsFocus(() => false)}
           onChangeText={(newSearchTerm) => {
@@ -86,7 +107,6 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
           }}
           onFocus={() => setIsFocus(() => true)}
           placeholder="Search item or location"
-          ref={searchBarRef}
           style={{ flex: 1 }}
           value={searchTerm || ""}
         />

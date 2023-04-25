@@ -15,6 +15,7 @@ export type HomeScreenNavStackProps = {
   CatalogItemScreen: { itemId: string };
   HomeScreen: undefined;
   ItemQueueScreen: undefined;
+  MoveNoteScreen: { noteId: string };
   NewCatalogItemScreen: {
     formData?: {
       code: string;
@@ -72,6 +73,11 @@ export type StorageScreenProps = NativeStackScreenProps<
 export type StorageLocationScreenProps = NativeStackScreenProps<
   HomeScreenNavStackProps,
   "StorageLocationScreen"
+>;
+
+export type MoveNoteScreenProps = NativeStackScreenProps<
+  HomeScreenNavStackProps,
+  "MoveNoteScreen"
 >;
 
 export type StorageCardComponentNavProps = NativeStackNavigationProp<

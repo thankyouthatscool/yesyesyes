@@ -5,6 +5,7 @@ import {
   SetStateAction,
   useCallback,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import { Pressable, ScrollView, ToastAndroid, View } from "react-native";
@@ -46,6 +47,8 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
   },
 }) => {
   const dispatch = useAppDispatch();
+
+  const scrollViewRef = useRef<ScrollView>(null);
 
   const { databaseInstance: db, searchTerm } = useAppSelector(({ app }) => ({
     ...app,
@@ -223,7 +226,7 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
         </View>
       </View>
       {!!itemData && (
-        <ScrollView>
+        <ScrollView ref={scrollViewRef}>
           <View
             style={{
               alignItems: "center",
@@ -367,19 +370,22 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
                 />
               )}
               <IconButton
+                disabled={!itemNotes.every((note) => !!note.noteBody)}
                 icon="plus"
                 mode="contained"
                 onPress={() => {
+                  scrollViewRef.current?.scrollToEnd();
+
                   setIsNotesSectionCollapsed(() => false);
 
                   setItemNotes((itemNotes) => [
+                    ...itemNotes,
                     {
                       noteBody: "",
                       noteId: Crypto.randomUUID(),
                       dateModified: Date.now().toString(),
                       referenceId: itemData.id,
                     },
-                    ...itemNotes,
                   ]);
                 }}
               />
@@ -387,6 +393,8 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
                 icon={`chevron-${isNotesSectionCollapsed ? "down" : "up"}`}
                 mode="contained"
                 onPress={() => {
+                  scrollViewRef.current?.scrollToEnd();
+
                   setIsNotesSectionCollapsed(
                     (isNotesSectionCollapsed) => !isNotesSectionCollapsed
                   );
@@ -401,6 +409,7 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
                 key={note.noteId}
                 note={note}
                 onUpdate={{ setIsNotesUpdateNeeded, setItemNotes }}
+                nav={navigation}
               />
             ))}
         </ScrollView>
@@ -698,7 +707,13 @@ export const NoteComponent: FC<{
     setIsNotesUpdateNeeded: Dispatch<SetStateAction<boolean>>;
     setItemNotes: Dispatch<SetStateAction<ItemNote[]>>;
   };
-}> = ({ idx, note, onUpdate: { setIsNotesUpdateNeeded, setItemNotes } }) => {
+  nav: StorageComponentNav;
+}> = ({
+  idx,
+  note,
+  onUpdate: { setIsNotesUpdateNeeded, setItemNotes },
+  nav,
+}) => {
   const { databaseInstance: db } = useAppSelector(({ app }) => ({ ...app }));
 
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
@@ -706,7 +721,7 @@ export const NoteComponent: FC<{
   return (
     <View>
       <TextInput
-        label="Note"
+        label={!!note.noteBody.length ? "Note" : "New note"}
         mode="outlined"
         multiline
         numberOfLines={4}
@@ -719,7 +734,7 @@ export const NoteComponent: FC<{
             ...itemNotes.slice(idx + 1),
           ]);
         }}
-        placeholder="Note body"
+        placeholder="New note"
         style={{ flex: 1 }}
         value={note.noteBody}
       />
@@ -750,8 +765,15 @@ export const NoteComponent: FC<{
           }}
           visible={isMenuOpen}
         >
-          <Menu.Item leadingIcon="file-move" title="Move" />
-          <Menu.Item leadingIcon="content-duplicate" title="Duplicate" />
+          <Menu.Item
+            leadingIcon="content-duplicate"
+            onPress={() => {
+              setIsMenuOpen(() => false);
+
+              nav.navigate("MoveNoteScreen", { noteId: note.noteId });
+            }}
+            title="Move/Duplicate"
+          />
           <Menu.Item
             leadingIcon="delete"
             onPress={() => {
