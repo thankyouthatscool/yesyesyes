@@ -57,8 +57,6 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
   const handleLatestSearchTerms = useCallback(
     _debounce(
       async (searchTerm: string) => {
-        console.log(searchTerm);
-
         await localStorageSetSearchTerm(searchTerm);
 
         const { searchTerms, status } = await localStorageGetSearchTerm();
@@ -82,10 +80,6 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
       handleLatestSearchTerms(searchTerm);
     }
   }, [searchTerm]);
-
-  useEffect(() => {
-    console.log(lastSearchTerms);
-  }, [lastSearchTerms]);
 
   return (
     <SafeAreaView style={{ height: "100%" }}>

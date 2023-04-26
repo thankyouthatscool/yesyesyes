@@ -46,7 +46,7 @@ export const AppRoot = () => {
         });
 
         tx.executeSql("SELECT * FROM items", [], (_, { rows: { _array } }) => {
-          console.log(_array.length);
+          // console.log(_array.length);
         });
       },
       (err) => {
