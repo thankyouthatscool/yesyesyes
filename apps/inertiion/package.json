@@ -10,7 +10,9 @@
     "build:android:preview": "eas build --platform android --profile preview --no-wait",
     "bap": "yarn build:android:preview",
     "bappers": "yarn bap",
-    "build:android:production": "eas build --platform android --profile production --no-wait"
+    "build:android:production": "eas build --platform android --profile production --no-wait",
+    "bap2": "yarn build:android:production",
+    "boopers": "yarn bap2"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "1.17.11",
