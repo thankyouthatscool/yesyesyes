@@ -1,3 +1,4 @@
+import * as Crypto from "expo-crypto";
 import { FC, useEffect, useState } from "react";
 import { ScrollView, View } from "react-native";
 import {
@@ -13,6 +14,15 @@ import { useAppSelector } from "@hooks";
 import { MoveNoteScreenProps } from "@types";
 import { defaultAppPadding } from "@theme";
 
+interface Item {
+  id: string;
+  code: string;
+  color?: string;
+  size?: string;
+  location: string;
+  description?: string;
+}
+
 export const MoveNoteScreen: FC<MoveNoteScreenProps> = ({
   navigation,
   route: {
@@ -22,23 +32,15 @@ export const MoveNoteScreen: FC<MoveNoteScreenProps> = ({
   const { databaseInstance: db } = useAppSelector(({ app }) => ({ ...app }));
 
   const [itemSearchTerm, setItemSearchTerm] = useState<string>("");
-  const [searchResult, setSearchResult] = useState<
-    {
-      id: string;
-      code: string;
-      color?: string;
-      size?: string;
-      location: string;
-      description?: string;
-    }[]
-  >([]);
+  const [searchResult, setSearchResult] = useState<Item[]>([]);
+  const [selectedItems, setSelectedItems] = useState<Item[]>([]);
   const [selectedOperation, setSelectedOperation] = useState<"copy" | "move">(
-    "move"
+    "copy"
   );
   const [targetNote, setTargetNote] = useState<
     | {
         dateModified: string;
-        nodeBody: string;
+        noteBody: string;
         noteId: string;
         referenceId: string;
       }
@@ -123,54 +125,160 @@ export const MoveNoteScreen: FC<MoveNoteScreenProps> = ({
             value="copy"
           />
           <RadioButton.Item
+            disabled
             label="Move"
             labelVariant="titleLarge"
             value="move"
           />
         </RadioButton.Group>
-        <TextInput
-          label="Item Lookup"
-          mode="outlined"
-          onChangeText={(newItemSearchTerm) =>
-            setItemSearchTerm(() => newItemSearchTerm)
-          }
-          placeholder="Lookup item by code or location"
-          style={{
-            marginHorizontal: defaultAppPadding,
-            marginBottom: defaultAppPadding / 2,
-          }}
-          value={itemSearchTerm}
-        />
+        <View style={{ alignItems: "center", flexDirection: "row" }}>
+          <TextInput
+            label="Item Lookup"
+            mode="outlined"
+            onChangeText={(newItemSearchTerm) =>
+              setItemSearchTerm(() => newItemSearchTerm)
+            }
+            placeholder="Lookup item by code or location"
+            right={
+              <TextInput.Icon
+                icon="cancel"
+                mode="contained"
+                onPress={() => {
+                  setItemSearchTerm(() => "");
+                  setSearchResult(() => []);
+                }}
+              />
+            }
+            style={{
+              flex: 1,
+              marginHorizontal: defaultAppPadding,
+              marginBottom: defaultAppPadding / 2,
+            }}
+            value={itemSearchTerm}
+          />
+          <IconButton
+            icon="send"
+            mode="contained"
+            onPress={() => {
+              console.log(selectedItems);
+
+              db.transaction(
+                (tx) => {
+                  selectedItems.forEach((item) => {
+                    tx.executeSql(
+                      `
+                      INSERT INTO notes
+                      VALUES (?, ?, ?, ?)
+                    `,
+                      [
+                        Crypto.randomUUID(),
+                        item.id,
+                        targetNote?.noteBody,
+                        Date.now().toString(),
+                      ],
+                      () => {
+                        if (targetNote?.referenceId) {
+                          navigation.navigate("CatalogItemScreen", {
+                            itemId: targetNote.referenceId,
+                          });
+                        } else {
+                          navigation.goBack();
+                        }
+                      }
+                    );
+                  });
+                },
+                (err) => {
+                  console.log(err);
+                }
+              );
+            }}
+          />
+        </View>
         {itemSearchTerm.length > 2 &&
           !!searchResult.length &&
-          searchResult.map((res) => (
+          searchResult
+            .filter(
+              (i) =>
+                !selectedItems.map((s) => s.id).includes(i.id) &&
+                i.id !== targetNote?.referenceId
+            )
+            .map((res) => (
+              <Card
+                key={res.id}
+                onPress={() => {
+                  setSelectedItems((selectedItems) => [res, ...selectedItems]);
+                }}
+                style={{
+                  marginHorizontal: defaultAppPadding,
+                  marginVertical: defaultAppPadding / 2,
+                }}
+              >
+                <Card.Content>
+                  <View style={{ flexDirection: "row" }}>
+                    <Text>{res.code}</Text>
+                    {!!res.color?.length && (
+                      <View style={{ flexDirection: "row" }}>
+                        <Text> | </Text>
+                        <Text>{res.color}</Text>
+                      </View>
+                    )}
+                    {!!res.size?.length && (
+                      <View style={{ flexDirection: "row" }}>
+                        <Text> | </Text>
+                        <Text>{res.size}</Text>
+                      </View>
+                    )}
+                    <View style={{ flexDirection: "row" }}>
+                      <Text> | </Text>
+                      <Text>{res.location}</Text>
+                    </View>
+                  </View>
+                </Card.Content>
+              </Card>
+            ))}
+        {!!selectedItems.length &&
+          selectedItems.map((item) => (
             <Card
-              key={res.id}
+              key={item.id}
               style={{
                 marginHorizontal: defaultAppPadding,
                 marginVertical: defaultAppPadding / 2,
               }}
             >
-              <Card.Content>
-                <View style={{ flexDirection: "row" }}>
-                  <Text>{res.code}</Text>
-                  {!!res.color?.length && (
-                    <View style={{ flexDirection: "row" }}>
-                      <Text> | </Text>
-                      <Text>{res.color}</Text>
-                    </View>
-                  )}
-                  {!!res.size?.length && (
-                    <View style={{ flexDirection: "row" }}>
-                      <Text> | </Text>
-                      <Text>{res.size}</Text>
-                    </View>
-                  )}
+              <Card.Title
+                title={item.code}
+                right={() => (
+                  <IconButton
+                    icon="delete"
+                    mode="contained"
+                    onPress={() => {
+                      setSelectedItems((selectedItems) =>
+                        selectedItems.filter((i) => i.id !== item.id)
+                      );
+                    }}
+                  />
+                )}
+                titleVariant="titleLarge"
+              />
+              <Card.Content style={{ flexDirection: "row" }}>
+                {item?.color && (
                   <View style={{ flexDirection: "row" }}>
-                    <Text> | </Text>
-                    <Text>{res.location}</Text>
+                    <Text variant="titleMedium">{item.color}</Text>
                   </View>
-                </View>
+                )}
+                {item?.size && (
+                  <View style={{ flexDirection: "row" }}>
+                    <Text variant="titleMedium"> | </Text>
+                    <Text>{item.size}</Text>
+                  </View>
+                )}
+                {item?.location && (
+                  <View style={{ flexDirection: "row" }}>
+                    <Text variant="titleMedium"> | </Text>
+                    <Text variant="titleMedium">{item.location}</Text>
+                  </View>
+                )}
               </Card.Content>
             </Card>
           ))}

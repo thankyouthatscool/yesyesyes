@@ -41,6 +41,8 @@ export const StorageLocationScreen: FC<StorageLocationScreenProps> = ({
   >([]);
   const [itemLookupSearchTerm, setItemLookupSearchTerm] = useState<string>("");
 
+  const [itemsToDelete, setItemsToDelete] = useState<string[]>([]);
+
   const handleLoadLocationData = useCallback(() => {
     setIsSomethingLoading(() => true);
 
@@ -106,6 +108,10 @@ export const StorageLocationScreen: FC<StorageLocationScreenProps> = ({
     }
   }, [itemLookupSearchTerm]);
 
+  useEffect(() => {
+    console.log(itemsToDelete);
+  }, [itemsToDelete]);
+
   return (
     <SafeAreaView style={{ height: "100%" }}>
       <View
@@ -139,6 +145,20 @@ export const StorageLocationScreen: FC<StorageLocationScreenProps> = ({
               onPress={() => {
                 db.transaction(
                   (tx) => {
+                    if (!!itemsToDelete.length) {
+                      console.log("will also need to delete some records ");
+
+                      itemsToDelete.forEach((item) => {
+                        tx.executeSql(
+                          `
+                          DELETE FROM storage
+                          WHERE storageId = ?
+                        `,
+                          [item]
+                        );
+                      });
+                    }
+
                     locationData.forEach(
                       ({
                         dateModified,
@@ -365,7 +385,27 @@ export const StorageLocationScreen: FC<StorageLocationScreenProps> = ({
                     style={{ flex: 1, marginLeft: defaultAppPadding / 2 }}
                     value={item.pieces.toString()}
                   />
-                  <IconButton iconColor="red" icon="delete" mode="contained" />
+                  <IconButton
+                    iconColor="red"
+                    icon="delete"
+                    mode="contained"
+                    onPress={() => {
+                      setIsUpdateNeeded(() => true);
+
+                      setItemsToDelete((itemsToDelete) => [
+                        ...itemsToDelete,
+                        item.storageId,
+                      ]);
+
+                      dispatch(
+                        setStorageLocationData(
+                          locationData.filter(
+                            (l) => l.storageId !== item.storageId
+                          )
+                        )
+                      );
+                    }}
+                  />
                 </View>
               </Card.Content>
             </Card>
