@@ -577,12 +577,15 @@ export const databaseItems: DatabaseItemInputWithId[] = [
   ["bd443f56-a479-4eab-8425-442b189b421f", "ST1043", "RED, WHITE", "S", "Clifford Polos", "DUNNO"],
   ["a77a4f91-7bf3-406a-8218-46c5f41f43fa", "ST1043", "ROYAL, WHITE", "S", "Clifford Polos", "DUNNO"],
   ["d9507842-b832-4662-a8c3-5219075b3ca3", "ST1043", "STONE, NAVY", "S", "Clifford Polos", "DUNNO"],
+  ["bb0671c1-5e4a-4423-ae4a-430f8b58d4f5", "ST1043", "SKY, NAVY", "S", "Clifford Polos", "DUNNO"],
   ["e5f0dc61-b2b5-4bc4-8f69-6ea046827b9d", "ST1043", "WHITE, NAVY", "S", "Clifford Polos", "DUNNO"],
   ["4ef74554-0d01-4a7c-9d35-9011e7494041", "ST1043", "WHITE, RED", "S", "Clifford Polos", "DUNNO"],
 
   ["a0dff6eb-2332-4f87-a541-883d306eb631", "ST1097", "BLACK, RED, GREY", "S", "Corbel Polos", "DUNNO"],
 
   ["266897bc-8172-4246-a7a2-813cb4112da1", "ST1141", "BLACK, RED, DARK GREY", "S", "Ignite Polos", "DUNNO"],
+
+  ["c3728d31-b62f-437a-857d-ccf6ef79161a", "ST1147", "BLACK, WHITE, DARK GREY", "S", "Avid Polos", "DUNNO"],
 
   ["1dc195b6-b722-46d4-a2a0-45c2520bc661", "ST1206", "RED, WHITE", "S", "Avalon Polos", "DUNNO"],
 
@@ -620,6 +623,8 @@ export const databaseItems: DatabaseItemInputWithId[] = [
   ["17c5595d-9d89-43f8-b0e6-b8a12d20d5a3", "ST1243", "NAVY, WHITE", "S", "Incline Polos", "DUNNO"],
   ["198a449f-0e86-43f6-81a1-949c3d8281cb", "ST1243", "ROYAL, WHITE", "S", "Incline Polos", "DUNNO"],
 
+  ["e7baaa27-61d9-40fb-be9f-2391814510fd", "ST1248", "BLACK, WHITE, DARK GREY", "S", "Verve Polos", "DUNNO"],
+
   ["11fc7da3-a7e4-4e75-b690-99a9f0f94a2a", "ST1250", "WHITE, NAVY, RED", "S", "Avanti Polos", "DUNNO"],
 
   ["d2f4fbed-f0fe-492e-933d-6a742f0b0989", "ST1252", "BLACK", "S", "Greenwich Polos", "DUNNO"],
@@ -628,6 +633,8 @@ export const databaseItems: DatabaseItemInputWithId[] = [
 
   ["1af475b8-1a7a-4811-bf75-4e66ba97d837", "ST1257", "RED, BLACK, WHITE", "S", "Driftwood Polos", "DUNNO"],
 
+  ["723faf5d-a278-4ab0-9e59-6d3893da523a", "ST1259", "BLACK, RED", "S", "Stride Polos", "DUNNO"],
+  ["07c25553-953c-4926-a750-6ab9227ca5ad", "ST1259", "NAVY, WHITE", "S", "Stride Polos", "DUNNO"],
   ["22efe9c0-408e-480d-9e51-46e123f6822a", "ST1259", "WHITE, NAVY", "S", "Stride Polos", "DUNNO"],
 
   ["e14483f8-51c9-47eb-9901-77dc37da7fc7", "ST1260", "BLACK, RED, BLACK", "S", "Tempo Polos", "DUNNO"],
@@ -1496,6 +1503,48 @@ export const databaseStorageRaw: DatabaseStorageItemWithoutDate[] = [
   ["ef8e9d89-f52d-4bfb-90be-10b99408f71b", "67-3-2", "f30c388d-7adb-4dba-b3d4-302cdfcab63d", 0, 0],
 
   ["87bf5dfd-a36f-46dd-936f-f5d4f6b7dec4", "67-4-1", "ce26b2a5-1204-4e7b-850c-d7b9c66f1d07", 0, 0],
+
+  ["b454d45a-c25a-4c19-82cb-8f39d6440553", "68-3-1", "ce26b2a5-1204-4e7b-850c-d7b9c66f1d07", 0, 0],
+
+  ["575bde06-e581-4c96-acbc-9edb29b9e62e", "68-3-2", "c9f287bc-094f-4f12-b916-1b10461643b6", 0, 0],
+
+  ["85856c15-ea34-40a3-ae7e-23426593f2d0", "68-4-1", "1bea6f54-012d-4ab6-9237-e71c0cf3a3fa", 0, 0],
+
+  ["c376667b-987a-4a7f-af3c-32107cb13ad9", "68-4-2", "86a59a83-6044-4421-a4d3-3d87c97c50a0", 0, 0],
+
+  ["db616533-12f1-4d9e-8c38-1a755c8fe55b", "69-3-1", "c3728d31-b62f-437a-857d-ccf6ef79161a", 0, 0],
+
+  ["8ffbf920-6dfd-4621-b86e-c4b7a80dd048", "69-3-2", "1dc195b6-b722-46d4-a2a0-45c2520bc661", 0, 0],
+
+  ["cefff931-e8dc-4adb-971a-b9b4ab2f9352", "69-4-1", "2b98e73a-4d64-4f4c-871e-db792860d45f", 0, 0],
+
+  ["253bc0da-9516-49eb-83a9-ad6323ea63c7", "69-4-2", "8dabbc64-8aa1-4a96-b9e0-e9bdb65f8a08", 0, 0],
+
+  ["6f96c96b-2c87-4774-b0d6-4234002cb7b0", "70-3-1", "1dc195b6-b722-46d4-a2a0-45c2520bc661", 0, 0],
+
+  ["ae2a0368-6420-4fc8-bcc5-64deced580bb", "70-3-2", "a77a4f91-7bf3-406a-8218-46c5f41f43fa", 0, 0],
+
+  ["bec8968b-6ba5-4451-95ca-62c429734035", "70-4-1", "bb0671c1-5e4a-4423-ae4a-430f8b58d4f5", 0, 0],
+
+  ["2e28cde1-0dea-42a7-8264-4a019762e729", "70-4-2", "3a983d6e-1e8a-48ed-b126-2da5ca103038", 0, 0],
+
+  ["036d0b60-3663-4f99-893d-5cedb1b5c29b", "71-3-1", "e7baaa27-61d9-40fb-be9f-2391814510fd", 0, 0],
+  ["b157b49d-c52c-4a28-bb85-de51bf1d6508", "71-3-1", "f07afd67-adcf-424f-8765-9734275ccf79", 0, 0],
+
+  ["a7f8315f-8444-457c-b576-697fc61ab887", "71-3-2", "f30c388d-7adb-4dba-b3d4-302cdfcab63d", 0, 0],
+
+  ["1e6c5978-acdd-4c8d-b77f-f60683278a2e", "71-4-1", "177da811-bb50-46cf-a5d2-fe9e54df19aa", 0, 0],
+
+  ["d5623521-567e-4667-88ef-f2ebac8dfdcd", "71-4-2", "f30c388d-7adb-4dba-b3d4-302cdfcab63d", 0, 0],
+
+  ["ea097a97-b78b-4d30-baf2-ae2a0d6657a1", "72-3-1", "22efe9c0-408e-480d-9e51-46e123f6822a", 0, 0],
+
+  ["9f62124d-e828-4f42-86cb-75bcae3fc5c0", "72-3-2", "723faf5d-a278-4ab0-9e59-6d3893da523a", 0, 0],
+  ["92ee0151-fdf4-4cd8-837e-f5e38aebcd6e", "72-3-2", "07c25553-953c-4926-a750-6ab9227ca5ad", 0, 0],
+
+  ["7d0506f7-fef5-4ec2-97f4-7d8fe9c75c35", "72-4-1", "758a4689-ac76-42eb-8398-7b077fc15843", 0, 0],
+
+  ["f8c26350-9e43-4118-98ee-d2d7d48d9198", "72-4-2", "f07afd67-adcf-424f-8765-9734275ccf79", 0, 0],
 ];
 
 export const databaseStorageItems: DatabaseStorageItem[] = databaseStorageRaw.map((item) => [...item, Date.now().toString()]);
