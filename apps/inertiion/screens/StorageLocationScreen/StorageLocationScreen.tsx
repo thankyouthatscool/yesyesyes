@@ -108,10 +108,6 @@ export const StorageLocationScreen: FC<StorageLocationScreenProps> = ({
     }
   }, [itemLookupSearchTerm]);
 
-  useEffect(() => {
-    console.log(itemsToDelete);
-  }, [itemsToDelete]);
-
   return (
     <SafeAreaView style={{ height: "100%" }}>
       <View

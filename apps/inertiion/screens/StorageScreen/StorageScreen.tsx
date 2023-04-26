@@ -5,32 +5,19 @@ import { Card, IconButton, Menu, Searchbar, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAppDispatch, useAppSelector } from "@hooks";
-import {
-  clearStorageSearchTerm,
-  setAllLocationData,
-  setStorageSearchTerm,
-} from "@store";
+import { clearStorageSearchTerm, setStorageSearchTerm } from "@store";
 import { defaultAppPadding } from "@theme";
-import {
-  StorageLocationData,
-  StorageScreenProps,
-  StorageCardComponentNavProps,
-} from "@types";
+import { StorageLocationData, StorageScreenProps } from "@types";
 
 export const StorageScreen: FC<StorageScreenProps> = ({ navigation }) => {
   const dispatch = useAppDispatch();
 
-  const {
-    allLocationData,
-    databaseInstance: db,
-    storageSearchTerm,
-  } = useAppSelector(({ app }) => ({ ...app }));
-
-  const [distinctLocations, setDistinctLocations] = useState<string[]>([]);
+  const { databaseInstance: db, storageSearchTerm } = useAppSelector(
+    ({ app }) => ({ ...app })
+  );
 
   const [isFocus, setIsFocus] = useState<boolean>(false);
-  const [isLoadingStorageData, setIsLoadingStorageData] =
-    useState<boolean>(false);
+
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isLoadingSearchResults, setIsLoadingSearchResults] =
     useState<boolean>(false);
@@ -38,52 +25,6 @@ export const StorageScreen: FC<StorageScreenProps> = ({ navigation }) => {
   const [storageSearchResult, setStorageSearchResult] = useState<
     StorageLocationData[]
   >([]);
-
-  const handleLoadStorageData = useCallback(() => {
-    setIsLoadingStorageData(() => true);
-
-    db.transaction(
-      (tx) => {
-        tx.executeSql(
-          ` SELECT DISTINCT storageLocation
-            FROM storage`,
-          [],
-          (_, { rows: { _array } }) => {
-            setDistinctLocations(() => {
-              const distinctStorageLocations = _array.map(
-                (loc) => loc.storageLocation
-              ) as string[];
-
-              return distinctStorageLocations;
-            });
-          }
-        );
-      },
-      (err) => console.log(err)
-    );
-  }, []);
-
-  const handleLoadAllLocationData = useCallback(() => {
-    db.transaction(
-      (tx) => {
-        tx.executeSql(
-          `
-          SELECT *
-          FROM storage
-          INNER JOIN items
-          ON items.id = storage.itemId
-          `,
-          [],
-          (_, { rows: { _array } }) => {
-            dispatch(setAllLocationData(_array));
-
-            setIsLoadingStorageData(() => false);
-          }
-        );
-      },
-      (err) => console.log(err)
-    );
-  }, []);
 
   const handleStorageSearch = useCallback(
     _debounce((storageSearchTerm: string) => {
@@ -97,8 +38,13 @@ export const StorageScreen: FC<StorageScreenProps> = ({ navigation }) => {
             ON items.id = storage.itemId
             WHERE items.code LIKE ?
             OR items.location LIKE ?
+            OR storage.storageLocation LIKE ?
           `,
-            [`%${storageSearchTerm}%`, `%${storageSearchTerm}%`],
+            [
+              `%${storageSearchTerm}%`,
+              `%${storageSearchTerm}%`,
+              `%${storageSearchTerm}%`,
+            ],
             (_, { rows: { _array } }) => {
               setStorageSearchResult(() => _array);
             }
@@ -113,16 +59,6 @@ export const StorageScreen: FC<StorageScreenProps> = ({ navigation }) => {
     }, 500),
     []
   );
-
-  useEffect(() => {
-    handleLoadStorageData();
-  }, []);
-
-  useEffect(() => {
-    if (!!distinctLocations.length) {
-      handleLoadAllLocationData();
-    }
-  }, [distinctLocations]);
 
   useEffect(() => {
     if (storageSearchTerm.length > 2) {
@@ -149,6 +85,8 @@ export const StorageScreen: FC<StorageScreenProps> = ({ navigation }) => {
           }}
           onClearIconPress={() => {
             dispatch(clearStorageSearchTerm());
+
+            setStorageSearchResult(() => []);
           }}
           onChangeText={(newStorageSearchTerm) => {
             dispatch(setStorageSearchTerm(newStorageSearchTerm));
@@ -198,118 +136,58 @@ export const StorageScreen: FC<StorageScreenProps> = ({ navigation }) => {
           />
         </Menu>
       </View>
-      {storageSearchTerm.length > 2 ? (
-        isLoadingSearchResults ? (
-          <Text>Loading...</Text>
-        ) : (
-          <FlatList
-            data={Array.from(
-              new Set(storageSearchResult.map((res) => res.storageLocation))
-            ).sort((a, b) => a.localeCompare(b))}
-            onRefresh={() => {
-              handleStorageSearch(storageSearchTerm);
-            }}
-            refreshing={false}
-            renderItem={({ item }) => (
-              <LocationCard
-                content={storageSearchResult.filter(
-                  (loc) => loc.storageLocation === item
-                )}
-                loc={item}
-                nav={navigation}
-              />
-            )}
-          />
-        )
-      ) : isLoadingStorageData ? (
-        <Text>Loading...</Text>
-      ) : (
+      {isLoadingSearchResults ? (
+        <Text variant="titleLarge">Loading...</Text>
+      ) : !!storageSearchResult.length ? (
         <FlatList
-          data={distinctLocations.sort((a, b) => a.localeCompare(b))}
-          onRefresh={handleLoadAllLocationData}
-          refreshing={false}
+          data={storageSearchResult}
+          keyExtractor={(item) => item.storageId}
           renderItem={({ item }) => (
-            <LocationCard
-              content={allLocationData.filter(
-                (loc) => loc.storageLocation === item
-              )}
-              loc={item}
-              nav={navigation}
-            />
+            <Card
+              onPress={() =>
+                navigation.navigate("StorageLocationScreen", {
+                  locationName: item.storageLocation,
+                })
+              }
+              style={{
+                marginHorizontal: defaultAppPadding,
+                marginVertical: defaultAppPadding / 2,
+              }}
+            >
+              <Card.Title
+                title={item.storageLocation}
+                titleVariant="titleLarge"
+              />
+              <Card.Content>
+                <View style={{ flexDirection: "row" }}>
+                  <Text style={{ fontWeight: "700" }}>{item.code}</Text>
+                  {!!item.color && (
+                    <View style={{ flexDirection: "row" }}>
+                      <Text> | </Text>
+                      <Text>{item.color}</Text>
+                    </View>
+                  )}
+                  {!!item.size && (
+                    <View style={{ flexDirection: "row" }}>
+                      <Text> | </Text>
+                      <Text>{item.size}</Text>
+                    </View>
+                  )}
+                  <View style={{ flexDirection: "row" }}>
+                    <Text> | </Text>
+                    <Text style={{ fontWeight: "700" }}>{item.location}</Text>
+                  </View>
+                </View>
+                {!!item.description && <Text>{item.description}</Text>}
+              </Card.Content>
+            </Card>
           )}
         />
+      ) : storageSearchTerm.length > 2 ? (
+        <Text>No Res</Text>
+      ) : (
+        <Text>Search for something</Text>
       )}
     </SafeAreaView>
-  );
-};
-
-const LocationCard: FC<{
-  content: StorageLocationData[];
-  loc: string;
-  nav: StorageCardComponentNavProps;
-}> = ({ content, loc, nav }) => {
-  return (
-    <Card
-      onPress={() =>
-        nav.navigate("StorageLocationScreen", { locationName: loc })
-      }
-      style={{
-        marginHorizontal: defaultAppPadding,
-        marginVertical: defaultAppPadding / 2,
-      }}
-    >
-      <Card.Title title={loc} titleVariant="titleLarge" />
-      <Card.Content>
-        {content.map((ls, idx) => (
-          <View
-            key={ls.storageId}
-            style={{
-              marginTop: idx !== 0 ? defaultAppPadding : 0,
-            }}
-          >
-            <View style={{ flexDirection: "row" }}>
-              <Text>{ls.code}</Text>
-              {!!ls.color && (
-                <View style={{ flexDirection: "row" }}>
-                  <Text> | </Text>
-                  <Text style={{ fontWeight: "700" }}>{ls.color}</Text>
-                </View>
-              )}
-              {!!ls.size && (
-                <View style={{ flexDirection: "row" }}>
-                  <Text> | </Text>
-                  <Text style={{ fontWeight: "700" }}>{ls.size}</Text>
-                </View>
-              )}
-              <Text> | </Text>
-              <Text>{ls.location}</Text>
-            </View>
-            {!!ls.description && <Text>{ls.description}</Text>}
-            {!!ls.cartons && !!ls.pieces && (
-              <View style={{ flexDirection: "row" }}>
-                <Text
-                  style={{
-                    color: "green",
-                    flex: 1,
-                    fontWeight: "700",
-                  }}
-                >
-                  Cartons: {ls.cartons}
-                </Text>
-                <Text
-                  style={{
-                    color: "green",
-                    flex: 1,
-                    fontWeight: "700",
-                  }}
-                >
-                  Pieces: {ls.pieces}
-                </Text>
-              </View>
-            )}
-          </View>
-        ))}
-      </Card.Content>
-    </Card>
   );
 };

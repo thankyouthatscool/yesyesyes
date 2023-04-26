@@ -97,9 +97,9 @@ export const databaseItems: DatabaseItemInputWithId[] = [
 
   ["75f45980-a064-4da5-bcd4-1d9d10a1557a", "AH456", "BLACK, WHITE, BLACK, BLACK", null, "A-Frame Striped Trucker Cap", "2GC32"],
   ["a57b5704-ae73-464b-b769-54377c1a3588", "AH456", "MAROON, WHITE, MAROON, WHITE", null, "A-Frame Striped Trucker Cap", "2GC42"],
-  ["c126abf0-ca07-4c73-ae50-9ccb4820b10f", "AH456", "NAVY, GREY, NAVY , WHITE", null, "A-Frame Striped Trucker Cap", "2GC41"],
+  ["c126abf0-ca07-4c73-ae50-9ccb4820b10f", "AH456", "NAVY, GREY, NAVY, WHITE", null, "A-Frame Striped Trucker Cap", "2GC41"],
   ["b9656bf3-44a4-43ed-8afc-58cad39acffe", "AH456", "KHAKI, BLACK, KHAKI, KHAKI", null, "A-Frame Striped Trucker Cap", "2GB42"],
-  ["5d6cc0a0-b255-40d7-8757-e5443cfaf596", "AH456", "PINK, BLACK, WHITE , PINK", null, "A-Frame Striped Trucker Cap", "2GB41"],
+  ["5d6cc0a0-b255-40d7-8757-e5443cfaf596", "AH456", "PINK, BLACK, WHITE, PINK", null, "A-Frame Striped Trucker Cap", "2GB41"],
   ["ee9b4cd1-4e9c-4fc9-b666-eb7304078aa2", "AH456", "RED, RED, WHITE, WHITE", null, "A-Frame Striped Trucker Cap", "2GC41"],
 
   ["b4083c95-d4d5-4a69-8be7-1278e433b510", "AH500", "BLACK", null, "100% cotton - 6 Panel Cap", "DUNNO"],
@@ -1111,7 +1111,7 @@ export const databaseStorageRaw: DatabaseStorageItemWithoutDate[] = [
 
   ["8a71b244-b4d7-48a0-9304-c5e8a578e6e3", "17-5-2", "bcaf8419-4428-4b08-bc82-4568f8d18f8a", 12, 1800],
 
-  ["f9461425-1001-412c-a671-95d101f8520c", "17-5-2/2", "c126abf0-ca07-4c73-ae50-9ccb4820b10f", 8, 1200],
+  ["f9461425-1001-412c-a671-95d101f8520c", "17-5-2", "c126abf0-ca07-4c73-ae50-9ccb4820b10f", 8, 1200],
 
   ["adcd2686-e49f-4719-8a29-ea3a8d30429c", "18-4-1", "49737edb-8cfd-4159-b176-9e5bc35ce4b9", 10, 80],
 
