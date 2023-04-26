@@ -26,6 +26,7 @@ export type HomeScreenNavStackProps = {
     };
   };
   NewStorageLocationScreen: undefined;
+  RecentStorage: undefined;
   StorageScreen: undefined;
   StorageLocationScreen: { locationName: string };
 };
@@ -78,6 +79,11 @@ export type StorageLocationScreenProps = NativeStackScreenProps<
 export type MoveNoteScreenProps = NativeStackScreenProps<
   HomeScreenNavStackProps,
   "MoveNoteScreen"
+>;
+
+export type RecentStorageScreenProps = NativeStackScreenProps<
+  HomeScreenNavStackProps,
+  "RecentStorage"
 >;
 
 export type StorageCardComponentNavProps = NativeStackNavigationProp<

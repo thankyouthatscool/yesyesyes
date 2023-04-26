@@ -1,7 +1,7 @@
 import _debounce from "lodash.debounce";
 import { FC, useCallback, useEffect, useState } from "react";
 import { FlatList, View } from "react-native";
-import { Card, IconButton, Searchbar, Text } from "react-native-paper";
+import { Card, IconButton, Menu, Searchbar, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAppDispatch, useAppSelector } from "@hooks";
@@ -27,11 +27,14 @@ export const StorageScreen: FC<StorageScreenProps> = ({ navigation }) => {
   } = useAppSelector(({ app }) => ({ ...app }));
 
   const [distinctLocations, setDistinctLocations] = useState<string[]>([]);
+
   const [isFocus, setIsFocus] = useState<boolean>(false);
   const [isLoadingStorageData, setIsLoadingStorageData] =
     useState<boolean>(false);
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isLoadingSearchResults, setIsLoadingSearchResults] =
     useState<boolean>(false);
+
   const [storageSearchResult, setStorageSearchResult] = useState<
     StorageLocationData[]
   >([]);
@@ -160,13 +163,40 @@ export const StorageScreen: FC<StorageScreenProps> = ({ navigation }) => {
           }}
           value={storageSearchTerm}
         />
-        <IconButton
-          icon="plus"
-          mode="contained"
-          onPress={() => {
-            navigation.navigate("NewStorageLocationScreen");
+        <Menu
+          anchor={
+            <IconButton
+              icon="dots-vertical"
+              mode="contained"
+              onPress={() => {
+                setIsMenuOpen(() => true);
+              }}
+            />
+          }
+          onDismiss={() => {
+            setIsMenuOpen(() => false);
           }}
-        />
+          visible={isMenuOpen}
+        >
+          <Menu.Item
+            leadingIcon="plus"
+            onPress={() => {
+              setIsMenuOpen(() => false);
+
+              navigation.navigate("NewStorageLocationScreen");
+            }}
+            title="Add Location"
+          />
+          <Menu.Item
+            leadingIcon="history"
+            onPress={() => {
+              setIsMenuOpen(() => false);
+
+              navigation.navigate("RecentStorage");
+            }}
+            title="Show Recent"
+          />
+        </Menu>
       </View>
       {storageSearchTerm.length > 2 ? (
         isLoadingSearchResults ? (

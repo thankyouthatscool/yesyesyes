@@ -569,7 +569,7 @@ export const CatalogItemScreenStorageComponent: FC<{
                 {
                   location: "",
                   storageLocation: "",
-                  dateModified: new Date().toISOString(),
+                  dateModified: Date.now().toString(),
                   cartons: 0,
                   storageId: Crypto.randomUUID(),
                   itemId,

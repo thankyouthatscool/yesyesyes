@@ -5,6 +5,7 @@ import { ItemQueueScreen } from "@screens/ItemQueueScreen";
 import { MoveNoteScreen } from "@screens/MoveNoteScreen";
 import { NewCatalogItemScreen } from "@screens/NewCatalogItemScreen";
 import { NewStorageLocationScreen } from "@screens/NewStorageLocationScreen";
+import { RecentStorage } from "@screens/RecentStorage";
 import { StorageScreen } from "@screens/StorageScreen";
 import { StorageLocationScreen } from "@screens/StorageLocationScreen";
 import { HomeScreenNavStackProps } from "@types";
@@ -48,6 +49,10 @@ export const HomeScreenRoot = () => {
       <HomeScreenNavStack.Screen
         component={MoveNoteScreen}
         name="MoveNoteScreen"
+      />
+      <HomeScreenNavStack.Screen
+        component={RecentStorage}
+        name="RecentStorage"
       />
     </HomeScreenNavStack.Navigator>
   );
