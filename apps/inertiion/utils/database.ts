@@ -1,4 +1,8 @@
+import Constants from "expo-constants";
+
 import { DatabaseItemInputWithId } from "@types";
+
+const ENV = Constants.expoConfig?.extra?.ENV! || "production";
 
 export const databaseItems: DatabaseItemInputWithId[] = [
   ["fbe3d393-98a2-4e6b-b2fc-67f11436f8f2", "AH022", "WHITE", null, "HBC Unstructured Hat", "11S11"],
