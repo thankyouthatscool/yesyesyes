@@ -1,3 +1,4 @@
+import { useAuth } from "@clerk/clerk-expo";
 import Constants from "expo-constants";
 import flattenDeep from "lodash.flattendeep";
 import { useState } from "react";
@@ -24,6 +25,8 @@ const API_URL =
 export const SettingsScreen = () => {
   const dispatch = useAppDispatch();
 
+  const { isSignedIn } = useAuth();
+
   const { databaseInstance: db } = useAppSelector(({ app }) => ({ ...app }));
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -43,6 +46,7 @@ export const SettingsScreen = () => {
         />
         <Card.Content>
           <Button
+            disabled={!isSignedIn}
             buttonColor="red"
             icon="delete"
             mode="contained"
@@ -86,9 +90,10 @@ export const SettingsScreen = () => {
             }}
             style={{ alignSelf: "flex-start" }}
           >
-            Drop Items Table
+            Drop Items Table{!isSignedIn && " - Need to Sign In!"}
           </Button>
           <Button
+            disabled={!isSignedIn}
             icon="seed"
             mode="contained"
             onPress={async () => {
@@ -114,7 +119,7 @@ export const SettingsScreen = () => {
               marginTop: defaultAppPadding,
             }}
           >
-            Seed Items Table
+            Seed Items Table{!isSignedIn && " - Need to Sign In!"}
           </Button>
         </Card.Content>
         <Card.Title
@@ -124,6 +129,7 @@ export const SettingsScreen = () => {
         />
         <Card.Content>
           <Button
+            disabled={!isSignedIn}
             buttonColor="red"
             icon="delete"
             mode="contained"
@@ -141,9 +147,10 @@ export const SettingsScreen = () => {
             }}
             style={{ alignSelf: "flex-start" }}
           >
-            Drop Storage Table
+            Drop Storage Table{!isSignedIn && " - Need to Sign In!"}
           </Button>
           <Button
+            disabled={!isSignedIn}
             icon="seed"
             mode="contained"
             onPress={() => {
@@ -168,7 +175,7 @@ export const SettingsScreen = () => {
             }}
             style={{ alignSelf: "flex-start", marginTop: defaultAppPadding }}
           >
-            Seed Storage Table
+            Seed Storage Table{!isSignedIn && " - Need to Sign In!"}
           </Button>
         </Card.Content>
       </Card>
@@ -215,7 +222,7 @@ export const SettingsScreen = () => {
         <Card.Title title="Backup Catalog Data" titleVariant="labelLarge" />
         <Card.Content>
           <Button
-            disabled={isLoading}
+            disabled={isLoading || !isSignedIn}
             icon="cloud-upload"
             loading={isLoading}
             mode="contained"
@@ -273,12 +280,13 @@ export const SettingsScreen = () => {
             }}
             style={{ alignSelf: "flex-start" }}
           >
-            Upload Catalog Data
+            Upload Catalog Data{!isSignedIn && " - Need to Sign In!"}
           </Button>
         </Card.Content>
         <Card.Title title="Backup Storage Data" titleVariant="labelLarge" />
         <Card.Content>
           <Button
+            disabled={isLoading || !isSignedIn}
             icon="cloud-upload"
             mode="contained"
             onPress={() => {
@@ -324,7 +332,7 @@ export const SettingsScreen = () => {
             }}
             style={{ alignSelf: "flex-start" }}
           >
-            Upload Storage Data
+            Upload Storage Data{!isSignedIn && " - Need to Sign In!"}
           </Button>
         </Card.Content>
       </Card>

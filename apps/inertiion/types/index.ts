@@ -8,6 +8,7 @@ import * as SQLite from "expo-sqlite";
 
 export type RootDrawerNavigationProps = {
   Home: undefined;
+  User: undefined;
   Settings: undefined;
 };
 
