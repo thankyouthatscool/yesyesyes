@@ -142,7 +142,7 @@ export const StorageScreen: FC<StorageScreenProps> = ({ navigation }) => {
         <FlatList
           data={storageSearchResult}
           keyExtractor={(item) => item.storageId}
-          renderItem={({ item }) => (
+          renderItem={({ item, index }) => (
             <Card
               onPress={() =>
                 navigation.navigate("StorageLocationScreen", {
@@ -155,6 +155,7 @@ export const StorageScreen: FC<StorageScreenProps> = ({ navigation }) => {
               }}
             >
               <Card.Title
+                subtitle={`${index + 1} of ${storageSearchResult.length}`}
                 title={item.storageLocation}
                 titleVariant="titleLarge"
               />
