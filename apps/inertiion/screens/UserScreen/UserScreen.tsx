@@ -32,11 +32,6 @@ export const UserScreen = () => {
     }
   }, [userData]);
 
-  useEffect(() => {
-    console.log(isSignedIn);
-    console.log(isLoaded);
-  }, [isLoaded, isSignedIn]);
-
   return (
     <SafeAreaView>
       <ScrollView>

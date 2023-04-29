@@ -511,11 +511,17 @@ export const databaseItems: DatabaseItemInputWithId[] = [
   ["cd54d584-a56e-4adb-bc3c-91bb43e563ec", "IV102", "NAVY", null, "Polyester/Mesh", "DUNNO"],
   ["1709ca61-9b77-4e2b-928d-b31e656df6ca", "IV102", "NAVY, WHITE", null, "Polyester/Mesh", "DUNNO"],
 
-  ["53838b0c-df1b-4239-bc26-e374017959f4", "IV104", "BLACK", null, "Cotton/Mesh", "DUNNO"],
+  ["53838b0c-df1b-4239-bc26-e374017959f4", "IV104", "BLACK", null, "Cotton/Mesh", "21Q22"],
+  ["ffcaf486-205b-4986-900e-b8ba3c61eea2", "IV104", "CHARCOAL", null, "Cotton/Mesh", "21Q22"],
+  ["c4ed74c5-3d08-4e39-b6e5-ac99ce7b6bc1", "IV104", "NAVY", null, "Cotton/Mesh", "21Q22"],
+  ["9aa6859d-8c25-43cf-8e15-5900403d9f12", "IV104", "ROYAL", null, "Cotton/Mesh", "21Q22"],
+  ["67a1807b-0663-405d-bb86-9e9e7529da6e", "IV104", "WHITE", null, "Cotton/Mesh", "21Q22"],
 
-  ["7a47cd86-afd9-401d-8069-aab890050663", "IV111", "BLACK", null, "100% Polyester (Cool Dry)", "DUNNO"],
-  ["33c2852c-8310-4a11-97c3-c9fd48eb367d", "IV111", "NAVY", null, "100% Polyester (Cool Dry)", "DUNNO"],
-  ["b63f42b6-88bd-47cc-bbfe-3e648900cb7c", "IV111", "RED", null, "100% Polyester (Cool Dry)", "DUNNO"],
+  ["7a47cd86-afd9-401d-8069-aab890050663", "IV111", "BLACK", null, "100% Polyester (Cool Dry)", "21P12"],
+  ["33c2852c-8310-4a11-97c3-c9fd48eb367d", "IV111", "NAVY", null, "100% Polyester (Cool Dry)", "21P22"],
+  ["b63f42b6-88bd-47cc-bbfe-3e648900cb7c", "IV111", "RED", null, "100% Polyester (Cool Dry)", "21P12"],
+  ["2dab233d-36a0-4aaa-be8a-7ccf092a2557", "IV111", "ROYAL", null, "100% Polyester (Cool Dry)", "21P22"],
+  ["8b83dee1-1079-45ac-b634-dfe5bc39c576", "IV111", "WHITE", null, "100% Polyester (Cool Dry)", "21P22"],
 
   ["2fdb7a95-260b-4dec-9f4f-03f7e2a5423b", "IV112", "LIGHT MARBLE", null, "100% Polyester", "DUNNO"],
   ["99a7cbc8-f3a6-4ee2-9c6d-de1b7872798e", "IV112", "DARK MARBLE", null, "100% Polyester", "DUNNO"],
