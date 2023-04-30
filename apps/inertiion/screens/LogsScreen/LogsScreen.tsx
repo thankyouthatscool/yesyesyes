@@ -11,7 +11,7 @@ interface LogItem {
   dateCreated: string;
   description: string;
   logId: string;
-  operationType: "delete" | "update";
+  operationType: string;
   referenceId: string;
   userId: string;
 }
@@ -46,9 +46,17 @@ export const LogsScreen: FC<LogsScreenProps> = ({ navigation }) => {
 
   useEffect(() => {
     if (!!selectedLog) {
-      console.log(selectedLog);
+      const { operationType, referenceId } = logs.find(
+        (log) => log.logId === selectedLog
+      )!;
 
-      console.log(logs.find((log) => log.logId === selectedLog));
+      const [operation, target] = operationType
+        .split(",")
+        .map((op) => op.trim());
+
+      console.log(operation);
+      console.log(target);
+      console.log(referenceId);
     }
   }, [logs, selectedLog]);
 
@@ -62,7 +70,7 @@ export const LogsScreen: FC<LogsScreenProps> = ({ navigation }) => {
             navigation.goBack();
           }}
         />
-        <Text>Logs Screen</Text>
+        <Text variant="headlineSmall">Logs</Text>
       </View>
       <View style={{ flex: 1 }}>
         <ScrollView>
@@ -80,6 +88,10 @@ export const LogsScreen: FC<LogsScreenProps> = ({ navigation }) => {
               >
                 <Card.Content>
                   <Text>{log.description}</Text>
+                  <Text>
+                    {new Date(parseInt(log.dateCreated)).toLocaleDateString()} @{" "}
+                    {new Date(parseInt(log.dateCreated)).toLocaleTimeString()}
+                  </Text>
                 </Card.Content>
               </Card>
             ))}

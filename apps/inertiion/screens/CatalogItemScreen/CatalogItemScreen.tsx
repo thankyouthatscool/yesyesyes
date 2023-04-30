@@ -29,6 +29,7 @@ import {
   CatalogItemScreenNavProps,
   NewCatalogItemInput as CatalogItemInput,
 } from "@types";
+import { array } from "zod";
 
 interface CatalogItemInputWithId extends CatalogItemInput {
   id: string;
@@ -443,26 +444,44 @@ export const CatalogItemScreenStorageComponent: FC<{
   const [isStorageCollapsed, setIsStorageCollapsed] = useState<boolean>(false);
 
   const handleUpdateItemStorageData = useCallback(() => {
-    db.transaction(
-      (tx) => {
-        itemStorageData.forEach(
-          ({
-            storageId,
-            storageLocation,
-            itemId,
-            cartons,
-            pieces,
-            dateModified,
-          }) => {
+    itemStorageData.forEach(
+      ({ storageId, storageLocation, itemId, cartons, pieces }) => {
+        let code: string;
+        let color: string;
+
+        db.transaction(
+          (tx) => {
             tx.executeSql(
-              ` INSERT INTO storage (storageId, storageLocation, itemId, cartons, pieces, dateModified) 
-                VALUES (?, ?, ?, ?, ?, ?) 
-                ON CONFLICT (storageId) DO UPDATE SET 
-                  storageLocation = excluded.storageLocation, 
+              `
+                SELECT *
+                FROM items
+                WHERE id = ?
+            `,
+              [itemId],
+              (_, { rows: { _array } }) => {
+                code = _array[0].code;
+                color = _array[0].color;
+              }
+            );
+          },
+          (err) => {
+            console.log(err);
+          }
+        );
+
+        db.transaction(
+          (tx) => {
+            tx.executeSql(
+              ` 
+                INSERT INTO storage (storageId, storageLocation, itemId, cartons, pieces, dateModified)
+                VALUES (?, ?, ?, ?, ?, ?)
+                ON CONFLICT (storageId) DO UPDATE SET
+                  storageLocation = excluded.storageLocation,
                   itemId = excluded.itemId,
                   cartons = excluded.cartons,
                   pieces = excluded.pieces,
-                  dateModified = excluded.dateModified`,
+                  dateModified = excluded.dateModified
+            `,
               [
                 storageId,
                 storageLocation,
@@ -474,7 +493,7 @@ export const CatalogItemScreenStorageComponent: FC<{
             );
 
             tx.executeSql(
-              `  
+              `
                 INSERT INTO logs
                 VALUES (?, ?, ?, ?, ?, ?)
               `,
@@ -482,9 +501,9 @@ export const CatalogItemScreenStorageComponent: FC<{
                 Crypto.randomUUID(),
                 storageId,
                 "update, storage",
-                `${storageId.split("-")[0]} updated with ${
-                  itemId.split("-")[0]
-                }/${cartons}/${pieces}`,
+                `Storage location "${storageLocation}" updated with ${cartons} carton(s)/${pieces} piece(s) of ${code}${
+                  !!color && ` ${color}`
+                }.`,
                 userId || "unknown",
                 Date.now().toString(),
               ],
@@ -492,10 +511,12 @@ export const CatalogItemScreenStorageComponent: FC<{
                 console.log(_array);
               }
             );
+          },
+          (err) => {
+            console.log(err);
           }
         );
-      },
-      (err) => console.log(err)
+      }
     );
 
     ToastAndroid.show(
@@ -507,15 +528,60 @@ export const CatalogItemScreenStorageComponent: FC<{
   }, [itemStorageData]);
 
   const handleDeleteItemStorageRow = useCallback((id: string) => {
+    let code: string;
+    let color: string;
+    let storageLocation: string;
+    let cartons: number;
+    let pieces: number;
+
     db.transaction(
       (tx) => {
-        tx.executeSql("DELETE FROM storage WHERE storageId = ?", [id], () => {
-          setItemStorageData((itemStorageData) =>
-            itemStorageData.filter((item) => item.storageId !== id)
-          );
+        tx.executeSql(
+          `
+          SELECT *
+          FROM storage
+          INNER JOIN items
+          ON items.id = storage.ItemId
+          WHERE storage.storageId = ?
+      `,
+          [id],
+          (_, { rows: { _array } }) => {
+            console.log(_array);
 
-          ToastAndroid.show("Storage Row removed!", ToastAndroid.LONG);
-        });
+            code = _array[0].code;
+            color = _array[0].color;
+            storageLocation = _array[0].storageLocation;
+            cartons = _array[0].cartons;
+            pieces = _array[0].pieces;
+          }
+        );
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+
+    db.transaction(
+      (tx) => {
+        tx.executeSql(
+          `
+            DELETE FROM storage 
+            WHERE storageId = ?
+          `,
+          [id],
+          () => {
+            setItemStorageData((itemStorageData) =>
+              itemStorageData.filter((item) => item.storageId !== id)
+            );
+
+            ToastAndroid.show("Storage Row removed!", ToastAndroid.LONG);
+          }
+        );
+
+        console.log(code);
+        console.log(storageLocation);
+        console.log(cartons);
+        console.log(pieces);
 
         tx.executeSql(
           `
@@ -526,7 +592,9 @@ export const CatalogItemScreenStorageComponent: FC<{
             Crypto.randomUUID(),
             id,
             "delete, storage",
-            `${id} deleted`,
+            `Storage location "${storageLocation}" deleted. ${cartons} carton(s)/${pieces} piece(s) of ${code} ${
+              !!color && ` ${color}`
+            } removed.`,
             userId || "unknown",
             Date.now().toString(),
           ],
