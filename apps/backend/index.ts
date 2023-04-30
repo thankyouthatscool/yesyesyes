@@ -4,6 +4,7 @@ import bodyParser from "body-parser";
 import express from "express";
 
 import { BackendStatusCodes } from "./types";
+import { catalogData, storageData } from "./utils";
 
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 5000;
 
@@ -36,15 +37,15 @@ app.post("/backupStorage", (req, res) => {
     JSON.stringify(req.body)
   );
 
-  return res.status(200).json({ data: "There will be some data here." });
+  return res.status(200).json({});
 });
 
 app.get("/seedCatalog", (_, res) => {
-  res.status(200).json({ data: "There will be some data here, eventually..." });
+  res.status(200).json({ data: catalogData });
 });
 
 app.get("/seedStorage", (_, res) => {
-  res.status(200).json({});
+  res.status(200).json({ data: storageData });
 });
 
 app.listen(PORT, "0.0.0.0", () => {

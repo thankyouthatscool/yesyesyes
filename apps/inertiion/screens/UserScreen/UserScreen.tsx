@@ -7,7 +7,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export const UserScreen = () => {
   const { isSignedIn, signOut } = useAuth();
-  const { isLoaded, setSession, signIn } = useSignIn();
+  const { setSession, signIn } = useSignIn();
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [userData, setUserData] = useState<{
     username: string;
@@ -18,6 +20,8 @@ export const UserScreen = () => {
   });
 
   const handleSignIn = useCallback(async () => {
+    setIsLoading(() => true);
+
     if (!!userData.username && !!userData.password) {
       try {
         const completeSignIn = await signIn?.create({
@@ -30,6 +34,8 @@ export const UserScreen = () => {
         console.log(err);
       }
     }
+
+    setIsLoading(() => false);
   }, [userData]);
 
   return (
@@ -67,7 +73,8 @@ export const UserScreen = () => {
               value={userData.password}
             />
             <Button
-              disabled={!userData.username || !userData.password}
+              disabled={!userData.username || !userData.password || isLoading}
+              loading={isLoading}
               mode="contained"
               onPress={handleSignIn}
               style={{
@@ -81,6 +88,8 @@ export const UserScreen = () => {
           </View>
         ) : (
           <Button
+            disabled={isLoading}
+            loading={isLoading}
             mode="contained"
             onPress={() => {
               signOut();

@@ -19,8 +19,7 @@ import {
 import { SettingsScreenWrapper } from "./Styled";
 import { defaultAppPadding } from "@theme";
 
-const API_URL =
-  Constants.expoConfig?.extra?.API_URL! || "http://192.168.0.3:5000";
+const API_URL = Constants.expoConfig?.extra?.API_URL!;
 
 export const SettingsScreen = () => {
   const dispatch = useAppDispatch();
@@ -46,7 +45,6 @@ export const SettingsScreen = () => {
         />
         <Card.Content>
           <Button
-            disabled={!isSignedIn}
             buttonColor="red"
             icon="delete"
             mode="contained"
@@ -90,29 +88,45 @@ export const SettingsScreen = () => {
             }}
             style={{ alignSelf: "flex-start" }}
           >
-            Drop Items Table{!isSignedIn && " - Need to Sign In!"}
+            Drop Items Table
           </Button>
           <Button
             disabled={!isSignedIn}
             icon="seed"
             mode="contained"
-            onPress={async () => {
-              db.transaction(
-                (tx) => {
-                  tx.executeSql(sqlStatementCreateItemsTable);
+            // onPress={async () => {
+            //   db.transaction(
+            //     (tx) => {
+            //       tx.executeSql(sqlStatementCreateItemsTable);
 
-                  tx.executeSql(
-                    sqlStatementSeedItemsTable,
-                    flattenDeep(databaseItems),
-                    (_, { rows }) => {
-                      console.log(rows);
-                    }
-                  );
-                },
-                (err) => {
-                  console.log(err);
-                }
-              );
+            //       tx.executeSql(
+            //         sqlStatementSeedItemsTable,
+            //         flattenDeep(databaseItems),
+            //         (_, { rows }) => {
+            //           console.log(rows);
+            //         }
+            //       );
+            //     },
+            //     (err) => {
+            //       console.log(err);
+            //     }
+            //   );
+            // }}
+
+            onPress={async () => {
+              try {
+                const res = await fetch(`${API_URL}/seedCatalog`, {
+                  headers: {
+                    Accept: "application/json",
+                    "Content-Type": "application/json",
+                  },
+                  method: "GET",
+                });
+
+                console.log(res);
+              } catch (err) {
+                console.log(err);
+              }
             }}
             style={{
               alignSelf: "flex-start",
@@ -129,7 +143,6 @@ export const SettingsScreen = () => {
         />
         <Card.Content>
           <Button
-            disabled={!isSignedIn}
             buttonColor="red"
             icon="delete"
             mode="contained"
@@ -147,7 +160,7 @@ export const SettingsScreen = () => {
             }}
             style={{ alignSelf: "flex-start" }}
           >
-            Drop Storage Table{!isSignedIn && " - Need to Sign In!"}
+            Drop Storage Table
           </Button>
           <Button
             disabled={!isSignedIn}

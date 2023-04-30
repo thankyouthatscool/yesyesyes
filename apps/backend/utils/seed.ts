@@ -1,6 +1,34 @@
-import { DatabaseItemInputWithId } from "@types";
+import { z } from "zod";
 
-export const databaseItems: DatabaseItemInputWithId[] = [
+const CatalogItemSchema = z.tuple([
+  // Item ID
+  z.string().uuid(),
+  // Code
+  z.string().min(3),
+  // Color
+  z.string(),
+  // Size
+  z.string().optional().nullable(),
+  // Description
+  z.string().optional().nullable(),
+  // Location
+  z.string(),
+]);
+
+const StorageItemSchema = z.tuple([
+  // Storage ID
+  z.string().uuid(),
+  // Storage Location
+  z.string(),
+  // Item Id
+  z.string().uuid(),
+  // Cartons
+  z.number(),
+  // Pieces
+  z.number(),
+]);
+
+export const catalogData: z.infer<typeof CatalogItemSchema>[] = [
   ["fbe3d393-98a2-4e6b-b2fc-67f11436f8f2", "AH022", "WHITE", null, "HBC Unstructured Hat", "11S11"],
 
   ["ab22dc9e-13b9-44b3-945b-aa090dbc249f", "AH097", "BLACK", null, "Acrylic Two Tone Beanie", "11AA31"],
@@ -806,13 +834,7 @@ export const databaseItems: DatabaseItemInputWithId[] = [
   ["15e485e5-bda4-44fc-9893-0c341a9c2262", "Shirt Pallet", "", null, "Shirt Pallet A", ""],
 ];
 
-// TODO: Move out of here
-type DatabaseStorageItemWithoutDate = [string, string, string, number, number];
-
-// TODO: Move out of here
-type DatabaseStorageItem = [...DatabaseStorageItemWithoutDate, string];
-
-export const databaseStorageRaw: DatabaseStorageItemWithoutDate[] = [
+export const storageData: z.infer<typeof StorageItemSchema>[] = [
   ["ae02950a-09bc-4f86-a6c8-1f138974ed9b", "01-2-2", "2ddb4418-eb77-407f-904f-e52364cf0a6a", 10, 200],
 
   ["569686b9-7995-459f-a7d7-713ed9e164c7", "13-1-2", "7fa2ab65-e5c6-4052-a440-ca1351ad11a1", 22, 1100],
@@ -1553,40 +1575,30 @@ export const databaseStorageRaw: DatabaseStorageItemWithoutDate[] = [
   ["f8c26350-9e43-4118-98ee-d2d7d48d9198", "72-4-2", "f07afd67-adcf-424f-8765-9734275ccf79", 0, 0],
 ];
 
-export const databaseStorageItems: DatabaseStorageItem[] = databaseStorageRaw.map((item) => [...item, Date.now().toString()]);
+export const verifySeedData = (whatToVerify: "catalog" | "storage") => {
+  console.info("Verifying seed data.");
 
-// Create Tables
-export const sqlStatementCreateItemsTable =
-  "CREATE TABLE IF NOT EXISTS items (id TEXT UNIQUE NOT NULL PRIMARY KEY, code TEXT NOT NULL, color TEXT, size TEXT, description TEXT, location TEXT NOT NULL)";
+  if (whatToVerify === "catalog") {
+    [...catalogData].forEach((item) => {
+      try {
+        CatalogItemSchema.parse(item);
+      } catch (err) {
+        console.warn(item);
+        console.warn(err);
 
-export const sqlStatementCreateNotesTable =
-  "CREATE TABLE IF NOT EXISTS notes (noteId TEXT UNIQUE NOT NULL PRIMARY KEY, referenceId STRING NOT NULL, noteBody TEXT NOT NULL, dateModified TEXT NOT NULL)";
+        throw new Error();
+      }
+    });
+  } else if (whatToVerify === "storage") {
+    [...storageData].forEach((item) => {
+      try {
+        StorageItemSchema.parse(item);
+      } catch (err) {
+        console.warn(item);
+        console.warn(err);
 
-export const sqlStatementCreateStorageTable =
-  "CREATE TABLE IF NOT EXISTS storage (storageId TEXT UNIQUE NOT NULL PRIMARY KEY, storageLocation TEXT NOT NULL, itemId STRING NOT NULL, cartons INTEGER NOT NULL, pieces INTEGER NOT NULL, dateModified TEXT NOT NULL, FOREIGN KEY (itemId) REFERENCES items (id))";
-
-// Seed Tables
-export const sqlStatementSeedItemsTable = `INSERT INTO items (id, code, color, size, description, location) VALUES ${databaseItems
-  .map(() => `(?, ?, ?, ?, ?, ?)`)
-  .join(", ")}`;
-
-export const sqlStatementSeedStorageTable = `INSERT INTO storage (storageId, storageLocation, itemId, cartons, pieces, dateModified) VALUES ${databaseStorageItems
-  .map(() => `(?, ?, ?, ?, ?, ?)`)
-  .join(", ")}`;
-
-// Database items checks
-if (!databaseItems.every(([id]) => !!id)) {
-  throw new Error("Not all items have an ID!");
-}
-
-if (!databaseStorageItems.every(([id]) => !!id)) {
-  throw new Error("Not all storage items have an ID!");
-}
-
-if (databaseItems.length !== Array.from(new Set(databaseItems.map((item) => item[0]))).length) {
-  throw new Error("Not all item IDs are unique!");
-}
-
-if (databaseStorageItems.length !== Array.from(new Set(databaseStorageItems.map((item) => item[0]))).length) {
-  throw new Error("Not all storage item IDs are unique!");
-}
+        throw new Error();
+      }
+    });
+  }
+};
