@@ -239,7 +239,7 @@ export const SettingsScreen = () => {
 
                       try {
                         const { status } = await fetch(
-                          `${API_URL}/catalogBackup`,
+                          `${API_URL}/backupCatalog`,
                           {
                             body: JSON.stringify(_array),
                             headers: {
@@ -301,7 +301,7 @@ export const SettingsScreen = () => {
                     async (_, { rows: { _array } }) => {
                       try {
                         const { status } = await fetch(
-                          `${API_URL}/storageBackup`,
+                          `${API_URL}/backupStorage`,
                           {
                             body: JSON.stringify(_array),
                             headers: {
