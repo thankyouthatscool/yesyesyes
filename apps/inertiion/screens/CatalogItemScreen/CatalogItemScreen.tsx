@@ -1,3 +1,4 @@
+import { useAuth } from "@clerk/clerk-expo";
 import * as Crypto from "expo-crypto";
 import {
   Dispatch,
@@ -422,6 +423,8 @@ export const CatalogItemScreenStorageComponent: FC<{
   itemId: string;
   navigation: StorageComponentNav;
 }> = ({ itemId, navigation }) => {
+  const { userId } = useAuth();
+
   const { databaseInstance: db } = useAppSelector(({ app }) => ({ ...app }));
 
   const [isUpdateNeeded, setIsUpdateNeeded] = useState<boolean>(false);
@@ -466,8 +469,28 @@ export const CatalogItemScreenStorageComponent: FC<{
                 itemId,
                 cartons,
                 pieces,
-                dateModified,
+                Date.now().toString(),
               ]
+            );
+
+            tx.executeSql(
+              `  
+                INSERT INTO logs
+                VALUES (?, ?, ?, ?, ?, ?)
+              `,
+              [
+                Crypto.randomUUID(),
+                storageId,
+                "update, storage",
+                `${storageId.split("-")[0]} updated with ${
+                  itemId.split("-")[0]
+                }/${cartons}/${pieces}`,
+                userId || "unknown",
+                Date.now().toString(),
+              ],
+              (_, { rows: { _array } }) => {
+                console.log(_array);
+              }
             );
           }
         );
@@ -493,6 +516,22 @@ export const CatalogItemScreenStorageComponent: FC<{
 
           ToastAndroid.show("Storage Row removed!", ToastAndroid.LONG);
         });
+
+        tx.executeSql(
+          `
+            INSERT INTO logs
+            VALUES (?, ?, ?, ?, ?, ?)
+        `,
+          [
+            Crypto.randomUUID(),
+            id,
+            "delete, storage",
+            `${id} deleted`,
+            userId || "unknown",
+            Date.now().toString(),
+          ],
+          () => {}
+        );
       },
       (err) => {
         console.log(err);
@@ -691,6 +730,10 @@ export const CatalogItemScreenStorageComponent: FC<{
                     size={20}
                   />
                 </View>
+                <Text>
+                  {new Date(parseFloat(loc.dateModified)).toLocaleDateString()}{" "}
+                  @ {new Date(parseInt(loc.dateModified)).toLocaleTimeString()}
+                </Text>
               </View>
             );
           })}

@@ -4,7 +4,7 @@
   "overrides": [
     {
       "files": "database.ts",
-      "options": { "printWidth": 150 }
+      "options": { "printWidth": 80 }
     }
   ]
 }

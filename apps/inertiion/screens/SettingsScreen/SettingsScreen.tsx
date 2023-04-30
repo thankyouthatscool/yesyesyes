@@ -12,6 +12,7 @@ import { defaultAppPadding } from "@theme";
 import { DatabaseItemInputWithId } from "@types";
 import {
   sqlStatementCreateItemsTable,
+  sqlStatementCreateLogsTable,
   sqlStatementCreateStorageTable,
 } from "@utils";
 import type { DatabaseStorageItem } from "@utils";
@@ -196,6 +197,59 @@ export const SettingsScreen = () => {
             style={{ alignSelf: "flex-start", marginTop: defaultAppPadding }}
           >
             Seed Storage Table{!isSignedIn && " - Need to Sign In!"}
+          </Button>
+        </Card.Content>
+        <Card.Title
+          title="Logs"
+          titleStyle={{ color: "red" }}
+          titleVariant="labelLarge"
+        />
+        <Card.Content>
+          <Button
+            buttonColor="red"
+            icon="delete"
+            mode="contained"
+            onPress={() => {
+              db.transaction(
+                (tx) => {
+                  tx.executeSql("DROP TABLE logs", [], () => {
+                    console.log("Logs table dropped");
+
+                    ToastAndroid.show("Logs table dropped", ToastAndroid.SHORT);
+                  });
+                },
+                (err) => {
+                  console.log(err);
+
+                  ToastAndroid.show(err.message, ToastAndroid.SHORT);
+                }
+              );
+            }}
+            textColor="white"
+            style={{ alignSelf: "flex-start", marginBottom: defaultAppPadding }}
+          >
+            Drop Logs Table
+          </Button>
+          <Button
+            icon="table"
+            mode="contained"
+            onPress={() => {
+              db.transaction(
+                (tx) => {
+                  tx.executeSql(sqlStatementCreateLogsTable, [], () => {
+                    console.log("Logs table created!");
+
+                    ToastAndroid.show("Logs table created", ToastAndroid.SHORT);
+                  });
+                },
+                (err) => {
+                  console.log(err);
+                }
+              );
+            }}
+            style={{ alignSelf: "flex-start" }}
+          >
+            Create Logs Table
           </Button>
         </Card.Content>
       </Card>

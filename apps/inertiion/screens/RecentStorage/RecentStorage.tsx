@@ -37,7 +37,7 @@ export const RecentStorage: FC<RecentStorageScreenProps> = ({ navigation }) => {
             INNER JOIN items
             ON items.id = storage.itemId
             ORDER BY storage.dateModified DESC
-            LIMIT 10
+            LIMIT 100
         `,
           [],
           (_, { rows: { _array } }) => {

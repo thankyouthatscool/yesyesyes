@@ -2,6 +2,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import { CatalogItemScreen } from "@screens/CatalogItemScreen";
 import { ItemQueueScreen } from "@screens/ItemQueueScreen";
+import { LogsScreen } from "@screens/LogsScreen";
 import { MoveNoteScreen } from "@screens/MoveNoteScreen";
 import { NewCatalogItemScreen } from "@screens/NewCatalogItemScreen";
 import { NewStorageLocationScreen } from "@screens/NewStorageLocationScreen";
@@ -54,6 +55,7 @@ export const HomeScreenRoot = () => {
         component={RecentStorage}
         name="RecentStorage"
       />
+      <HomeScreenNavStack.Screen component={LogsScreen} name="LogsScreen" />
     </HomeScreenNavStack.Navigator>
   );
 };

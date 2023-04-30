@@ -1,7 +1,7 @@
 import _debounce from "lodash.debounce";
 import { FC, useCallback, useEffect, useRef, useState } from "react";
 import { Keyboard, TextInput, ToastAndroid, View } from "react-native";
-import { Chip, FAB, IconButton, Searchbar } from "react-native-paper";
+import { Chip, FAB, IconButton, Menu, Searchbar } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { SearchResult } from "@components/SearchResult";
@@ -27,6 +27,7 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
   );
 
   const [isFocus, setIsFocus] = useState<boolean>(false);
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [lastSearchTerms, setLastSearchTerms] = useState<string[] | null>(null);
 
   const searchBarRef = useRef<TextInput>(null);
@@ -111,13 +112,40 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
             navigation.navigate("StorageScreen");
           }}
         />
-        <IconButton
-          icon="plus"
-          mode="contained"
-          onPress={() => {
-            navigation.navigate("NewCatalogItemScreen", {});
+        <Menu
+          anchor={
+            <IconButton
+              icon="dots-vertical"
+              mode="contained"
+              onPress={() => {
+                setIsMenuOpen(() => true);
+              }}
+            />
+          }
+          onDismiss={() => {
+            setIsMenuOpen(() => false);
           }}
-        />
+          visible={isMenuOpen}
+        >
+          <Menu.Item
+            leadingIcon="plus"
+            onPress={() => {
+              setIsMenuOpen(() => false);
+
+              navigation.navigate("NewCatalogItemScreen", {});
+            }}
+            title="Add New Item"
+          />
+          <Menu.Item
+            leadingIcon="text-box-outline"
+            onPress={() => {
+              setIsMenuOpen(() => false);
+
+              navigation.navigate("LogsScreen");
+            }}
+            title="See Logs"
+          />
+        </Menu>
       </View>
       {searchTerm.length < 3 && (
         <View
