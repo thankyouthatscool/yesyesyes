@@ -1,4 +1,5 @@
 import { useAuth } from "@clerk/clerk-expo";
+import axios from "axios";
 import Constants from "expo-constants";
 import flattenDeep from "lodash.flattendeep";
 import { useState } from "react";
@@ -7,17 +8,15 @@ import { Avatar, Button, Card, IconButton, Text } from "react-native-paper";
 
 import { useAppDispatch, useAppSelector } from "@hooks";
 import { clearItemQueue, clearSearchResult, clearSearchTerm } from "@store";
+import { defaultAppPadding } from "@theme";
+import { DatabaseItemInputWithId } from "@types";
 import {
-  databaseItems,
-  databaseStorageItems,
   sqlStatementCreateItemsTable,
   sqlStatementCreateStorageTable,
-  sqlStatementSeedItemsTable,
-  sqlStatementSeedStorageTable,
 } from "@utils";
+import type { DatabaseStorageItem } from "@utils";
 
 import { SettingsScreenWrapper } from "./Styled";
-import { defaultAppPadding } from "@theme";
 
 const API_URL = Constants.expoConfig?.extra?.API_URL!;
 
@@ -51,34 +50,15 @@ export const SettingsScreen = () => {
             onPress={() => {
               db.transaction(
                 (tx) => {
-                  tx.executeSql(
-                    "DROP TABLE items",
-                    [],
-                    (_, { rows, rowsAffected }) => {
-                      console.log(rows);
-                      console.log(rowsAffected);
-
-                      console.log("Items table dropped");
-
-                      ToastAndroid.show(
-                        "Items table dropped!",
-                        ToastAndroid.LONG
-                      );
-                    }
-                  );
-
-                  tx.executeSql("DROP TABLE storage", [], (_, { rows }) => {
-                    console.log(rows);
-
-                    console.log("Storage table dropped");
+                  tx.executeSql("DROP TABLE items", [], () => {
+                    console.log("Items table dropped");
 
                     ToastAndroid.show(
-                      "Storage table dropped!",
+                      "Items table dropped!",
                       ToastAndroid.LONG
                     );
                   });
                 },
-
                 (err) => console.log(err)
               );
 
@@ -94,36 +74,38 @@ export const SettingsScreen = () => {
             disabled={!isSignedIn}
             icon="seed"
             mode="contained"
-            // onPress={async () => {
-            //   db.transaction(
-            //     (tx) => {
-            //       tx.executeSql(sqlStatementCreateItemsTable);
-
-            //       tx.executeSql(
-            //         sqlStatementSeedItemsTable,
-            //         flattenDeep(databaseItems),
-            //         (_, { rows }) => {
-            //           console.log(rows);
-            //         }
-            //       );
-            //     },
-            //     (err) => {
-            //       console.log(err);
-            //     }
-            //   );
-            // }}
-
             onPress={async () => {
               try {
-                const res = await fetch(`${API_URL}/seedCatalog`, {
-                  headers: {
-                    Accept: "application/json",
-                    "Content-Type": "application/json",
-                  },
-                  method: "GET",
-                });
+                const {
+                  data: { data },
+                }: { data: { data: DatabaseItemInputWithId[] } } =
+                  await axios.get(`${API_URL}/seedCatalog`, {
+                    headers: {
+                      Accept: "application/json",
+                      "Content-Type": "application/json",
+                    },
+                  });
 
-                console.log(res);
+                db.transaction(
+                  (tx) => {
+                    tx.executeSql(sqlStatementCreateItemsTable);
+
+                    tx.executeSql(
+                      `
+                        INSERT INTO items (id, code, color, size, description, location) 
+                        VALUES ${data
+                          .map(() => `(?, ?, ?, ?, ?, ?)`)
+                          .join(", ")}`,
+                      flattenDeep(data),
+                      (_, { rows }) => {
+                        console.log(rows);
+                      }
+                    );
+                  },
+                  (err) => {
+                    console.log(err);
+                  }
+                );
               } catch (err) {
                 console.log(err);
               }
@@ -149,7 +131,14 @@ export const SettingsScreen = () => {
             onPress={() => {
               db.transaction(
                 (tx) => {
-                  tx.executeSql("DROP TABLE storage");
+                  tx.executeSql("DROP TABLE storage", [], () => {
+                    console.log("Storage Table dropped!");
+
+                    ToastAndroid.show(
+                      "Storage Table dropped!",
+                      ToastAndroid.SHORT
+                    );
+                  });
                 },
                 (err) => {
                   console.log(err);
@@ -166,25 +155,43 @@ export const SettingsScreen = () => {
             disabled={!isSignedIn}
             icon="seed"
             mode="contained"
-            onPress={() => {
-              db.transaction(
-                (tx) => {
-                  tx.executeSql(sqlStatementCreateStorageTable);
+            onPress={async () => {
+              try {
+                const {
+                  data: { data: storageData },
+                }: { data: { data: DatabaseStorageItem[] } } = await axios.get(
+                  `${API_URL}/seedStorage`,
+                  {
+                    headers: {
+                      Accept: "application/json",
+                      "Content-Type": "application/json",
+                    },
+                  }
+                );
 
-                  tx.executeSql(
-                    sqlStatementSeedStorageTable,
-                    flattenDeep([databaseStorageItems]),
-                    (_, { rows: { _array } }) => {
-                      console.log(_array.length);
-                    }
-                  );
-                },
-                (err) => {
-                  console.log(err);
+                db.transaction(
+                  (tx) => {
+                    tx.executeSql(sqlStatementCreateStorageTable);
 
-                  ToastAndroid.show(err.message, ToastAndroid.LONG);
-                }
-              );
+                    tx.executeSql(
+                      `
+                        INSERT INTO storage (storageId, storageLocation, itemId, cartons, pieces, dateModified)
+                        VALUES ${storageData
+                          .map(() => `(?, ?, ?, ?, ?, ?)`)
+                          .join(", ")}`,
+                      flattenDeep(storageData),
+                      (_, { rows }) => {
+                        console.log(rows);
+                      }
+                    );
+                  },
+                  (err) => {
+                    console.log(err);
+                  }
+                );
+              } catch (err) {
+                console.error(err);
+              }
             }}
             style={{ alignSelf: "flex-start", marginTop: defaultAppPadding }}
           >

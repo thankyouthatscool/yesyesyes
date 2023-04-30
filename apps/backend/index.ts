@@ -45,7 +45,11 @@ app.get("/seedCatalog", (_, res) => {
 });
 
 app.get("/seedStorage", (_, res) => {
-  res.status(200).json({ data: storageData });
+  res
+    .status(200)
+    .json({
+      data: storageData.map((item) => [...item, Date.now().toString()]),
+    });
 });
 
 app.listen(PORT, "0.0.0.0", () => {

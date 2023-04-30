@@ -6,7 +6,7 @@ import { Button, Text, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export const UserScreen = () => {
-  const { isSignedIn, signOut } = useAuth();
+  const { isSignedIn, signOut, userId } = useAuth();
   const { setSession, signIn } = useSignIn();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -37,6 +37,10 @@ export const UserScreen = () => {
 
     setIsLoading(() => false);
   }, [userData]);
+
+  useEffect(() => {
+    console.log(userId);
+  }, [userId]);
 
   return (
     <SafeAreaView>
