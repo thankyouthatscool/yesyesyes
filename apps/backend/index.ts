@@ -17,7 +17,7 @@ app.get("/", (_, res) => {
   return res.status(200).json({ status: BackendStatusCodes.OK });
 });
 
-app.post("/catalogBackup", (req, res) => {
+app.post("/backupCatalog", (req, res) => {
   console.log(`New catalog backup ${new Date().toLocaleDateString()}`);
 
   writeFileSync(
@@ -28,7 +28,7 @@ app.post("/catalogBackup", (req, res) => {
   return res.status(200).json({});
 });
 
-app.post("/storageBackup", (req, res) => {
+app.post("/backupStorage", (req, res) => {
   console.log(`New storage backup ${new Date().toLocaleDateString()}`);
 
   writeFileSync(
@@ -36,7 +36,15 @@ app.post("/storageBackup", (req, res) => {
     JSON.stringify(req.body)
   );
 
-  return res.status(200).json({});
+  return res.status(200).json({ data: "There will be some data here." });
+});
+
+app.get("/seedCatalog", (_, res) => {
+  res.status(200).json({ data: "There will be some data here, eventually..." });
+});
+
+app.get("/seedStorage", (_, res) => {
+  res.status(200).json({});
 });
 
 app.listen(PORT, "0.0.0.0", () => {
