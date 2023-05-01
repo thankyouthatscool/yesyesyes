@@ -85,9 +85,9 @@ export const LogsScreen: FC<LogsScreenProps> = ({ navigation }) => {
             logs.map((log) => (
               <Card
                 key={log.logId}
-                onPress={() => {
-                  setSelectedLog(() => log.logId);
-                }}
+                // onPress={() => {
+                // setSelectedLog(() => log.logId);
+                // }}
                 style={{
                   marginHorizontal: defaultAppPadding,
                   marginVertical: defaultAppPadding / 2,

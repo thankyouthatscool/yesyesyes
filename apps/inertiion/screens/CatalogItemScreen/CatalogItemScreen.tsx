@@ -444,6 +444,7 @@ export const CatalogItemScreenStorageComponent: FC<{
       cartons: number;
       pieces: number;
       dateModified: string;
+      isModified?: boolean;
     }[]
   >([]);
 
@@ -452,7 +453,9 @@ export const CatalogItemScreenStorageComponent: FC<{
 
   const handleUpdateItemStorageData = useCallback(() => {
     itemStorageData.forEach(
-      ({ storageId, storageLocation, itemId, cartons, pieces }) => {
+      ({ storageId, storageLocation, itemId, cartons, pieces, isModified }) => {
+        if (!isModified) return;
+
         let code: string;
         let color: string;
 
@@ -585,11 +588,6 @@ export const CatalogItemScreenStorageComponent: FC<{
           }
         );
 
-        console.log(code);
-        console.log(storageLocation);
-        console.log(cartons);
-        console.log(pieces);
-
         tx.executeSql(
           `
             INSERT INTO logs
@@ -688,6 +686,7 @@ export const CatalogItemScreenStorageComponent: FC<{
                   storageId: Crypto.randomUUID(),
                   itemId,
                   pieces: 0,
+                  isModified: true,
                 },
               ]);
             }}
@@ -734,6 +733,7 @@ export const CatalogItemScreenStorageComponent: FC<{
                         {
                           ...itemStorageData[idx],
                           storageLocation: newLocation,
+                          isModified: true,
                         },
                         ...itemStorageData.slice(idx + 1),
                       ]);
@@ -771,6 +771,7 @@ export const CatalogItemScreenStorageComponent: FC<{
                         {
                           ...itemStorageData[idx],
                           cartons: parseInt(newNumberOfCartons),
+                          isModified: true,
                         },
                         ...itemStorageData.slice(idx + 1),
                       ]);
@@ -790,6 +791,7 @@ export const CatalogItemScreenStorageComponent: FC<{
                         {
                           ...itemStorageData[idx],
                           pieces: parseInt(newNumberOfPieces),
+                          isModified: true,
                         },
                         ...itemStorageData.slice(idx + 1),
                       ]);
