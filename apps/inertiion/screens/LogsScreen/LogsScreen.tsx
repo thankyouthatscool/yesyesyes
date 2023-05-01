@@ -6,6 +6,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppSelector } from "@hooks";
 import { LogsScreenProps } from "@types";
 import { defaultAppPadding } from "@theme";
+import { ScreenStackHeaderConfig } from "react-native-screens";
+import { array } from "zod";
 
 interface LogItem {
   dateCreated: string;
@@ -16,10 +18,13 @@ interface LogItem {
   userId: string;
 }
 
+const LOG_OFFSET_INCREMENT = 25;
+
 export const LogsScreen: FC<LogsScreenProps> = ({ navigation }) => {
   const { databaseInstance: db } = useAppSelector(({ app }) => ({ ...app }));
 
   const [logs, setLogs] = useState<LogItem[]>([]);
+  const [offset, setOffset] = useState<number | null>(null);
   const [selectedLog, setSelectedLog] = useState<string | null>(null);
 
   useEffect(() => {
@@ -30,11 +35,13 @@ export const LogsScreen: FC<LogsScreenProps> = ({ navigation }) => {
             SELECT *
             FROM logs
             ORDER BY dateCreated DESC
-            LIMIT 100
+            LIMIT ${LOG_OFFSET_INCREMENT}
         `,
           [],
           (_, { rows: { _array } }) => {
             setLogs(() => _array);
+
+            setOffset(() => LOG_OFFSET_INCREMENT);
           }
         );
       },
@@ -95,7 +102,38 @@ export const LogsScreen: FC<LogsScreenProps> = ({ navigation }) => {
                 </Card.Content>
               </Card>
             ))}
+          <Button
+            onPress={() => {
+              db.transaction(
+                (tx) => {
+                  tx.executeSql(
+                    `
+                      SELECT *
+                      FROM logs
+                      ORDER BY dateCreated DESC
+                      LIMIT ${LOG_OFFSET_INCREMENT}
+                      OFFSET ?
+                    `,
+                    [offset],
+                    (_, { rows: { _array } }) => {
+                      console.log(_array);
 
+                      setLogs((logs) => [...logs, ..._array]);
+                    }
+                  );
+                },
+                (err) => {
+                  console.log(err);
+                }
+              );
+
+              setOffset((offset) =>
+                !!offset ? offset + LOG_OFFSET_INCREMENT : LOG_OFFSET_INCREMENT
+              );
+            }}
+          >
+            Load More
+          </Button>
           {!!selectedLog && (
             <View>
               <Button

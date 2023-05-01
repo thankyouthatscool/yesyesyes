@@ -1,10 +1,11 @@
 import Checkbox from "expo-checkbox";
 import { FC, useCallback, useEffect, useState } from "react";
-import { View } from "react-native";
+import { ScrollView, ToastAndroid, View } from "react-native";
 import { Card, IconButton, Text } from "react-native-paper";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAppDispatch, useAppSelector } from "@hooks";
-import { setItemQueueChecked } from "@store";
+import { setItemQueue, setItemQueueChecked } from "@store";
 import { defaultAppPadding } from "@theme";
 import {
   AsyncStorageReturnStatus,
@@ -63,7 +64,7 @@ export const ItemQueueScreen: FC<ItemQueueScreenNavProps> = ({
   }, []);
 
   return (
-    <ItemQueueScreenWrapper>
+    <SafeAreaView style={{ height: "100%" }}>
       <View
         style={{
           alignItems: "center",
@@ -71,108 +72,156 @@ export const ItemQueueScreen: FC<ItemQueueScreenNavProps> = ({
           justifyContent: "space-between",
         }}
       >
-        <Text variant="headlineLarge">Queue</Text>
+        <View style={{ alignItems: "center", flexDirection: "row" }}>
+          <IconButton
+            icon="arrow-left"
+            mode="contained"
+            onPress={() => {
+              navigation.goBack();
+            }}
+          />
+          <Text variant="headlineLarge">Queue</Text>
+        </View>
         <IconButton
+          disabled={!itemQueue.length}
           icon={isHiddenChecked ? "eye" : "eye-off"}
           mode="contained"
           onPress={() => {
             setIsHiddenChecked((isHiddenChecked) => !isHiddenChecked);
           }}
+          onLongPress={() => {
+            dispatch(setItemQueue([]));
+
+            ToastAndroid.show(
+              "All items removed from the queue.",
+              ToastAndroid.SHORT
+            );
+          }}
         />
       </View>
+      <View style={{ flex: 1 }}>
+        <ScrollView>
+          {itemQueue.map((item) => {
+            return (
+              <Card
+                key={item}
+                onPress={() => {
+                  if (itemQueueChecked.includes(item)) {
+                    dispatch(
+                      setItemQueueChecked(
+                        itemQueueChecked.filter((i) => i !== item)
+                      )
+                    );
 
-      {itemQueue.map((item) => {
-        return (
-          <Card
-            key={item}
-            onLongPress={() => {
-              navigation.navigate("CatalogItemScreen", { itemId: item });
-            }}
-            style={{
-              display:
-                itemQueueChecked.includes(item) && !!isHiddenChecked
-                  ? "none"
-                  : "flex",
-              marginVertical: defaultAppPadding / 2,
-            }}
-          >
-            <Card.Content
-              style={{
-                alignItems: "center",
-                flexDirection: "row",
-                justifyContent: "space-between",
-              }}
-            >
-              <View>
-                <Text variant="bodyLarge" style={{ fontWeight: "700" }}>
-                  {catalogData.find((i) => i.id === item)?.code}
-                </Text>
-                <Text>
-                  {catalogData.find((i) => i.id === item)?.color}
-                  {!!catalogData.find((i) => i.id === item)?.size && (
-                    <Text
-                      style={{ fontStyle: "italic", fontWeight: "700" }}
-                    >{` ${catalogData.find((i) => i.id === item)?.size}`}</Text>
-                  )}
-                </Text>
-                <Text variant="bodyMedium" style={{ fontWeight: "700" }}>
-                  {catalogData.find((i) => i.id === item)?.location}
-                </Text>
-              </View>
-              <View
+                    localStorageSetCheckedItemQueue(
+                      itemQueueChecked.filter((i) => i !== item)
+                    );
+                  } else {
+                    dispatch(setItemQueueChecked([...itemQueueChecked, item]));
+
+                    localStorageSetCheckedItemQueue([
+                      ...itemQueueChecked,
+                      item,
+                    ]);
+                  }
+                }}
+                onLongPress={() => {
+                  navigation.navigate("CatalogItemScreen", { itemId: item });
+                }}
                 style={{
-                  alignItems: "center",
-                  flexDirection: "row",
-                  justifyContent: "center",
+                  display:
+                    itemQueueChecked.includes(item) && !!isHiddenChecked
+                      ? "none"
+                      : "flex",
+                  marginVertical: defaultAppPadding / 2,
+                  marginHorizontal: defaultAppPadding,
                 }}
               >
-                <Checkbox
-                  onValueChange={(e) => {
-                    if (!!e) {
-                      dispatch(
-                        setItemQueueChecked([...itemQueueChecked, item])
-                      );
-
-                      localStorageSetCheckedItemQueue([
-                        ...itemQueueChecked,
-                        item,
-                      ]);
-
-                      return;
-                    }
-
-                    if (!e) {
-                      dispatch(
-                        setItemQueueChecked(
-                          itemQueueChecked.filter((i) => i !== item)
-                        )
-                      );
-
-                      localStorageSetCheckedItemQueue(
-                        itemQueueChecked.filter((i) => i !== item)
-                      );
-
-                      return;
-                    }
+                <Card.Content
+                  style={{
+                    alignItems: "center",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
                   }}
-                  value={itemQueueChecked.includes(item)}
-                />
-                <IconButton
-                  iconColor="red"
-                  icon="close"
-                  mode="contained-tonal"
-                  onPress={() => console.log(`Removing ${item} from queue`)}
-                  size={20}
-                  style={{ marginLeft: defaultAppPadding * 3 }}
-                />
-              </View>
-            </Card.Content>
-          </Card>
-        );
-      })}
-    </ItemQueueScreenWrapper>
+                >
+                  <View>
+                    <Text variant="bodyLarge" style={{ fontWeight: "700" }}>
+                      {catalogData.find((i) => i.id === item)?.code}
+                    </Text>
+                    <Text>
+                      {catalogData.find((i) => i.id === item)?.color}
+                      {!!catalogData.find((i) => i.id === item)?.size && (
+                        <Text
+                          style={{ fontStyle: "italic", fontWeight: "700" }}
+                        >{` ${
+                          catalogData.find((i) => i.id === item)?.size
+                        }`}</Text>
+                      )}
+                    </Text>
+                    <Text variant="bodyMedium" style={{ fontWeight: "700" }}>
+                      {catalogData.find((i) => i.id === item)?.location}
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      alignItems: "center",
+                      flexDirection: "row",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Checkbox
+                      onValueChange={(e) => {
+                        if (!!e) {
+                          dispatch(
+                            setItemQueueChecked([...itemQueueChecked, item])
+                          );
+
+                          localStorageSetCheckedItemQueue([
+                            ...itemQueueChecked,
+                            item,
+                          ]);
+
+                          return;
+                        }
+
+                        if (!e) {
+                          dispatch(
+                            setItemQueueChecked(
+                              itemQueueChecked.filter((i) => i !== item)
+                            )
+                          );
+
+                          localStorageSetCheckedItemQueue(
+                            itemQueueChecked.filter((i) => i !== item)
+                          );
+
+                          return;
+                        }
+                      }}
+                      value={itemQueueChecked.includes(item)}
+                    />
+                    <IconButton
+                      iconColor="red"
+                      icon="close"
+                      mode="contained-tonal"
+                      onPress={() => {
+                        dispatch(
+                          setItemQueue(itemQueue.filter((i) => i !== item))
+                        );
+
+                        localStorageSetCheckedItemQueue(
+                          itemQueueChecked.filter((i) => i !== item)
+                        );
+                      }}
+                      style={{ marginLeft: defaultAppPadding * 2 }}
+                    />
+                  </View>
+                </Card.Content>
+              </Card>
+            );
+          })}
+        </ScrollView>
+      </View>
+    </SafeAreaView>
   );
 };
-
-// StorageScreen
-// StorageLocationScreen
