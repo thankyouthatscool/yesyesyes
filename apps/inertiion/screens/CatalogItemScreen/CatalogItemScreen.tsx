@@ -21,7 +21,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAppDispatch, useAppSelector } from "@hooks";
-import { setSearchResult, setSearchTerm } from "@store";
+import { setSearchResult } from "@store";
 import { defaultAppPadding } from "@theme";
 import { CatalogItem, StorageComponentNav } from "@types";
 
@@ -29,7 +29,6 @@ import {
   CatalogItemScreenNavProps,
   NewCatalogItemInput as CatalogItemInput,
 } from "@types";
-import { array } from "zod";
 
 interface CatalogItemInputWithId extends CatalogItemInput {
   id: string;
@@ -207,6 +206,7 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
             visible={isMenuOpen}
           >
             <Menu.Item
+              leadingIcon="content-duplicate"
               onPress={() => {
                 setIsMenuOpen(() => false);
 
@@ -223,6 +223,13 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
                 });
               }}
               title="Duplicate"
+            />
+            <Menu.Item
+              leadingIcon="plus"
+              onPress={() => {
+                console.log("will add to the item queue");
+              }}
+              title="Add to Queue"
             />
           </Menu>
         </View>
