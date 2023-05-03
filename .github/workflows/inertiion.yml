@@ -3,7 +3,7 @@ on:
     branches:
       - main
 jobs:
-  update:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: 🏗 Setup repo
@@ -24,7 +24,7 @@ jobs:
       - name: 📦 Install dependencies
         run: yarn install
 
-      - name: 🚀 Create update
+      - name: 🚀 Create build
         run: |
           cd apps/inertiion
           yarn build:android:production
