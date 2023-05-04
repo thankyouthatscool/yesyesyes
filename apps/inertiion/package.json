@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "start": "dotenv -e .env expo start",
-    "start:win": "expo start --port 19005",
+    "start:win": "dotenv -e .env expo start",
     "build:android:preview": "eas build --platform android --profile preview --no-wait",
     "bap": "yarn build:android:preview",
     "bappers": "yarn bap",

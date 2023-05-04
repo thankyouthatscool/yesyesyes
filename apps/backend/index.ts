@@ -12,8 +12,12 @@ const app = express();
 
 app.use(bodyParser.json());
 
-app.get("/", (_, res) => {
-  console.log("Client APP test OK!");
+app.get("/", (req, res) => {
+  if (req.headers["user-agent"]?.includes("Mozilla")) {
+    console.log("Looks like a test from a browser.");
+  } else {
+    console.log("Client APP test OK!");
+  }
 
   return res.status(200).json({ status: BackendStatusCodes.OK });
 });
@@ -45,11 +49,9 @@ app.get("/seedCatalog", (_, res) => {
 });
 
 app.get("/seedStorage", (_, res) => {
-  res
-    .status(200)
-    .json({
-      data: storageData.map((item) => [...item, Date.now().toString()]),
-    });
+  res.status(200).json({
+    data: storageData.map((item) => [...item, Date.now().toString()]),
+  });
 });
 
 app.listen(PORT, "0.0.0.0", () => {

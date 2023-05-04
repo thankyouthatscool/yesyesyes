@@ -3,7 +3,7 @@ import axios from "axios";
 import Constants from "expo-constants";
 import flattenDeep from "lodash.flattendeep";
 import { useState } from "react";
-import { ToastAndroid, View } from "react-native";
+import { ScrollView, ToastAndroid, View } from "react-native";
 import { Avatar, Button, Card, IconButton, Text } from "react-native-paper";
 
 import { useAppDispatch, useAppSelector } from "@hooks";
@@ -19,7 +19,12 @@ import type { DatabaseStorageItem } from "@utils";
 
 import { SettingsScreenWrapper } from "./Styled";
 
-const API_URL = Constants.expoConfig?.extra?.API_URL!;
+const ENV = Constants.expoConfig?.extra?.ENV;
+
+const API_URL =
+  ENV === "development:win"
+    ? "http://192.168.0.5:5000"
+    : Constants.expoConfig?.extra?.API_URL!;
 
 export const SettingsScreen = () => {
   const dispatch = useAppDispatch();
@@ -30,9 +35,12 @@ export const SettingsScreen = () => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  // TODO: Create all tables at the same time.
+  // FIXME: Right now the Notes table does not exist.
+
   return (
     <SettingsScreenWrapper>
-      <Card>
+      {/* <Card>
         <Card.Title
           left={(props) => <Avatar.Icon {...props} icon="database" />}
           title="Database Management"
@@ -251,6 +259,156 @@ export const SettingsScreen = () => {
           >
             Create Logs Table
           </Button>
+          <Button
+            onPress={async () => {
+              const res = await axios.post(`${API_URL}/auth`, {
+                mookie: "yes",
+              });
+            }}
+          >
+            Test Auth
+          </Button>
+        </Card.Content>
+      </Card> */}
+      <Card>
+        <Card.Title
+          left={(props) => <Avatar.Icon {...props} icon="database" />}
+          subtitle="Drop Tables"
+          subtitleStyle={{ color: "red" }}
+          subtitleVariant="titleMedium"
+          title="Database Management"
+          titleVariant="titleLarge"
+        />
+        <Card.Content>
+          <Button
+            buttonColor="red"
+            icon="delete"
+            mode="contained"
+            style={{ marginBottom: defaultAppPadding }}
+            textColor="white"
+          >
+            DROP ALL
+          </Button>
+          <ScrollView horizontal={true}>
+            <Button
+              buttonColor="red"
+              icon="delete"
+              mode="contained"
+              style={{
+                alignSelf: "flex-start",
+                marginRight: defaultAppPadding,
+              }}
+            >
+              Catalog
+            </Button>
+            <Button
+              buttonColor="red"
+              icon="delete"
+              mode="contained"
+              style={{
+                alignSelf: "flex-start",
+                marginRight: defaultAppPadding,
+              }}
+            >
+              Storage
+            </Button>
+            <Button
+              buttonColor="red"
+              icon="delete"
+              mode="contained"
+              style={{
+                alignSelf: "flex-start",
+                marginRight: defaultAppPadding,
+              }}
+            >
+              Logs
+            </Button>
+            <Button
+              buttonColor="red"
+              icon="delete"
+              mode="contained"
+              style={{
+                alignSelf: "flex-start",
+                marginRight: defaultAppPadding,
+              }}
+            >
+              Notes
+            </Button>
+          </ScrollView>
+        </Card.Content>
+      </Card>
+      <Card style={{ marginTop: defaultAppPadding }}>
+        <Card.Title
+          left={(props) => <Avatar.Icon {...props} icon="database" />}
+          subtitle="Seed Tables"
+          subtitleStyle={{ color: "green" }}
+          subtitleVariant="titleMedium"
+          title="Database Management"
+          titleVariant="titleLarge"
+        />
+        <Card.Content>
+          <Button
+            buttonColor="green"
+            icon="seed"
+            style={{ marginBottom: defaultAppPadding }}
+            textColor="white"
+          >
+            SEED ALL
+          </Button>
+          <ScrollView horizontal={true}>
+            <Button
+              disabled={!isSignedIn}
+              icon="seed"
+              buttonColor="green"
+              mode="contained"
+              textColor="white"
+              style={{
+                alignSelf: "flex-start",
+                marginRight: defaultAppPadding,
+              }}
+            >
+              Catalog
+            </Button>
+            <Button
+              disabled={!isSignedIn}
+              icon="seed"
+              buttonColor="green"
+              mode="contained"
+              textColor="white"
+              style={{
+                alignSelf: "flex-start",
+                marginRight: defaultAppPadding,
+              }}
+            >
+              Storage
+            </Button>
+            <Button
+              disabled={!isSignedIn}
+              icon="seed"
+              buttonColor="green"
+              mode="contained"
+              textColor="white"
+              style={{
+                alignSelf: "flex-start",
+                marginRight: defaultAppPadding,
+              }}
+            >
+              Logs
+            </Button>
+            <Button
+              disabled={!isSignedIn}
+              icon="seed"
+              buttonColor="green"
+              mode="contained"
+              textColor="white"
+              style={{
+                alignSelf: "flex-start",
+                marginRight: defaultAppPadding,
+              }}
+            >
+              Notes
+            </Button>
+          </ScrollView>
         </Card.Content>
       </Card>
       <Card style={{ marginTop: defaultAppPadding }}>
@@ -274,7 +432,9 @@ export const SettingsScreen = () => {
                 }
 
                 throw new Error();
-              } catch {
+              } catch (err) {
+                console.log(err);
+
                 ToastAndroid.show(
                   "Could not connect! Please try again later.",
                   ToastAndroid.LONG
