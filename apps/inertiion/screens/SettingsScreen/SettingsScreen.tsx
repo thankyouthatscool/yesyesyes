@@ -270,7 +270,7 @@ export const SettingsScreen = () => {
           </Button>
         </Card.Content>
       </Card> */}
-      <Card>
+      <Card style={{ marginVertical: defaultAppPadding }}>
         <Card.Title
           left={(props) => <Avatar.Icon {...props} icon="database" />}
           subtitle="Drop Tables"
@@ -337,7 +337,7 @@ export const SettingsScreen = () => {
           </ScrollView>
         </Card.Content>
       </Card>
-      <Card style={{ marginTop: defaultAppPadding }}>
+      <Card style={{ marginVertical: defaultAppPadding }}>
         <Card.Title
           left={(props) => <Avatar.Icon {...props} icon="database" />}
           subtitle="Seed Tables"
@@ -411,7 +411,7 @@ export const SettingsScreen = () => {
           </ScrollView>
         </Card.Content>
       </Card>
-      <Card style={{ marginTop: defaultAppPadding }}>
+      <Card style={{ marginVertical: defaultAppPadding }}>
         <Card.Title
           left={(props) => <Avatar.Icon {...props} icon="api" />}
           subtitle="Backend"
@@ -447,7 +447,7 @@ export const SettingsScreen = () => {
           </Button>
         </Card.Content>
       </Card>
-      <Card style={{ marginTop: defaultAppPadding }}>
+      <Card style={{ marginVertical: defaultAppPadding }}>
         <Card.Title
           left={(props) => <Avatar.Icon {...props} icon="cloud-upload" />}
           title="Backup"
@@ -515,7 +515,7 @@ export const SettingsScreen = () => {
             }}
             style={{ alignSelf: "flex-start" }}
           >
-            Upload Catalog Data{!isSignedIn && " - Need to Sign In!"}
+            Backup Catalog Data{!isSignedIn && " - Need to Sign In!"}
           </Button>
         </Card.Content>
         <Card.Title title="Backup Storage Data" titleVariant="labelLarge" />
@@ -570,7 +570,7 @@ export const SettingsScreen = () => {
             }}
             style={{ alignSelf: "flex-start" }}
           >
-            Upload Storage Data{!isSignedIn && " - Need to Sign In!"}
+            Backup Storage Data{!isSignedIn && " - Need to Sign In!"}
           </Button>
         </Card.Content>
       </Card>
