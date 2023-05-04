@@ -15,8 +15,8 @@ export const UserScreen = () => {
     username: string;
     password: string;
   }>({
-    username: "o.zahnitko@gmail.com",
-    password: "j4i6NeXKt6PZM6",
+    username: "",
+    password: "",
   });
 
   const handleSignIn = useCallback(async () => {

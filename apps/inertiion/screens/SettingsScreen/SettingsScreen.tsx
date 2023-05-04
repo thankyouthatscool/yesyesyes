@@ -29,7 +29,7 @@ const API_URL =
 export const SettingsScreen = () => {
   const dispatch = useAppDispatch();
 
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, userId } = useAuth();
 
   const { databaseInstance: db } = useAppSelector(({ app }) => ({ ...app }));
 
@@ -469,13 +469,14 @@ export const SettingsScreen = () => {
                     "SELECT * FROM items",
                     [],
                     async (_, { rows: { _array } }) => {
-                      console.log(_array);
-
                       try {
                         const { status } = await fetch(
                           `${API_URL}/backupCatalog`,
                           {
-                            body: JSON.stringify(_array),
+                            body: JSON.stringify({
+                              data: _array,
+                              user: userId,
+                            }),
                             headers: {
                               Accept: "application/json",
                               "Content-Type": "application/json",
@@ -537,7 +538,10 @@ export const SettingsScreen = () => {
                         const { status } = await fetch(
                           `${API_URL}/backupStorage`,
                           {
-                            body: JSON.stringify(_array),
+                            body: JSON.stringify({
+                              data: _array,
+                              user: userId,
+                            }),
                             headers: {
                               Accept: "application/json",
                               "Content-Type": "application/json",
