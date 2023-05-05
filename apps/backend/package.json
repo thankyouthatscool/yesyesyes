@@ -6,6 +6,7 @@
   "scripts": {
     "prebuild": "rm -rf build",
     "build": "tsc",
+    "db:seed:users": "yarn ts-node seed/seedUsers.ts",
     "dev": "dotenv -e .env nodemon",
     "image:build:dev": "docker build . -t ozahnitko/backend:dev-latest",
     "image:push:dev": "docker push ozahnitko/backend:dev-latest",
