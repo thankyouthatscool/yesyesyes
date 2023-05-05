@@ -3,16 +3,16 @@ import axios from "axios";
 import Constants from "expo-constants";
 import flattenDeep from "lodash.flattendeep";
 import { useState } from "react";
-import { ScrollView, ToastAndroid, View } from "react-native";
-import { Avatar, Button, Card, IconButton, Text } from "react-native-paper";
+import { ScrollView, ToastAndroid } from "react-native";
+import { Avatar, Button, Card } from "react-native-paper";
 
 import { useAppDispatch, useAppSelector } from "@hooks";
-import { clearItemQueue, clearSearchResult, clearSearchTerm } from "@store";
 import { defaultAppPadding } from "@theme";
 import { DatabaseItemInputWithId } from "@types";
 import {
   sqlStatementCreateItemsTable,
   sqlStatementCreateLogsTable,
+  sqlStatementCreateNotesTable,
   sqlStatementCreateStorageTable,
 } from "@utils";
 import type { DatabaseStorageItem } from "@utils";
@@ -35,241 +35,8 @@ export const SettingsScreen = () => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  // TODO: Create all tables at the same time.
-  // FIXME: Right now the Notes table does not exist.
-
   return (
     <SettingsScreenWrapper>
-      {/* <Card>
-        <Card.Title
-          left={(props) => <Avatar.Icon {...props} icon="database" />}
-          title="Database Management"
-          titleVariant="titleLarge"
-        />
-        <Card.Title
-          title="Items Table"
-          titleStyle={{ color: "red" }}
-          titleVariant="labelLarge"
-        />
-        <Card.Content>
-          <Button
-            buttonColor="red"
-            icon="delete"
-            mode="contained"
-            onPress={() => {
-              db.transaction(
-                (tx) => {
-                  tx.executeSql("DROP TABLE items", [], () => {
-                    console.log("Items table dropped");
-
-                    ToastAndroid.show(
-                      "Items table dropped!",
-                      ToastAndroid.LONG
-                    );
-                  });
-                },
-                (err) => console.log(err)
-              );
-
-              dispatch(clearItemQueue());
-              dispatch(clearSearchResult());
-              dispatch(clearSearchTerm());
-            }}
-            style={{ alignSelf: "flex-start" }}
-          >
-            Drop Items Table
-          </Button>
-          <Button
-            disabled={!isSignedIn}
-            icon="seed"
-            mode="contained"
-            onPress={async () => {
-              try {
-                const {
-                  data: { data },
-                }: { data: { data: DatabaseItemInputWithId[] } } =
-                  await axios.get(`${API_URL}/seedCatalog`, {
-                    headers: {
-                      Accept: "application/json",
-                      "Content-Type": "application/json",
-                    },
-                  });
-
-                db.transaction(
-                  (tx) => {
-                    tx.executeSql(sqlStatementCreateItemsTable);
-
-                    tx.executeSql(
-                      `
-                        INSERT INTO items (id, code, color, size, description, location) 
-                        VALUES ${data
-                          .map(() => `(?, ?, ?, ?, ?, ?)`)
-                          .join(", ")}`,
-                      flattenDeep(data),
-                      (_, { rows }) => {
-                        console.log(rows);
-                      }
-                    );
-                  },
-                  (err) => {
-                    console.log(err);
-                  }
-                );
-              } catch (err) {
-                console.log(err);
-              }
-            }}
-            style={{
-              alignSelf: "flex-start",
-              marginTop: defaultAppPadding,
-            }}
-          >
-            Seed Items Table{!isSignedIn && " - Need to Sign In!"}
-          </Button>
-        </Card.Content>
-        <Card.Title
-          title="Storage Table"
-          titleStyle={{ color: "red" }}
-          titleVariant="labelLarge"
-        />
-        <Card.Content>
-          <Button
-            buttonColor="red"
-            icon="delete"
-            mode="contained"
-            onPress={() => {
-              db.transaction(
-                (tx) => {
-                  tx.executeSql("DROP TABLE storage", [], () => {
-                    console.log("Storage Table dropped!");
-
-                    ToastAndroid.show(
-                      "Storage Table dropped!",
-                      ToastAndroid.SHORT
-                    );
-                  });
-                },
-                (err) => {
-                  console.log(err);
-
-                  ToastAndroid.show(err.message, ToastAndroid.LONG);
-                }
-              );
-            }}
-            style={{ alignSelf: "flex-start" }}
-          >
-            Drop Storage Table
-          </Button>
-          <Button
-            disabled={!isSignedIn}
-            icon="seed"
-            mode="contained"
-            onPress={async () => {
-              try {
-                const {
-                  data: { data: storageData },
-                }: { data: { data: DatabaseStorageItem[] } } = await axios.get(
-                  `${API_URL}/seedStorage`,
-                  {
-                    headers: {
-                      Accept: "application/json",
-                      "Content-Type": "application/json",
-                    },
-                  }
-                );
-
-                db.transaction(
-                  (tx) => {
-                    tx.executeSql(sqlStatementCreateStorageTable);
-
-                    tx.executeSql(
-                      `
-                        INSERT INTO storage (storageId, storageLocation, itemId, cartons, pieces, dateModified)
-                        VALUES ${storageData
-                          .map(() => `(?, ?, ?, ?, ?, ?)`)
-                          .join(", ")}`,
-                      flattenDeep(storageData),
-                      (_, { rows }) => {
-                        console.log(rows);
-                      }
-                    );
-                  },
-                  (err) => {
-                    console.log(err);
-                  }
-                );
-              } catch (err) {
-                console.error(err);
-              }
-            }}
-            style={{ alignSelf: "flex-start", marginTop: defaultAppPadding }}
-          >
-            Seed Storage Table{!isSignedIn && " - Need to Sign In!"}
-          </Button>
-        </Card.Content>
-        <Card.Title
-          title="Logs"
-          titleStyle={{ color: "red" }}
-          titleVariant="labelLarge"
-        />
-        <Card.Content>
-          <Button
-            buttonColor="red"
-            icon="delete"
-            mode="contained"
-            onPress={() => {
-              db.transaction(
-                (tx) => {
-                  tx.executeSql("DROP TABLE logs", [], () => {
-                    console.log("Logs table dropped");
-
-                    ToastAndroid.show("Logs table dropped", ToastAndroid.SHORT);
-                  });
-                },
-                (err) => {
-                  console.log(err);
-
-                  ToastAndroid.show(err.message, ToastAndroid.SHORT);
-                }
-              );
-            }}
-            textColor="white"
-            style={{ alignSelf: "flex-start", marginBottom: defaultAppPadding }}
-          >
-            Drop Logs Table
-          </Button>
-          <Button
-            icon="table"
-            mode="contained"
-            onPress={() => {
-              db.transaction(
-                (tx) => {
-                  tx.executeSql(sqlStatementCreateLogsTable, [], () => {
-                    console.log("Logs table created!");
-
-                    ToastAndroid.show("Logs table created", ToastAndroid.SHORT);
-                  });
-                },
-                (err) => {
-                  console.log(err);
-                }
-              );
-            }}
-            style={{ alignSelf: "flex-start" }}
-          >
-            Create Logs Table
-          </Button>
-          <Button
-            onPress={async () => {
-              const res = await axios.post(`${API_URL}/auth`, {
-                mookie: "yes",
-              });
-            }}
-          >
-            Test Auth
-          </Button>
-        </Card.Content>
-      </Card> */}
       <Card style={{ marginVertical: defaultAppPadding }}>
         <Card.Title
           left={(props) => <Avatar.Icon {...props} icon="database" />}
@@ -282,8 +49,32 @@ export const SettingsScreen = () => {
         <Card.Content>
           <Button
             buttonColor="red"
+            disabled={!!isLoading}
             icon="delete"
             mode="contained"
+            onPress={() => {
+              setIsLoading(() => true);
+
+              db.transaction(
+                (tx) => {
+                  ["storage", "items", "logs", "notes"].forEach((table) => {
+                    tx.executeSql(`DROP TABLE ${table}`, [], () => {
+                      ToastAndroid.show(
+                        `${table} table dropped!`,
+                        ToastAndroid.SHORT
+                      );
+                    });
+                  });
+                },
+                (err) => {
+                  console.log(err.message);
+
+                  ToastAndroid.show(err.message, ToastAndroid.SHORT);
+                }
+              );
+
+              setIsLoading(() => false);
+            }}
             style={{ marginBottom: defaultAppPadding }}
             textColor="white"
           >
@@ -292,8 +83,30 @@ export const SettingsScreen = () => {
           <ScrollView horizontal={true}>
             <Button
               buttonColor="red"
+              disabled={!!isLoading}
               icon="delete"
               mode="contained"
+              onPress={() => {
+                setIsLoading(() => true);
+
+                db.transaction(
+                  (tx) => {
+                    tx.executeSql("DROP TABLE items", [], () => {
+                      ToastAndroid.show(
+                        "Catalog table dropped",
+                        ToastAndroid.SHORT
+                      );
+                    });
+                  },
+                  (err) => {
+                    console.log(err.message);
+
+                    ToastAndroid.show(err.message, ToastAndroid.SHORT);
+                  }
+                );
+
+                setIsLoading(() => false);
+              }}
               style={{
                 alignSelf: "flex-start",
                 marginRight: defaultAppPadding,
@@ -303,8 +116,30 @@ export const SettingsScreen = () => {
             </Button>
             <Button
               buttonColor="red"
+              disabled={isLoading}
               icon="delete"
               mode="contained"
+              onPress={() => {
+                setIsLoading(() => true);
+
+                db.transaction(
+                  (tx) => {
+                    tx.executeSql("DROP TABLE storage", [], () => {
+                      ToastAndroid.show(
+                        "Storage table dropped!",
+                        ToastAndroid.SHORT
+                      );
+                    });
+                  },
+                  (err) => {
+                    console.log(err);
+
+                    ToastAndroid.show(err.message, ToastAndroid.SHORT);
+                  }
+                );
+
+                setIsLoading(() => false);
+              }}
               style={{
                 alignSelf: "flex-start",
                 marginRight: defaultAppPadding,
@@ -314,8 +149,30 @@ export const SettingsScreen = () => {
             </Button>
             <Button
               buttonColor="red"
+              disabled={!!isLoading}
               icon="delete"
               mode="contained"
+              onPress={() => {
+                setIsLoading(() => true);
+
+                db.transaction(
+                  (tx) => {
+                    tx.executeSql("DROP TABLE logs", [], () => {
+                      ToastAndroid.show(
+                        "Logs table dropped!",
+                        ToastAndroid.SHORT
+                      );
+                    });
+                  },
+                  (err) => {
+                    console.log(err.message);
+
+                    ToastAndroid.show(err.message, ToastAndroid.SHORT);
+                  }
+                );
+
+                setIsLoading(() => false);
+              }}
               style={{
                 alignSelf: "flex-start",
                 marginRight: defaultAppPadding,
@@ -325,8 +182,30 @@ export const SettingsScreen = () => {
             </Button>
             <Button
               buttonColor="red"
+              disabled={!!isLoading}
               icon="delete"
               mode="contained"
+              onPress={() => {
+                setIsLoading(() => true);
+
+                db.transaction(
+                  (tx) => {
+                    tx.executeSql("DROP TABLE notes", [], () => {
+                      ToastAndroid.show(
+                        "Notes table dropped!",
+                        ToastAndroid.SHORT
+                      );
+                    });
+                  },
+                  (err) => {
+                    console.log(err.message);
+
+                    ToastAndroid.show(err.message, ToastAndroid.SHORT);
+                  }
+                );
+
+                setIsLoading(() => false);
+              }}
               style={{
                 alignSelf: "flex-start",
                 marginRight: defaultAppPadding,
@@ -348,8 +227,102 @@ export const SettingsScreen = () => {
         />
         <Card.Content>
           <Button
+            disabled={!isSignedIn || !!isLoading}
             buttonColor="green"
             icon="seed"
+            loading={!!isLoading}
+            onPress={async () => {
+              setIsLoading(() => true);
+
+              db.transaction(
+                (tx) => {
+                  [
+                    sqlStatementCreateItemsTable,
+                    sqlStatementCreateStorageTable,
+                    sqlStatementCreateLogsTable,
+                    sqlStatementCreateNotesTable,
+                  ].forEach((tableCreateStatement) => {
+                    tx.executeSql(tableCreateStatement);
+                  });
+                },
+                (err) => {
+                  console.log(err.message);
+
+                  ToastAndroid.show(err.message, ToastAndroid.SHORT);
+                }
+              );
+
+              try {
+                const [
+                  {
+                    data: { data: catalogData },
+                  },
+                  {
+                    data: { data: storageData },
+                  },
+                ]: { data: { data: any[] } }[] = await Promise.all(
+                  ["seedCatalog", "seedStorage"].map(async (route) => {
+                    return await axios.get(`${API_URL}/${route}`);
+                  })
+                );
+
+                db.transaction(
+                  (tx) => {
+                    tx.executeSql(sqlStatementCreateItemsTable);
+                    tx.executeSql(sqlStatementCreateStorageTable);
+
+                    tx.executeSql(
+                      `
+                        INSERT INTO items (id, code, color, size, description, location) 
+                        VALUES ${catalogData
+                          .map(() => `(?, ?, ?, ?, ?, ?)`)
+                          .join(", ")}`,
+                      flattenDeep(catalogData),
+                      () => {
+                        ToastAndroid.show(
+                          "Catalog table created!",
+                          ToastAndroid.SHORT
+                        );
+                      }
+                    );
+
+                    tx.executeSql(
+                      `
+                          INSERT INTO storage (storageId, storageLocation, itemId, cartons, pieces, dateModified)
+                          VALUES ${storageData
+                            .map(() => `(?, ?, ?, ?, ?, ?)`)
+                            .join(", ")}`,
+                      flattenDeep(storageData),
+                      () => {
+                        ToastAndroid.show(
+                          "Storage table created!",
+                          ToastAndroid.SHORT
+                        );
+                      }
+                    );
+                  },
+                  (err) => {
+                    console.log(err.message);
+
+                    ToastAndroid.show(err.message, ToastAndroid.SHORT);
+                  }
+                );
+              } catch (err) {
+                if (err instanceof Error) {
+                  console.log(err.message);
+
+                  ToastAndroid.show(err.message, ToastAndroid.SHORT);
+                } else {
+                  console.log("Something went wrong");
+
+                  ToastAndroid.show("Something went wrong", ToastAndroid.SHORT);
+                }
+              }
+
+              ToastAndroid.show("All tables created!", ToastAndroid.SHORT);
+
+              setIsLoading(() => false);
+            }}
             style={{ marginBottom: defaultAppPadding }}
             textColor="white"
           >
@@ -357,10 +330,62 @@ export const SettingsScreen = () => {
           </Button>
           <ScrollView horizontal={true}>
             <Button
-              disabled={!isSignedIn}
+              disabled={!isSignedIn || !!isLoading}
               icon="seed"
               buttonColor="green"
+              loading={!!isLoading}
               mode="contained"
+              onPress={async () => {
+                setIsLoading(() => true);
+
+                try {
+                  const {
+                    data: { data: catalogData },
+                  }: { data: { data: DatabaseItemInputWithId[] } } =
+                    await axios.get(`${API_URL}/seedCatalog`);
+
+                  db.transaction(
+                    (tx) => {
+                      tx.executeSql(sqlStatementCreateItemsTable);
+
+                      tx.executeSql(
+                        `
+                          INSERT INTO items (id, code, color, size, description, location) 
+                          VALUES ${catalogData
+                            .map(() => `(?, ?, ?, ?, ?, ?)`)
+                            .join(", ")}`,
+                        flattenDeep(catalogData),
+                        () => {
+                          ToastAndroid.show(
+                            "Catalog table created!",
+                            ToastAndroid.SHORT
+                          );
+                        }
+                      );
+                    },
+                    (err) => {
+                      console.log(err.message);
+
+                      ToastAndroid.show(err.message, ToastAndroid.SHORT);
+                    }
+                  );
+                } catch (err) {
+                  if (err instanceof Error) {
+                    console.log(err.message);
+
+                    ToastAndroid.show(err.message, ToastAndroid.SHORT);
+                  } else {
+                    console.log("Something went wrong!");
+
+                    ToastAndroid.show(
+                      "Something went wrong!",
+                      ToastAndroid.SHORT
+                    );
+                  }
+                }
+
+                setIsLoading(() => false);
+              }}
               textColor="white"
               style={{
                 alignSelf: "flex-start",
@@ -370,10 +395,62 @@ export const SettingsScreen = () => {
               Catalog
             </Button>
             <Button
-              disabled={!isSignedIn}
-              icon="seed"
               buttonColor="green"
+              disabled={!isSignedIn || !!isLoading}
+              icon="seed"
+              loading={!!isLoading}
               mode="contained"
+              onPress={async () => {
+                setIsLoading(() => true);
+
+                try {
+                  const {
+                    data: { data: storageData },
+                  }: { data: { data: DatabaseStorageItem[] } } =
+                    await axios.get(`${API_URL}/seedStorage`);
+
+                  db.transaction(
+                    (tx) => {
+                      tx.executeSql(sqlStatementCreateStorageTable);
+
+                      tx.executeSql(
+                        `
+                            INSERT INTO storage (storageId, storageLocation, itemId, cartons, pieces, dateModified)
+                            VALUES ${storageData
+                              .map(() => `(?, ?, ?, ?, ?, ?)`)
+                              .join(", ")}`,
+                        flattenDeep(storageData),
+                        () => {
+                          ToastAndroid.show(
+                            "Storage table created!",
+                            ToastAndroid.SHORT
+                          );
+                        }
+                      );
+                    },
+                    (err) => {
+                      console.log(err.message);
+
+                      ToastAndroid.show(err.message, ToastAndroid.SHORT);
+                    }
+                  );
+                } catch (err) {
+                  if (err instanceof Error) {
+                    console.log(err);
+
+                    ToastAndroid.show(err.message, ToastAndroid.SHORT);
+                  } else {
+                    console.log("Something went wrong.");
+
+                    ToastAndroid.show(
+                      "Something went wrong.",
+                      ToastAndroid.SHORT
+                    );
+                  }
+                }
+
+                setIsLoading(() => false);
+              }}
               textColor="white"
               style={{
                 alignSelf: "flex-start",
@@ -383,10 +460,28 @@ export const SettingsScreen = () => {
               Storage
             </Button>
             <Button
-              disabled={!isSignedIn}
-              icon="seed"
               buttonColor="green"
+              disabled={!isSignedIn || !!isLoading}
+              icon="seed"
+              loading={!!isLoading}
               mode="contained"
+              onPress={() => {
+                db.transaction(
+                  (tx) => {
+                    tx.executeSql(sqlStatementCreateLogsTable, [], () => {
+                      ToastAndroid.show(
+                        "Logs table created.",
+                        ToastAndroid.SHORT
+                      );
+                    });
+                  },
+                  (err) => {
+                    console.log(err);
+
+                    ToastAndroid.show(err.message, ToastAndroid.SHORT);
+                  }
+                );
+              }}
               textColor="white"
               style={{
                 alignSelf: "flex-start",
@@ -396,10 +491,32 @@ export const SettingsScreen = () => {
               Logs
             </Button>
             <Button
-              disabled={!isSignedIn}
-              icon="seed"
               buttonColor="green"
+              disabled={!isSignedIn || !!isLoading}
+              icon="seed"
+              loading={isLoading}
               mode="contained"
+              onPress={() => {
+                setIsLoading(() => true);
+
+                db.transaction(
+                  (tx) => {
+                    tx.executeSql(sqlStatementCreateNotesTable, [], () => {
+                      ToastAndroid.show(
+                        "Notes table created!",
+                        ToastAndroid.SHORT
+                      );
+                    });
+                  },
+                  (err) => {
+                    console.log(err);
+
+                    ToastAndroid.show(err.message, ToastAndroid.SHORT);
+                  }
+                );
+
+                setIsLoading(() => false);
+              }}
               textColor="white"
               style={{
                 alignSelf: "flex-start",

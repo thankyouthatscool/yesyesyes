@@ -173,8 +173,8 @@ export const NewCatalogItemScreen: FC<NewCatalogItemScreenNavProps> = ({
         />
         <ButtonWrapper>
           <IconButton
-            icon="cancel"
-            mode="outlined"
+            icon="close"
+            mode="contained"
             onPress={() => {
               setIsConfirmCancelModalOpen(() => true);
 

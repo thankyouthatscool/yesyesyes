@@ -3,7 +3,14 @@ import _flattendeep from "lodash.flattendeep";
 import _debounce from "lodash.debounce";
 import { FC, useCallback, useEffect, useState } from "react";
 import { FlatList, ScrollView, ToastAndroid, View } from "react-native";
-import { Avatar, Card, IconButton, Text, TextInput } from "react-native-paper";
+import {
+  Avatar,
+  Card,
+  IconButton,
+  Menu,
+  Text,
+  TextInput,
+} from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAppDispatch, useAppSelector } from "@hooks";
@@ -42,6 +49,10 @@ export const StorageLocationScreen: FC<StorageLocationScreenProps> = ({
   const [itemLookupSearchTerm, setItemLookupSearchTerm] = useState<string>("");
 
   const [itemsToDelete, setItemsToDelete] = useState<string[]>([]);
+
+  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+
+  const [expandedItemMenu, setExpandedItemMenu] = useState<string | null>(null);
 
   const handleLoadLocationData = useCallback(() => {
     setIsSomethingLoading(() => true);
@@ -208,15 +219,44 @@ export const StorageLocationScreen: FC<StorageLocationScreenProps> = ({
               }}
             />
           )}
-          <IconButton
-            icon={isItemLookup ? "cancel" : "plus"}
-            mode="contained"
-            onPress={() => {
-              setIsItemLookup((isItemLookup) => !isItemLookup);
-              setItemLookupSearchTerm(() => "");
-              setItemLookupSearchResult(() => []);
-            }}
-          />
+
+          {isItemLookup ? (
+            <IconButton
+              icon="close"
+              mode="contained"
+              onPress={() => {
+                setIsItemLookup((isItemLookup) => !isItemLookup);
+                setItemLookupSearchTerm(() => "");
+                setItemLookupSearchResult(() => []);
+              }}
+            />
+          ) : (
+            <Menu
+              anchor={
+                <IconButton
+                  icon="dots-vertical"
+                  mode="contained"
+                  onPress={() => {
+                    setIsMenuOpen(() => true);
+                  }}
+                />
+              }
+              onDismiss={() => {
+                setIsMenuOpen(() => false);
+              }}
+              visible={isMenuOpen}
+            >
+              <Menu.Item
+                leadingIcon="plus"
+                onPress={() => {
+                  setIsMenuOpen(() => false);
+
+                  setIsItemLookup(() => true);
+                }}
+                title="Add New"
+              />
+            </Menu>
+          )}
         </View>
       </View>
       {!!isItemLookup && (
@@ -303,41 +343,67 @@ export const StorageLocationScreen: FC<StorageLocationScreenProps> = ({
                 marginVertical: defaultAppPadding / 2,
               }}
             >
-              <Card.Content>
-                <View style={{ alignItems: "center", flexDirection: "row" }}>
-                  <TextInput
-                    disabled
-                    label="Item Code"
-                    mode="outlined"
-                    style={{ flex: 1 }}
-                    value={item.code}
-                  />
-                  <IconButton
-                    icon="arrow-right"
-                    mode="contained"
-                    onPress={() => {
-                      navigation.navigate("CatalogItemScreen", {
-                        itemId: item.itemId,
-                      });
+              <Card.Title
+                left={(props) => <Avatar.Icon {...props} icon="record" />}
+                subtitle={`${item.color}${
+                  !!item.size ? ` | ${item.size}` : ""
+                }`}
+                subtitleVariant="titleMedium"
+                title={item.code}
+                titleVariant="titleLarge"
+                right={(props) => (
+                  <Menu
+                    {...props}
+                    anchor={
+                      <IconButton
+                        icon="dots-vertical"
+                        onPress={() => {
+                          setExpandedItemMenu(() => item.itemId);
+                        }}
+                      />
+                    }
+                    onDismiss={() => {
+                      setExpandedItemMenu(() => null);
                     }}
-                  />
-                </View>
-                <View style={{ flexDirection: "row" }}>
-                  <TextInput
-                    disabled
-                    label="Item Color"
-                    mode="outlined"
-                    style={{ flex: 2, marginRight: defaultAppPadding / 2 }}
-                    value={item.color}
-                  />
-                  <TextInput
-                    disabled
-                    label="Item Size"
-                    mode="outlined"
-                    style={{ flex: 1, marginLeft: defaultAppPadding / 2 }}
-                    value={item.size}
-                  />
-                </View>
+                    visible={expandedItemMenu === item.itemId}
+                  >
+                    <Menu.Item
+                      leadingIcon="arrow-right"
+                      onPress={() => {
+                        setExpandedItemMenu(() => null);
+
+                        navigation.navigate("CatalogItemScreen", {
+                          itemId: item.itemId,
+                        });
+                      }}
+                      title="Go to Item"
+                    />
+                    <Menu.Item
+                      leadingIcon="delete"
+                      onPress={() => {
+                        setExpandedItemMenu(() => null);
+
+                        setIsUpdateNeeded(() => true);
+
+                        setItemsToDelete((itemsToDelete) => [
+                          ...itemsToDelete,
+                          item.storageId,
+                        ]);
+
+                        dispatch(
+                          setStorageLocationData(
+                            locationData.filter(
+                              (l) => l.storageId !== item.storageId
+                            )
+                          )
+                        );
+                      }}
+                      title="Delete Storage Record"
+                    />
+                  </Menu>
+                )}
+              />
+              <Card.Content>
                 <View style={{ alignItems: "center", flexDirection: "row" }}>
                   <TextInput
                     keyboardType="numeric"
@@ -380,27 +446,6 @@ export const StorageLocationScreen: FC<StorageLocationScreenProps> = ({
                     }}
                     style={{ flex: 1, marginLeft: defaultAppPadding / 2 }}
                     value={item.pieces.toString()}
-                  />
-                  <IconButton
-                    iconColor="red"
-                    icon="delete"
-                    mode="contained"
-                    onPress={() => {
-                      setIsUpdateNeeded(() => true);
-
-                      setItemsToDelete((itemsToDelete) => [
-                        ...itemsToDelete,
-                        item.storageId,
-                      ]);
-
-                      dispatch(
-                        setStorageLocationData(
-                          locationData.filter(
-                            (l) => l.storageId !== item.storageId
-                          )
-                        )
-                      );
-                    }}
                   />
                 </View>
               </Card.Content>

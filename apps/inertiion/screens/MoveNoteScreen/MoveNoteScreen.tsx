@@ -141,7 +141,7 @@ export const MoveNoteScreen: FC<MoveNoteScreenProps> = ({
             placeholder="Lookup item by code or location"
             right={
               <TextInput.Icon
-                icon="cancel"
+                icon="close"
                 mode="contained"
                 onPress={() => {
                   setItemSearchTerm(() => "");

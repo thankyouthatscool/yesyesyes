@@ -140,7 +140,7 @@ export const NewStorageLocationScreen: FC<NewStorageLocationScreenNavProps> = ({
         }
         right={
           <TextInput.Icon
-            icon="cancel"
+            icon="close"
             onPress={() => {
               setItemLookupSearchTerm(() => "");
 
