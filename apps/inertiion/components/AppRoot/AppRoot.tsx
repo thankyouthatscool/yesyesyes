@@ -45,8 +45,12 @@ export const AppRoot = () => {
       initialRouteName="Home"
       screenOptions={{ headerShown: false, swipeEdgeWidth: width / 2 }}
     >
+      <RootDrawer.Screen
+        component={UserScreen}
+        name="User"
+        options={{ title: "Admin" }}
+      />
       <RootDrawer.Screen component={HomeScreenRoot} name="Home" />
-      <RootDrawer.Screen component={UserScreen} name="User" />
       <RootDrawer.Screen component={SettingsScreen} name="Settings" />
     </RootDrawer.Navigator>
   );
