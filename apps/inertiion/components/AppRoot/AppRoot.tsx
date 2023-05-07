@@ -1,4 +1,6 @@
 import { createDrawerNavigator } from "@react-navigation/drawer";
+import Constants from "expo-constants";
+import * as Updates from "expo-updates";
 import { useCallback, useEffect } from "react";
 import { Dimensions } from "react-native";
 
@@ -27,12 +29,39 @@ export const AppRoot = () => {
   }, []);
 
   const handleInitialLoad = useCallback(async () => {
-    console.log("doing the initial load");
-    console.log("Will need to get the splashy");
+    if (
+      Constants.expoConfig?.extra?.ENV === "development" ||
+      Constants.expoConfig?.extra?.ENV === "development:win"
+    ) {
+      console.log("doing the initial load");
+      console.log("Will need to get the splashy");
 
-    await Promise.all(
-      [handleInitialItemQueue].map((functionName) => functionName())
-    );
+      await Promise.all(
+        [handleInitialItemQueue].map((functionName) => functionName())
+      );
+    } else {
+      try {
+        const update = await Updates.checkForUpdateAsync();
+
+        if (update.isAvailable) {
+          await Updates.fetchUpdateAsync();
+          await Updates.reloadAsync();
+        } else {
+          console.log("doing the initial load");
+          console.log("Will need to get the splashy");
+
+          await Promise.all(
+            [handleInitialItemQueue].map((functionName) => functionName())
+          );
+        }
+      } catch (err) {
+        if (err instanceof Error) {
+          console.log(err.message);
+        } else {
+          console.log("Something went wrong.");
+        }
+      }
+    }
   }, []);
 
   useEffect(() => {
