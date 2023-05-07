@@ -91,9 +91,6 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={{ height: "100%" }}>
-      <Text>
-        Yes, this is an update, and what are you going to do about it?
-      </Text>
       <View
         style={{
           alignItems: "center",
