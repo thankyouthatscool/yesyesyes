@@ -1,5 +1,6 @@
 import { useAuth } from "@clerk/clerk-expo";
 import * as Crypto from "expo-crypto";
+import * as ImagePicker from "expo-image-picker";
 import {
   Dispatch,
   FC,
@@ -61,6 +62,16 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
   const [isUpdateNeeded, setIsUpdateNeeded] = useState<boolean>(false);
   const [itemData, setItemData] = useState<CatalogItemInputWithId | null>(null);
   const [itemNotes, setItemNotes] = useState<ItemNote[]>([]);
+  const [images, setImages] = useState<
+    {
+      referenceId: string;
+      referenceType: "item" | "note";
+      imageData: {
+        base64: string;
+        uri: string;
+      }[];
+    }[]
+  >([]);
 
   // Section Toggles
   const [isItemInformationCollapsed, setIsItemInformationCollapsed] =
@@ -170,6 +181,8 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
           icon="arrow-left"
           mode="contained-tonal"
           onPress={() => {
+            setImages(() => []);
+
             navigation.goBack();
           }}
         >
@@ -374,6 +387,14 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
                       (err) => console.log(err)
                     );
 
+                    // TODO: Somewhere around here the images will need to be uploaded to the backend.
+                    // TODO: Also, will need to be saved to the local db to reference somewhere for later.
+                    // TODO: Will need to make a table for images.
+
+                    setImages((images) =>
+                      images.filter((image) => image.referenceType !== "note")
+                    );
+
                     setIsNotesUpdateNeeded(() => false);
                   }}
                 />
@@ -417,7 +438,7 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
                 idx={idx}
                 key={note.noteId}
                 note={note}
-                onUpdate={{ setIsNotesUpdateNeeded, setItemNotes }}
+                onUpdate={{ setImages, setIsNotesUpdateNeeded, setItemNotes }}
                 nav={navigation}
               />
             ))}
@@ -824,6 +845,18 @@ export const NoteComponent: FC<{
   idx: number;
   note: ItemNote;
   onUpdate: {
+    setImages: Dispatch<
+      SetStateAction<
+        {
+          referenceId: string;
+          referenceType: "item" | "note";
+          imageData: {
+            base64: string;
+            uri: string;
+          }[];
+        }[]
+      >
+    >;
     setIsNotesUpdateNeeded: Dispatch<SetStateAction<boolean>>;
     setItemNotes: Dispatch<SetStateAction<ItemNote[]>>;
   };
@@ -831,12 +864,35 @@ export const NoteComponent: FC<{
 }> = ({
   idx,
   note,
-  onUpdate: { setIsNotesUpdateNeeded, setItemNotes },
+  onUpdate: { setImages, setIsNotesUpdateNeeded, setItemNotes },
   nav,
 }) => {
   const { databaseInstance: db } = useAppSelector(({ app }) => ({ ...app }));
 
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+
+  const handleUpdateNoteImages = useCallback(async (noteId: string) => {
+    const res = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      base64: true,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 0.5,
+    });
+
+    if (!res.canceled) {
+      setImages((images) => [
+        ...images,
+        {
+          referenceId: noteId,
+          referenceType: "note",
+          imageData: res.assets.map(({ base64, uri }) => ({
+            base64: base64!,
+            uri,
+          })),
+        },
+      ]);
+    }
+  }, []);
 
   return (
     <View>
@@ -885,6 +941,15 @@ export const NoteComponent: FC<{
           }}
           visible={isMenuOpen}
         >
+          <Menu.Item
+            leadingIcon="image-area"
+            onPress={() => {
+              setIsMenuOpen(() => false);
+
+              handleUpdateNoteImages(note.noteId);
+            }}
+            title="Add Image(s)"
+          />
           <Menu.Item
             leadingIcon="content-duplicate"
             onPress={() => {

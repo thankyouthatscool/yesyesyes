@@ -1,7 +1,8 @@
 import _debounce from "lodash.debounce";
 import { FC, useCallback, useEffect, useRef, useState } from "react";
-import { Keyboard, TextInput, ToastAndroid, View } from "react-native";
+import { TextInput, ToastAndroid, View } from "react-native";
 import {
+  Button,
   Chip,
   FAB,
   IconButton,

@@ -41,4 +41,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   updates: {
     url: "https://u.expo.dev/8bc63a5b-3b3b-4880-a1bb-dd406383ea51",
   },
+  plugins: [
+    [
+      "expo-image-picker",
+      {
+        photoPermission: "The app need to access the pictures, please.",
+      },
+    ],
+  ],
 });

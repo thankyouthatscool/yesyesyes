@@ -24,3 +24,6 @@ export const sqlStatementCreateNotesTable =
 
 export const sqlStatementCreateStorageTable =
   "CREATE TABLE IF NOT EXISTS storage (storageId TEXT UNIQUE NOT NULL PRIMARY KEY, storageLocation TEXT NOT NULL, itemId STRING NOT NULL, cartons INTEGER NOT NULL, pieces INTEGER NOT NULL, dateModified TEXT NOT NULL, FOREIGN KEY (itemId) REFERENCES items (id))";
+
+export const sqlStatementCreateImagesTable =
+  "CREATE TABLE IF NOT EXISTS images (imageId TEXT UNIQUE NOT NULL PRIMARY KEY, referenceId TEXT NOT NULL, referenceType TEXT NOT NULL)";
