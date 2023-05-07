@@ -6,6 +6,7 @@
     "start": "dotenv -e .env expo start",
     "build:android:preview": "eas build --platform android --profile preview --no-wait"
   },
+  "private": true,
   "dependencies": {
     "@react-native-async-storage/async-storage": "1.17.11",
     "@react-navigation/drawer": "^6.6.2",
@@ -31,6 +32,5 @@
     "dotenv-cli": "^7.1.0",
     "eas-cli": "^3.11.0",
     "typescript": "^4.9.4"
-  },
-  "private": true
+  }
 }

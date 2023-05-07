@@ -1,7 +1,14 @@
 import _debounce from "lodash.debounce";
 import { FC, useCallback, useEffect, useRef, useState } from "react";
 import { Keyboard, TextInput, ToastAndroid, View } from "react-native";
-import { Chip, FAB, IconButton, Menu, Searchbar } from "react-native-paper";
+import {
+  Chip,
+  FAB,
+  IconButton,
+  Menu,
+  Searchbar,
+  Text,
+} from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { SearchResult } from "@components/SearchResult";
@@ -84,6 +91,9 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={{ height: "100%" }}>
+      <Text>
+        Yes, this is an update, and what are you going to do about it?
+      </Text>
       <View
         style={{
           alignItems: "center",

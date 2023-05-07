@@ -2,7 +2,7 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 import Constants from "expo-constants";
 import * as Updates from "expo-updates";
 import { useCallback, useEffect } from "react";
-import { Dimensions } from "react-native";
+import { Dimensions, ToastAndroid } from "react-native";
 
 import { CustomDrawer } from "@components/CustomDrawer";
 import { useAppDispatch } from "@hooks";
@@ -44,6 +44,11 @@ export const AppRoot = () => {
         const update = await Updates.checkForUpdateAsync();
 
         if (update.isAvailable) {
+          ToastAndroid.show(
+            "Update is available, and will be downloaded right now.",
+            ToastAndroid.LONG
+          );
+
           await Updates.fetchUpdateAsync();
           await Updates.reloadAsync();
         } else {
