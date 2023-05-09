@@ -1,5 +1,8 @@
 import { useAuth } from "@clerk/clerk-expo";
+import Constants from "expo-constants";
 import * as Crypto from "expo-crypto";
+import { Image } from "expo-image";
+import * as FileSystem from "expo-file-system";
 import * as ImagePicker from "expo-image-picker";
 import {
   Dispatch,
@@ -42,6 +45,13 @@ interface ItemNote {
   dateModified: string;
 }
 
+const ENV = Constants.expoConfig?.extra?.ENV;
+
+const API_URL =
+  ENV === "development:win"
+    ? "http://192.168.0.7:5000"
+    : Constants.expoConfig?.extra?.API_URL!;
+
 export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
   navigation,
   route: {
@@ -59,6 +69,8 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isNotesUpdateNeeded, setIsNotesUpdateNeeded] =
     useState<boolean>(false);
+  const [isUpdateImagesNeeded, setIsUpdateImagesNeeded] =
+    useState<boolean>(false);
   const [isUpdateNeeded, setIsUpdateNeeded] = useState<boolean>(false);
   const [itemData, setItemData] = useState<CatalogItemInputWithId | null>(null);
   const [itemNotes, setItemNotes] = useState<ItemNote[]>([]);
@@ -66,10 +78,7 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
     {
       referenceId: string;
       referenceType: "item" | "note";
-      imageData: {
-        base64: string;
-        uri: string;
-      }[];
+      uri: string;
     }[]
   >([]);
 
@@ -360,15 +369,59 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
                 <Avatar.Text label={itemNotes.length.toString()} size={24} />
               )}
             </View>
+            {/* TODO: Remove all the base64 shit, don't need that anymore. */}
+            {/* TODO: Just need the referenceId, referenceType, and image URI. */}
             <View style={{ flexDirection: "row" }}>
               {!!isNotesUpdateNeeded && (
                 <IconButton
                   disabled={!itemNotes.every((note) => !!note.noteBody)}
                   icon="content-save"
                   mode="contained"
-                  onPress={() => {
+                  onPress={async () => {
+                    const imageUploadRes = await Promise.all(
+                      images.map(
+                        async ({ referenceId, referenceType, uri }) => {
+                          const { body } = await FileSystem.uploadAsync(
+                            `${API_URL}/uploadImage`,
+                            uri,
+                            {
+                              httpMethod: "POST",
+                              uploadType:
+                                FileSystem.FileSystemUploadType.MULTIPART,
+                              fieldName: "note_image",
+                            }
+                          );
+
+                          const { imageId } = JSON.parse(body) as {
+                            imageId: string;
+                          };
+
+                          return { imageId, referenceId, referenceType };
+                        }
+                      )
+                    );
+
                     db.transaction(
                       (tx) => {
+                        if (!!imageUploadRes.length) {
+                          imageUploadRes.forEach(
+                            ({ imageId, referenceId, referenceType }) => {
+                              tx.executeSql(
+                                `
+                                  INSERT INTO images
+                                  VALUES (?, ?, ?)
+                              `,
+                                [imageId, referenceId, referenceType],
+                                () => {
+                                  console.log("images saved locally ");
+
+                                  setIsUpdateImagesNeeded(() => true);
+                                }
+                              );
+                            }
+                          );
+                        }
+
                         itemNotes.forEach(
                           ({ dateModified, noteBody, noteId, referenceId }) => {
                             tx.executeSql(
@@ -436,6 +489,15 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
             itemNotes.map((note, idx) => (
               <NoteComponent
                 idx={idx}
+                images={
+                  !![].length
+                    ? []
+                    : images
+                        .filter(
+                          ({ referenceId }) => referenceId === note.noteId
+                        )
+                        .map(({ uri }) => uri)
+                }
                 key={note.noteId}
                 note={note}
                 onUpdate={{ setImages, setIsNotesUpdateNeeded, setItemNotes }}
@@ -843,6 +905,7 @@ export const CatalogItemScreenStorageComponent: FC<{
 
 export const NoteComponent: FC<{
   idx: number;
+  images: string[];
   note: ItemNote;
   onUpdate: {
     setImages: Dispatch<
@@ -850,10 +913,7 @@ export const NoteComponent: FC<{
         {
           referenceId: string;
           referenceType: "item" | "note";
-          imageData: {
-            base64: string;
-            uri: string;
-          }[];
+          uri: string;
         }[]
       >
     >;
@@ -863,6 +923,7 @@ export const NoteComponent: FC<{
   nav: StorageComponentNav;
 }> = ({
   idx,
+  images,
   note,
   onUpdate: { setImages, setIsNotesUpdateNeeded, setItemNotes },
   nav,
@@ -870,11 +931,12 @@ export const NoteComponent: FC<{
   const { databaseInstance: db } = useAppSelector(({ app }) => ({ ...app }));
 
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const [noteImages, setNoteImages] = useState<string[]>([]);
 
   const handleUpdateNoteImages = useCallback(async (noteId: string) => {
     const res = await ImagePicker.launchCameraAsync({
-      allowsEditing: true,
-      base64: true,
+      allowsEditing: false,
+      aspect: [4, 3],
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 0.5,
     });
@@ -885,13 +947,32 @@ export const NoteComponent: FC<{
         {
           referenceId: noteId,
           referenceType: "note",
-          imageData: res.assets.map(({ base64, uri }) => ({
-            base64: base64!,
-            uri,
-          })),
+          uri: res.assets[0].uri,
         },
       ]);
+
+      setIsNotesUpdateNeeded(() => true);
     }
+  }, []);
+
+  useEffect(() => {
+    db.transaction(
+      (tx) => {
+        tx.executeSql(
+          `
+            SELECT * FROM images
+            WHERE referenceId = ?
+          `,
+          [note.noteId],
+          (_, { rows: { _array } }) => {
+            setNoteImages(() => _array.map((item) => item.imageId));
+          }
+        );
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
   }, []);
 
   return (
@@ -914,6 +995,28 @@ export const NoteComponent: FC<{
         style={{ flex: 1 }}
         value={note.noteBody}
       />
+      {!![...images, ...noteImages].length && (
+        <ScrollView
+          horizontal
+          style={{ flexDirection: "row", marginTop: defaultAppPadding }}
+        >
+          {[
+            ...images,
+            ...noteImages.map((image) => `${API_URL}/getImage/${image}.jpeg`),
+          ].map((image) => (
+            <Image
+              key={image}
+              source={image}
+              style={{
+                borderRadius: 10,
+                height: 120,
+                width: 90,
+                marginRight: defaultAppPadding / 2,
+              }}
+            />
+          ))}
+        </ScrollView>
+      )}
       <View
         style={{
           alignItems: "center",

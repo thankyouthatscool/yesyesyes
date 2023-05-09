@@ -7,7 +7,8 @@ import {
   unlinkSync,
   writeFileSync,
 } from "fs";
-import { resolve } from "path";
+import multer from "multer";
+import { parse, resolve } from "path";
 import { verbose } from "sqlite3";
 
 import { BackendStatusCodes } from "./types";
@@ -20,6 +21,8 @@ const db = new sqlite3.Database("users");
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 5000;
 
 const app = express();
+
+const upload = multer({ dest: resolve("./images") });
 
 app.use(bodyParser.json());
 
@@ -175,6 +178,18 @@ app.post("/syncStorageData", (req, res) => {
   console.log(req.body.userId);
 
   res.status(200).json({});
+});
+
+app.post("/uploadImage", upload.single("note_image"), (req, res) => {
+  console.log(req.file);
+
+  res.status(200).json({ imageId: req.file?.filename });
+});
+
+app.get("/getImage/:imageId", (req, res) => {
+  const { name: fileName } = parse(req.params.imageId);
+
+  return res.sendFile(resolve("./images", fileName));
 });
 
 app.listen(PORT, "0.0.0.0", () => {

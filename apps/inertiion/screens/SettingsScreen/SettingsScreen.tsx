@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from "@hooks";
 import { defaultAppPadding } from "@theme";
 import { DatabaseItemInputWithId } from "@types";
 import {
+  sqlStatementCreateImagesTable,
   sqlStatementCreateItemsTable,
   sqlStatementCreateLogsTable,
   sqlStatementCreateNotesTable,
@@ -23,7 +24,7 @@ const ENV = Constants.expoConfig?.extra?.ENV;
 
 const API_URL =
   ENV === "development:win"
-    ? "http://192.168.0.5:5000"
+    ? "http://192.168.0.7:5000"
     : Constants.expoConfig?.extra?.API_URL!;
 
 export const SettingsScreen = () => {
@@ -237,6 +238,7 @@ export const SettingsScreen = () => {
               db.transaction(
                 (tx) => {
                   [
+                    sqlStatementCreateImagesTable,
                     sqlStatementCreateItemsTable,
                     sqlStatementCreateStorageTable,
                     sqlStatementCreateLogsTable,
