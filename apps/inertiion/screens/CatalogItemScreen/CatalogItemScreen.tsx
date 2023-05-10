@@ -473,6 +473,7 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
                 }}
               />
               <IconButton
+                disabled={!itemNotes.length}
                 icon={`chevron-${isNotesSectionCollapsed ? "down" : "up"}`}
                 mode="contained"
                 onPress={() => {
@@ -975,6 +976,12 @@ export const NoteComponent: FC<{
     );
   }, []);
 
+  useEffect(() => {
+    setNoteImages((noteImages) =>
+      Array.from(new Set([...noteImages, ...images]))
+    );
+  }, [images]);
+
   return (
     <View>
       <TextInput
@@ -1001,8 +1008,11 @@ export const NoteComponent: FC<{
           style={{ flexDirection: "row", marginTop: defaultAppPadding }}
         >
           {[
-            ...images,
-            ...noteImages.map((image) => `${API_URL}/getImage/${image}.jpeg`),
+            ...noteImages.map((image) =>
+              image.startsWith("file")
+                ? image
+                : `${API_URL}/getImage/${image}.jpeg`
+            ),
           ].map((image) => (
             <Image
               key={image}
