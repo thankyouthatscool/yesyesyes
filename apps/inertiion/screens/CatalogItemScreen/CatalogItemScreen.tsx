@@ -17,8 +17,10 @@ import { Pressable, ScrollView, ToastAndroid, View } from "react-native";
 import {
   Avatar,
   Button,
+  Card,
   IconButton,
   Menu,
+  Modal,
   Text,
   TextInput,
 } from "react-native-paper";
@@ -52,6 +54,9 @@ const API_URL =
     ? "http://192.168.0.7:5000"
     : Constants.expoConfig?.extra?.API_URL!;
 
+const BLUR_HASH =
+  "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
+
 export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
   navigation,
   route: {
@@ -66,11 +71,14 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
     ...app,
   }));
 
+  const [isImageSelectModalOpen, setIsImageSelectModalOpen] =
+    useState<boolean>(false);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isNotesUpdateNeeded, setIsNotesUpdateNeeded] =
     useState<boolean>(false);
   const [isUpdateImagesNeeded, setIsUpdateImagesNeeded] =
     useState<boolean>(false);
+
   const [isUpdateNeeded, setIsUpdateNeeded] = useState<boolean>(false);
   const [itemData, setItemData] = useState<CatalogItemInputWithId | null>(null);
   const [itemNotes, setItemNotes] = useState<ItemNote[]>([]);
@@ -170,6 +178,12 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
     }
   }, [itemData]);
 
+  const pickImage = useCallback((source: "camera" | "gallery") => {
+    console.log(source);
+
+    setIsImageSelectModalOpen(() => false);
+  }, []);
+
   useEffect(() => {
     handleGetItemData();
   }, [itemId]);
@@ -245,6 +259,14 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
                 });
               }}
               title="Duplicate"
+            />
+            <Menu.Item
+              leadingIcon="image-area"
+              onPress={() => {
+                setIsImageSelectModalOpen(() => true);
+                setIsMenuOpen(() => false);
+              }}
+              title="Add Image(s)"
             />
             <Menu.Item
               leadingIcon="plus"
@@ -507,6 +529,57 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
             ))}
         </ScrollView>
       )}
+      <Modal
+        onDismiss={() => {
+          setIsImageSelectModalOpen(() => false);
+        }}
+        style={{
+          paddingHorizontal: defaultAppPadding,
+        }}
+        visible={isImageSelectModalOpen}
+      >
+        <Card>
+          <Card.Title
+            right={(props) => (
+              <IconButton
+                {...props}
+                icon="close"
+                onPress={() => {
+                  setIsImageSelectModalOpen(() => false);
+                }}
+              />
+            )}
+            title="Image(s) Source"
+            titleVariant="titleLarge"
+          />
+          <Card.Actions>
+            <Button
+              icon="camera"
+              mode="contained"
+              onPress={() => {
+                pickImage("camera");
+              }}
+              style={{
+                alignSelf: "flex-start",
+              }}
+            >
+              Camera
+            </Button>
+            <Button
+              icon="image-area"
+              mode="contained"
+              onPress={() => {
+                pickImage("gallery");
+              }}
+              style={{
+                alignSelf: "flex-start",
+              }}
+            >
+              Gallery
+            </Button>
+          </Card.Actions>
+        </Card>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -1014,16 +1087,23 @@ export const NoteComponent: FC<{
                 : `${API_URL}/getImage/${image}.jpeg`
             ),
           ].map((image) => (
-            <Image
-              key={image}
-              source={image}
-              style={{
-                borderRadius: 10,
-                height: 120,
-                width: 90,
-                marginRight: defaultAppPadding / 2,
+            <Pressable
+              onPress={() => {
+                console.log("pressed the button", note.noteId, image);
               }}
-            />
+              key={image}
+            >
+              <Image
+                placeholder={BLUR_HASH}
+                source={image}
+                style={{
+                  borderRadius: 10,
+                  height: 120,
+                  width: 90,
+                  marginRight: defaultAppPadding / 2,
+                }}
+              />
+            </Pressable>
           ))}
         </ScrollView>
       )}

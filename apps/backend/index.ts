@@ -189,7 +189,11 @@ app.post("/uploadImage", upload.single("note_image"), (req, res) => {
 app.get("/getImage/:imageId", (req, res) => {
   const { name: fileName } = parse(req.params.imageId);
 
-  return res.sendFile(resolve("./images", fileName));
+  if (existsSync(resolve("./images", fileName))) {
+    return res.sendFile(resolve("./images", fileName));
+  } else {
+    return res.status(404);
+  }
 });
 
 app.listen(PORT, "0.0.0.0", () => {
