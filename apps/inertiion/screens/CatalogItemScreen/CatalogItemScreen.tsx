@@ -13,7 +13,13 @@ import {
   useRef,
   useState,
 } from "react";
-import { Pressable, ScrollView, ToastAndroid, View } from "react-native";
+import {
+  Dimensions,
+  Pressable,
+  ScrollView,
+  ToastAndroid,
+  View,
+} from "react-native";
 import {
   Avatar,
   Button,
@@ -24,7 +30,10 @@ import {
   Text,
   TextInput,
 } from "react-native-paper";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 import { useAppDispatch, useAppSelector } from "@hooks";
 import { setUploadingState, setSearchResult } from "@store";
@@ -54,6 +63,8 @@ const API_URL =
     ? "http://192.168.0.7:5000"
     : Constants.expoConfig?.extra?.API_URL!;
 
+const { width: SCREEN_WIDTH } = Dimensions.get("screen");
+
 export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
   navigation,
   route: {
@@ -78,6 +89,11 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isNotesUpdateNeeded, setIsNotesUpdateNeeded] =
     useState<boolean>(false);
+
+  const [isDisplayFullImage, setIsDisplayFullImage] = useState<boolean>(false);
+  const [fullImageScreenURI, setFullScreenImageURI] = useState<string | null>(
+    null
+  );
 
   const [isUpdateNeeded, setIsUpdateNeeded] = useState<boolean>(false);
   const [isURLTextboxOpen, setIsURLTextboxOpen] = useState<boolean>(false);
@@ -105,6 +121,8 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
   const [isNotesSectionCollapsed, setIsNotesSectionCollapsed] =
     useState<boolean>(true);
 
+  const { top } = useSafeAreaInsets();
+
   const handleGetImageData = useCallback(() => {
     db.transaction(
       (tx) => {
@@ -113,7 +131,7 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
           [itemId],
           (_, { rows: { _array } }) => {
             setDatabaseImages(() =>
-              _array.map((image) => ({ ...image, uri: image.imageId }))
+              _array.map((image) => ({ ...image, uri: image.imageLocation }))
             );
           }
         );
@@ -203,15 +221,25 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
             tx.executeSql(
               ` 
                 INSERT INTO images
-                VALUES (?, ?, ?)
+                VALUES (?, ?, ?, ?)
               `,
-              [image.uri, image.referenceId, image.referenceType]
+              [
+                Crypto.randomUUID(),
+                image.referenceId,
+                image.referenceType,
+                image.uri,
+              ]
             );
           });
 
-          setImages((images) =>
-            images.filter((image) => image.referenceType !== "item")
-          );
+          setImages((images) => {
+            setDatabaseImages((databaseImages) => [
+              ...databaseImages,
+              ...images,
+            ]);
+
+            return images.filter((image) => image.referenceType !== "item");
+          });
         },
         (err) => console.log(err)
       );
@@ -419,10 +447,22 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
                 {[...databaseImages, ...images]
                   .filter((image) => image.referenceType === "item")
                   .map((image, idx) => (
-                    <Pressable key={`${image.uri}-${idx}`}>
+                    <Pressable
+                      key={`${image.uri}-${idx}`}
+                      onPress={() => {
+                        setIsDisplayFullImage(() => true);
+                        setFullScreenImageURI(() => image.uri);
+                      }}
+                    >
                       <Image
+                        contentFit="contain"
                         source={image.uri}
-                        style={{ height: 120, width: 90 }}
+                        style={{
+                          borderRadius: 10,
+                          height: 120,
+                          marginRight: defaultAppPadding / 2,
+                          width: 90,
+                        }}
                       />
                     </Pressable>
                   ))}
@@ -461,7 +501,9 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
             <View style={{ alignItems: "center", flexDirection: "row" }}>
               {!!isNotesUpdateNeeded && (
                 <Button
-                  disabled={!itemNotes.every((note) => !!note.noteBody)}
+                  disabled={
+                    !itemNotes.every((note) => !!note.noteBody) || !!isUploading
+                  }
                   icon="content-save"
                   loading={isUploading}
                   mode="contained"
@@ -499,9 +541,14 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
                               tx.executeSql(
                                 `
                                   INSERT INTO images
-                                  VALUES (?, ?, ?)
+                                  VALUES (?, ?, ?, ?)
                               `,
-                                [imageId, referenceId, referenceType]
+                                [
+                                  Crypto.randomUUID(),
+                                  referenceId,
+                                  referenceType,
+                                  imageId,
+                                ]
                               );
                             }
                           );
@@ -578,6 +625,10 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
           {!isNotesSectionCollapsed &&
             itemNotes.map((note, idx) => (
               <NoteComponent
+                fullScreenActions={{
+                  setFullScreenImageURI,
+                  setIsDisplayFullImage,
+                }}
                 idx={idx}
                 images={
                   !![].length
@@ -704,6 +755,40 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
           )}
         </Card>
       </Modal>
+      {!!isDisplayFullImage && (
+        <View
+          style={{
+            alignItems: "center",
+            backgroundColor: "rgba(255, 255, 255, 0.9)",
+            borderColor: "red",
+            height: "100%",
+            justifyContent: "center",
+            position: "absolute",
+            top,
+            width: SCREEN_WIDTH,
+          }}
+        >
+          <Image
+            contentFit="contain"
+            source={fullImageScreenURI}
+            style={{
+              height: "75%",
+              width: "75%",
+            }}
+          />
+
+          <Button
+            icon="close"
+            mode="contained"
+            onPress={() => {
+              setIsDisplayFullImage(() => false);
+              setFullScreenImageURI(() => null);
+            }}
+          >
+            Close
+          </Button>
+        </View>
+      )}
     </SafeAreaView>
   );
 };
@@ -1102,6 +1187,10 @@ export const CatalogItemScreenStorageComponent: FC<{
 };
 
 export const NoteComponent: FC<{
+  fullScreenActions: {
+    setFullScreenImageURI: Dispatch<SetStateAction<string | null>>;
+    setIsDisplayFullImage: Dispatch<SetStateAction<boolean>>;
+  };
   idx: number;
   images: string[];
   note: ItemNote;
@@ -1120,6 +1209,7 @@ export const NoteComponent: FC<{
   };
   nav: StorageComponentNav;
 }> = ({
+  fullScreenActions: { setFullScreenImageURI, setIsDisplayFullImage },
   idx,
   images,
   note,
@@ -1163,7 +1253,7 @@ export const NoteComponent: FC<{
           `,
           [note.noteId],
           (_, { rows: { _array } }) => {
-            setNoteImages(() => _array.map((item) => item.imageId));
+            setNoteImages(() => _array.map((item) => item.imageLocation));
           }
         );
       },
@@ -1215,11 +1305,13 @@ export const NoteComponent: FC<{
             return (
               <Pressable
                 onPress={() => {
-                  console.log("pressed the button", note.noteId, image);
+                  setFullScreenImageURI(() => image);
+                  setIsDisplayFullImage(() => true);
                 }}
                 key={image}
               >
                 <Image
+                  contentFit="contain"
                   source={image}
                   style={{
                     borderRadius: 10,
