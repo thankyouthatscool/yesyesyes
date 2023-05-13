@@ -27,7 +27,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAppDispatch, useAppSelector } from "@hooks";
-import { setSearchResult } from "@store";
+import { setUploadingState, setSearchResult } from "@store";
 import { defaultAppPadding } from "@theme";
 import { CatalogItem, StorageComponentNav } from "@types";
 
@@ -54,9 +54,6 @@ const API_URL =
     ? "http://192.168.0.7:5000"
     : Constants.expoConfig?.extra?.API_URL!;
 
-const BLUR_HASH =
-  "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
-
 export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
   navigation,
   route: {
@@ -67,8 +64,13 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
 
   const scrollViewRef = useRef<ScrollView>(null);
 
-  const { databaseInstance: db, searchTerm } = useAppSelector(({ app }) => ({
+  const {
+    databaseInstance: db,
+    isUploading,
+    searchTerm,
+  } = useAppSelector(({ app, appState }) => ({
     ...app,
+    ...appState,
   }));
 
   const [isImageSelectModalOpen, setIsImageSelectModalOpen] =
@@ -76,13 +78,20 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isNotesUpdateNeeded, setIsNotesUpdateNeeded] =
     useState<boolean>(false);
-  const [isUpdateImagesNeeded, setIsUpdateImagesNeeded] =
-    useState<boolean>(false);
 
   const [isUpdateNeeded, setIsUpdateNeeded] = useState<boolean>(false);
+  const [isURLTextboxOpen, setIsURLTextboxOpen] = useState<boolean>(false);
+  const [imageURLs, setImageURLs] = useState<string[]>([]);
   const [itemData, setItemData] = useState<CatalogItemInputWithId | null>(null);
   const [itemNotes, setItemNotes] = useState<ItemNote[]>([]);
   const [images, setImages] = useState<
+    {
+      referenceId: string;
+      referenceType: "item" | "note";
+      uri: string;
+    }[]
+  >([]);
+  const [databaseImages, setDatabaseImages] = useState<
     {
       referenceId: string;
       referenceType: "item" | "note";
@@ -95,6 +104,25 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
     useState<boolean>(false);
   const [isNotesSectionCollapsed, setIsNotesSectionCollapsed] =
     useState<boolean>(true);
+
+  const handleGetImageData = useCallback(() => {
+    db.transaction(
+      (tx) => {
+        tx.executeSql(
+          "SELECT * FROM images WHERE referenceId = ?",
+          [itemId],
+          (_, { rows: { _array } }) => {
+            setDatabaseImages(() =>
+              _array.map((image) => ({ ...image, uri: image.imageId }))
+            );
+          }
+        );
+      },
+      (err) => {
+        console.log(err);
+      }
+    );
+  }, [itemId]);
 
   const handleGetItemData = useCallback(() => {
     db.transaction(
@@ -165,18 +193,31 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
                 })) as unknown as CatalogItem[];
 
                 dispatch(setSearchResult(searchResult));
-
-                setIsUpdateNeeded(() => false);
               } catch (err) {
                 console.log(err);
               }
             }
           );
+
+          images.forEach((image) => {
+            tx.executeSql(
+              ` 
+                INSERT INTO images
+                VALUES (?, ?, ?)
+              `,
+              [image.uri, image.referenceId, image.referenceType]
+            );
+          });
+
+          setImages((images) =>
+            images.filter((image) => image.referenceType !== "item")
+          );
         },
         (err) => console.log(err)
       );
+      setIsUpdateNeeded(() => false);
     }
-  }, [itemData]);
+  }, [images, itemData]);
 
   const pickImage = useCallback((source: "camera" | "gallery") => {
     console.log(source);
@@ -186,7 +227,12 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
 
   useEffect(() => {
     handleGetItemData();
+    handleGetImageData();
   }, [itemId]);
+
+  useEffect(() => {
+    console.log(images);
+  }, [images]);
 
   return (
     <SafeAreaView
@@ -363,6 +409,27 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
               />
             </View>
           )}
+
+          {!![...databaseImages, ...images].filter(
+            (image) => image.referenceType === "item"
+          ).length && (
+            <View>
+              <Text variant="headlineSmall">Images</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {[...databaseImages, ...images]
+                  .filter((image) => image.referenceType === "item")
+                  .map((image, idx) => (
+                    <Pressable key={`${image.uri}-${idx}`}>
+                      <Image
+                        source={image.uri}
+                        style={{ height: 120, width: 90 }}
+                      />
+                    </Pressable>
+                  ))}
+              </ScrollView>
+            </View>
+          )}
+
           <CatalogItemScreenStorageComponent
             itemId={itemData.id}
             navigation={navigation}
@@ -391,15 +458,16 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
                 <Avatar.Text label={itemNotes.length.toString()} size={24} />
               )}
             </View>
-            {/* TODO: Remove all the base64 shit, don't need that anymore. */}
-            {/* TODO: Just need the referenceId, referenceType, and image URI. */}
-            <View style={{ flexDirection: "row" }}>
+            <View style={{ alignItems: "center", flexDirection: "row" }}>
               {!!isNotesUpdateNeeded && (
-                <IconButton
+                <Button
                   disabled={!itemNotes.every((note) => !!note.noteBody)}
                   icon="content-save"
+                  loading={isUploading}
                   mode="contained"
                   onPress={async () => {
+                    dispatch(setUploadingState(true));
+
                     const imageUploadRes = await Promise.all(
                       images.map(
                         async ({ referenceId, referenceType, uri }) => {
@@ -433,12 +501,7 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
                                   INSERT INTO images
                                   VALUES (?, ?, ?)
                               `,
-                                [imageId, referenceId, referenceType],
-                                () => {
-                                  console.log("images saved locally ");
-
-                                  setIsUpdateImagesNeeded(() => true);
-                                }
+                                [imageId, referenceId, referenceType]
                               );
                             }
                           );
@@ -471,8 +534,12 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
                     );
 
                     setIsNotesUpdateNeeded(() => false);
+
+                    dispatch(setUploadingState(false));
                   }}
-                />
+                >
+                  Save
+                </Button>
               )}
               <IconButton
                 disabled={!itemNotes.every((note) => !!note.noteBody)}
@@ -532,6 +599,7 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
       <Modal
         onDismiss={() => {
           setIsImageSelectModalOpen(() => false);
+          setIsURLTextboxOpen(() => false);
         }}
         style={{
           paddingHorizontal: defaultAppPadding,
@@ -546,6 +614,7 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
                 icon="close"
                 onPress={() => {
                   setIsImageSelectModalOpen(() => false);
+                  setIsURLTextboxOpen(() => false);
                 }}
               />
             )}
@@ -559,9 +628,6 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
               onPress={() => {
                 pickImage("camera");
               }}
-              style={{
-                alignSelf: "flex-start",
-              }}
             >
               Camera
             </Button>
@@ -571,13 +637,71 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
               onPress={() => {
                 pickImage("gallery");
               }}
-              style={{
-                alignSelf: "flex-start",
-              }}
             >
               Gallery
             </Button>
+            <Button
+              icon="web"
+              mode="contained"
+              onPress={() => {
+                setIsURLTextboxOpen(() => true);
+              }}
+            >
+              URLs
+            </Button>
           </Card.Actions>
+          {!!isURLTextboxOpen && (
+            <View>
+              <Card.Content>
+                <TextInput
+                  label="Image URLs"
+                  mode="outlined"
+                  multiline
+                  numberOfLines={4}
+                  onChangeText={(text) => {
+                    setImageURLs(() =>
+                      text.split(/,|\n/).map((url) => url.trim())
+                    );
+                  }}
+                  placeholder="Image URLs (comma/new line separated)"
+                />
+              </Card.Content>
+              <Card.Actions>
+                <Button
+                  icon="cancel"
+                  mode="contained"
+                  onPress={() => {
+                    setIsURLTextboxOpen(() => false);
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  disabled={!imageURLs.filter((url) => !!url).length}
+                  icon="content-save"
+                  mode="contained"
+                  onPress={() => {
+                    setImages((images) => [
+                      ...images,
+                      ...imageURLs
+                        .filter((url) => !!url)
+                        .map((url) => ({
+                          referenceId: itemId,
+                          referenceType: "item" as const,
+                          uri: url.trim(),
+                        })),
+                    ]);
+
+                    setIsUpdateNeeded(() => true);
+                    setIsImageSelectModalOpen(() => false);
+                    setIsURLTextboxOpen(() => false);
+                  }}
+                >
+                  Save
+                </Button>
+              </Card.Actions>
+            </View>
+          )}
         </Card>
       </Modal>
     </SafeAreaView>
@@ -1078,6 +1202,7 @@ export const NoteComponent: FC<{
       {!![...images, ...noteImages].length && (
         <ScrollView
           horizontal
+          showsHorizontalScrollIndicator
           style={{ flexDirection: "row", marginTop: defaultAppPadding }}
         >
           {[
@@ -1086,25 +1211,26 @@ export const NoteComponent: FC<{
                 ? image
                 : `${API_URL}/getImage/${image}.jpeg`
             ),
-          ].map((image) => (
-            <Pressable
-              onPress={() => {
-                console.log("pressed the button", note.noteId, image);
-              }}
-              key={image}
-            >
-              <Image
-                placeholder={BLUR_HASH}
-                source={image}
-                style={{
-                  borderRadius: 10,
-                  height: 120,
-                  width: 90,
-                  marginRight: defaultAppPadding / 2,
+          ].map((image) => {
+            return (
+              <Pressable
+                onPress={() => {
+                  console.log("pressed the button", note.noteId, image);
                 }}
-              />
-            </Pressable>
-          ))}
+                key={image}
+              >
+                <Image
+                  source={image}
+                  style={{
+                    borderRadius: 10,
+                    height: 120,
+                    width: 90,
+                    marginRight: defaultAppPadding / 2,
+                  }}
+                />
+              </Pressable>
+            );
+          })}
         </ScrollView>
       )}
       <View

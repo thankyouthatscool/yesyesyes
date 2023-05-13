@@ -1,4 +1,5 @@
 export * from "./appSlice";
+export * from "./appStateSlice";
 
 export * from "./catalogSlice";
 
