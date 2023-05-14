@@ -247,10 +247,36 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
     }
   }, [images, itemData]);
 
-  const pickImage = useCallback((source: "camera" | "gallery") => {
-    console.log(source);
+  const pickImage = useCallback(async (source: "camera" | "gallery") => {
+    let res: ImagePicker.ImagePickerResult;
 
-    setIsImageSelectModalOpen(() => false);
+    if (source === "camera") {
+      res = await ImagePicker.launchCameraAsync({
+        allowsEditing: false,
+        aspect: [4, 3],
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 0.5,
+      });
+    } else {
+      res = await ImagePicker.launchImageLibraryAsync({
+        allowsEditing: false,
+        aspect: [4, 3],
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 0.5,
+      });
+    }
+
+    if (!res.canceled) {
+      const selectedAssets = res.assets.map((asset) => ({
+        referenceId: itemId,
+        referenceType: "item" as const,
+        uri: asset.uri,
+      }));
+
+      setIsImageSelectModalOpen(() => false);
+      setImages((images) => [...images, ...selectedAssets]);
+      setIsUpdateNeeded(() => true);
+    }
   }, []);
 
   useEffect(() => {
@@ -572,10 +598,6 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
                       (err) => console.log(err)
                     );
 
-                    // TODO: Somewhere around here the images will need to be uploaded to the backend.
-                    // TODO: Also, will need to be saved to the local db to reference somewhere for later.
-                    // TODO: Will need to make a table for images.
-
                     setImages((images) =>
                       images.filter((image) => image.referenceType !== "note")
                     );
@@ -672,13 +694,14 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
             title="Image(s) Source"
             titleVariant="titleLarge"
           />
-          <Card.Actions>
+          <ScrollView horizontal style={{ padding: defaultAppPadding }}>
             <Button
               icon="camera"
               mode="contained"
               onPress={() => {
                 pickImage("camera");
               }}
+              style={{ marginRight: defaultAppPadding / 2 }}
             >
               Camera
             </Button>
@@ -688,6 +711,7 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
               onPress={() => {
                 pickImage("gallery");
               }}
+              style={{ marginRight: defaultAppPadding / 2 }}
             >
               Gallery
             </Button>
@@ -700,7 +724,7 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
             >
               URLs
             </Button>
-          </Card.Actions>
+          </ScrollView>
           {!!isURLTextboxOpen && (
             <View>
               <Card.Content>
