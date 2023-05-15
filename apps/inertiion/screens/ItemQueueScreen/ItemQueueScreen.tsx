@@ -5,7 +5,11 @@ import { Card, IconButton, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAppDispatch, useAppSelector } from "@hooks";
-import { setItemQueue, setItemQueueChecked } from "@store";
+import {
+  setIsCheckedQueueHidden,
+  setItemQueue,
+  setItemQueueChecked,
+} from "@store";
 import { defaultAppPadding } from "@theme";
 import {
   AsyncStorageReturnStatus,
@@ -13,6 +17,8 @@ import {
   ItemQueueScreenNavProps,
 } from "@types";
 import {
+  localStorageGetIsCheckedQueueHidden,
+  localStorageSetIsCheckedQueueHidden,
   localStorageGetCheckedItemQueue,
   localStorageSetCheckedItemQueue,
 } from "@utils";
@@ -26,12 +32,12 @@ export const ItemQueueScreen: FC<ItemQueueScreenNavProps> = ({
 
   const {
     databaseInstance: db,
+    isCheckedQueueHidden,
     itemQueue,
     itemQueueChecked,
-  } = useAppSelector(({ app }) => app);
+  } = useAppSelector(({ app, appState }) => ({ ...app, ...appState }));
 
   const [catalogData, setCatalogData] = useState<CatalogItem[]>([]);
-  const [isHiddenChecked, setIsHiddenChecked] = useState<boolean>(false);
 
   const handleItemDataLoad = useCallback(async () => {
     setCatalogData(() => []);
@@ -42,6 +48,12 @@ export const ItemQueueScreen: FC<ItemQueueScreenNavProps> = ({
     if (status === AsyncStorageReturnStatus.OK) {
       dispatch(setItemQueueChecked(checkedItemQueue));
     }
+
+    const hiddenItemQueueStatus = await localStorageGetIsCheckedQueueHidden();
+
+    console.log(hiddenItemQueueStatus);
+
+    dispatch(setIsCheckedQueueHidden(hiddenItemQueueStatus));
 
     db.transaction(
       (tx) => {
@@ -84,10 +96,12 @@ export const ItemQueueScreen: FC<ItemQueueScreenNavProps> = ({
         </View>
         <IconButton
           disabled={!itemQueue.length}
-          icon={isHiddenChecked ? "eye" : "eye-off"}
+          icon={isCheckedQueueHidden ? "eye" : "eye-off"}
           mode="contained"
-          onPress={() => {
-            setIsHiddenChecked((isHiddenChecked) => !isHiddenChecked);
+          onPress={async () => {
+            dispatch(setIsCheckedQueueHidden(!isCheckedQueueHidden));
+
+            await localStorageSetIsCheckedQueueHidden(!isCheckedQueueHidden);
           }}
           onLongPress={() => {
             dispatch(setItemQueue([]));
@@ -130,7 +144,7 @@ export const ItemQueueScreen: FC<ItemQueueScreenNavProps> = ({
                 }}
                 style={{
                   display:
-                    itemQueueChecked.includes(item) && !!isHiddenChecked
+                    itemQueueChecked.includes(item) && !!isCheckedQueueHidden
                       ? "none"
                       : "flex",
                   marginVertical: defaultAppPadding / 2,

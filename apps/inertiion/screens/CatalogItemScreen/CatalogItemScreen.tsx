@@ -267,6 +267,8 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
     }
 
     if (!res.canceled) {
+      // TODO: Will need to upload!!!
+
       const selectedAssets = res.assets.map((asset) => ({
         referenceId: itemId,
         referenceType: "item" as const,

@@ -4,6 +4,7 @@ import { AsyncStorageReturnStatus } from "@types";
 
 enum LocalStorageKeys {
   CHECKED_ITEM_QUEUE = "checkedItemQueue",
+  IS_CHECKED_QUEUE_HIDDEN = "isCheckedQueueHidden",
   ITEM_QUEUE = "itemQueue",
   SEARCH_TERM = "searchTerm",
 }
@@ -69,6 +70,37 @@ export const localStorageSetCheckedItemQueue = async (
     await AsyncStorage.setItem(
       LocalStorageKeys.CHECKED_ITEM_QUEUE,
       JSON.stringify([...checkedItemQueue])
+    );
+
+    return { status: AsyncStorageReturnStatus.OK };
+  } catch {
+    return { status: AsyncStorageReturnStatus.ERROR };
+  }
+};
+
+export const localStorageGetIsCheckedQueueHidden = async () => {
+  const isCheckedQueueHiddenString = await AsyncStorage.getItem(
+    LocalStorageKeys.IS_CHECKED_QUEUE_HIDDEN
+  );
+
+  if (!!isCheckedQueueHiddenString) {
+    const isCheckedQueueHidden = JSON.parse(
+      isCheckedQueueHiddenString
+    ) as boolean;
+
+    return isCheckedQueueHidden;
+  } else {
+    return false;
+  }
+};
+
+export const localStorageSetIsCheckedQueueHidden = async (
+  hiddenItemQueueStatus: boolean
+) => {
+  try {
+    await AsyncStorage.setItem(
+      LocalStorageKeys.IS_CHECKED_QUEUE_HIDDEN,
+      JSON.stringify(hiddenItemQueueStatus)
     );
 
     return { status: AsyncStorageReturnStatus.OK };
