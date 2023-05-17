@@ -1,3 +1,4 @@
+import * as Haptics from "expo-haptics";
 import _debounce from "lodash.debounce";
 import { FC, useCallback, useEffect, useRef, useState } from "react";
 import { TextInput, ToastAndroid, View } from "react-native";
@@ -202,7 +203,9 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
           onPress={() => {
             navigation.navigate("ItemQueueScreen");
           }}
-          onLongPress={async () => {
+          onLongPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+
             setIsClearAllPickQueueModalVisible(() => true);
           }}
           style={{
@@ -224,6 +227,7 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
           style={{
             backgroundColor: "white",
             borderRadius: 10,
+            elevation: 10,
             padding: defaultAppPadding,
           }}
         >

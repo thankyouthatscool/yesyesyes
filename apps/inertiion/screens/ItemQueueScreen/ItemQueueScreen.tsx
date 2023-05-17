@@ -1,4 +1,5 @@
 import Checkbox from "expo-checkbox";
+import * as Haptics from "expo-haptics";
 import { FC, useCallback, useEffect, useState } from "react";
 import { ScrollView, ToastAndroid, View } from "react-native";
 import { Card, IconButton, Snackbar, Text } from "react-native-paper";
@@ -125,6 +126,8 @@ export const ItemQueueScreen: FC<ItemQueueScreenNavProps> = ({
               <Card
                 key={item}
                 onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
                   setIsSnackVisible(() => true);
 
                   if (itemQueueChecked.includes(item)) {
@@ -242,6 +245,8 @@ export const ItemQueueScreen: FC<ItemQueueScreenNavProps> = ({
                   >
                     <Checkbox
                       onValueChange={(e) => {
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
                         setIsSnackVisible(() => true);
 
                         if (!!e) {
@@ -348,8 +353,9 @@ export const ItemQueueScreen: FC<ItemQueueScreenNavProps> = ({
       <Snackbar
         action={{
           label: "Undo",
-
           onPress: async () => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
             if (!!lastActions?.length) {
               if (lastActions.length === 1) {
                 if (lastActions[0].action === "check") {
