@@ -1,7 +1,7 @@
 import Checkbox from "expo-checkbox";
 import { FC, useCallback, useEffect, useState } from "react";
 import { ScrollView, ToastAndroid, View } from "react-native";
-import { Card, IconButton, Text } from "react-native-paper";
+import { Card, IconButton, Snackbar, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAppDispatch, useAppSelector } from "@hooks";
@@ -23,8 +23,6 @@ import {
   localStorageSetCheckedItemQueue,
 } from "@utils";
 
-import { ItemQueueScreenWrapper } from "./Styled";
-
 export const ItemQueueScreen: FC<ItemQueueScreenNavProps> = ({
   navigation,
 }) => {
@@ -38,6 +36,15 @@ export const ItemQueueScreen: FC<ItemQueueScreenNavProps> = ({
   } = useAppSelector(({ app, appState }) => ({ ...app, ...appState }));
 
   const [catalogData, setCatalogData] = useState<CatalogItem[]>([]);
+  const [isSnackVisible, setIsSnackVisible] = useState<boolean>(false);
+  const [lastActions, setLastActions] = useState<
+    | {
+        action: "check" | "uncheck";
+        item: string;
+        message: string;
+      }[]
+    | null
+  >(null);
 
   const handleItemDataLoad = useCallback(async () => {
     setCatalogData(() => []);
@@ -50,8 +57,6 @@ export const ItemQueueScreen: FC<ItemQueueScreenNavProps> = ({
     }
 
     const hiddenItemQueueStatus = await localStorageGetIsCheckedQueueHidden();
-
-    console.log(hiddenItemQueueStatus);
 
     dispatch(setIsCheckedQueueHidden(hiddenItemQueueStatus));
 
@@ -120,6 +125,8 @@ export const ItemQueueScreen: FC<ItemQueueScreenNavProps> = ({
               <Card
                 key={item}
                 onPress={() => {
+                  setIsSnackVisible(() => true);
+
                   if (itemQueueChecked.includes(item)) {
                     dispatch(
                       setItemQueueChecked(
@@ -130,6 +137,31 @@ export const ItemQueueScreen: FC<ItemQueueScreenNavProps> = ({
                     localStorageSetCheckedItemQueue(
                       itemQueueChecked.filter((i) => i !== item)
                     );
+
+                    setLastActions((lastActions) => {
+                      if (!!lastActions?.length) {
+                        return [
+                          ...lastActions,
+                          {
+                            action: "uncheck",
+                            item,
+                            message: `Undo UN-checking ${catalogData.find(
+                              (i) => i.id === item
+                            )?.code!}?`,
+                          },
+                        ];
+                      } else {
+                        return [
+                          {
+                            action: "uncheck",
+                            item,
+                            message: `Undo UN-checking ${catalogData.find(
+                              (i) => i.id === item
+                            )?.code!}?`,
+                          },
+                        ];
+                      }
+                    });
                   } else {
                     dispatch(setItemQueueChecked([...itemQueueChecked, item]));
 
@@ -137,6 +169,31 @@ export const ItemQueueScreen: FC<ItemQueueScreenNavProps> = ({
                       ...itemQueueChecked,
                       item,
                     ]);
+
+                    setLastActions((lastActions) => {
+                      if (!!lastActions?.length) {
+                        return [
+                          ...lastActions,
+                          {
+                            action: "check",
+                            item,
+                            message: `Undo checking ${catalogData.find(
+                              (i) => i.id === item
+                            )?.code!}?`,
+                          },
+                        ];
+                      } else {
+                        return [
+                          {
+                            action: "check",
+                            item,
+                            message: `Undo checking ${catalogData.find(
+                              (i) => i.id === item
+                            )?.code!}?`,
+                          },
+                        ];
+                      }
+                    });
                   }
                 }}
                 onLongPress={() => {
@@ -185,6 +242,8 @@ export const ItemQueueScreen: FC<ItemQueueScreenNavProps> = ({
                   >
                     <Checkbox
                       onValueChange={(e) => {
+                        setIsSnackVisible(() => true);
+
                         if (!!e) {
                           dispatch(
                             setItemQueueChecked([...itemQueueChecked, item])
@@ -194,6 +253,31 @@ export const ItemQueueScreen: FC<ItemQueueScreenNavProps> = ({
                             ...itemQueueChecked,
                             item,
                           ]);
+
+                          setLastActions((lastActions) => {
+                            if (!!lastActions?.length) {
+                              return [
+                                ...lastActions,
+                                {
+                                  action: "check",
+                                  item,
+                                  message: `Undo checking ${catalogData.find(
+                                    (i) => i.id === item
+                                  )?.code!}?`,
+                                },
+                              ];
+                            } else {
+                              return [
+                                {
+                                  action: "check",
+                                  item,
+                                  message: `Undo checking ${catalogData.find(
+                                    (i) => i.id === item
+                                  )?.code!}?`,
+                                },
+                              ];
+                            }
+                          });
 
                           return;
                         }
@@ -208,6 +292,31 @@ export const ItemQueueScreen: FC<ItemQueueScreenNavProps> = ({
                           localStorageSetCheckedItemQueue(
                             itemQueueChecked.filter((i) => i !== item)
                           );
+
+                          setLastActions((lastActions) => {
+                            if (!!lastActions?.length) {
+                              return [
+                                ...lastActions,
+                                {
+                                  action: "uncheck",
+                                  item,
+                                  message: `Undo UN-checking ${catalogData.find(
+                                    (i) => i.id === item
+                                  )?.code!}?`,
+                                },
+                              ];
+                            } else {
+                              return [
+                                {
+                                  action: "uncheck",
+                                  item,
+                                  message: `Undo UN-checking ${catalogData.find(
+                                    (i) => i.id === item
+                                  )?.code!}?`,
+                                },
+                              ];
+                            }
+                          });
 
                           return;
                         }
@@ -236,6 +345,70 @@ export const ItemQueueScreen: FC<ItemQueueScreenNavProps> = ({
           })}
         </ScrollView>
       </View>
+      <Snackbar
+        action={{
+          label: "Undo",
+
+          onPress: async () => {
+            if (!!lastActions?.length) {
+              if (lastActions.length === 1) {
+                if (lastActions[0].action === "check") {
+                  dispatch(
+                    setItemQueueChecked(
+                      itemQueueChecked.filter((i) => i !== lastActions[0].item)
+                    )
+                  );
+
+                  localStorageSetCheckedItemQueue(
+                    itemQueueChecked.filter((i) => i !== lastActions[0].item)
+                  );
+                } else {
+                  dispatch(
+                    setItemQueueChecked([
+                      ...itemQueueChecked,
+                      lastActions[0].item,
+                    ])
+                  );
+
+                  await localStorageSetCheckedItemQueue([
+                    ...itemQueueChecked,
+                    lastActions[0].item,
+                  ]);
+                }
+              } else {
+                const toRemove = lastActions
+                  .filter((action) => action.action === "check")
+                  .map((action) => action.item);
+
+                const toAdd = lastActions
+                  .filter((action) => action.action === "uncheck")
+                  .map((action) => action.item);
+
+                const finalCheckedQueue = [
+                  ...itemQueueChecked.filter(
+                    (item) => !toRemove.includes(item)
+                  ),
+                  ...toAdd,
+                ];
+
+                dispatch(setItemQueueChecked(finalCheckedQueue));
+              }
+            }
+
+            setLastActions(() => null);
+          },
+        }}
+        onDismiss={() => {
+          setIsSnackVisible(() => false);
+        }}
+        visible={isSnackVisible}
+      >
+        {lastActions?.length === 1
+          ? lastActions[0].message
+          : !!lastActions
+          ? `Undo last ${lastActions?.length} actions?`
+          : "All done!"}
+      </Snackbar>
     </SafeAreaView>
   );
 };

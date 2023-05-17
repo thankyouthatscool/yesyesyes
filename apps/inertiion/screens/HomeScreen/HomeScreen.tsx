@@ -7,6 +7,7 @@ import {
   FAB,
   IconButton,
   Menu,
+  Modal,
   Searchbar,
   Text,
 } from "react-native-paper";
@@ -35,6 +36,8 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
   );
 
   const [isFocus, setIsFocus] = useState<boolean>(false);
+  const [isClearAllPickQueueModalVisible, setIsClearAllPickQueueModalVisible] =
+    useState<boolean>(false);
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [lastSearchTerms, setLastSearchTerms] = useState<string[] | null>(null);
 
@@ -200,16 +203,7 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
             navigation.navigate("ItemQueueScreen");
           }}
           onLongPress={async () => {
-            ToastAndroid.show("Item queue cleared!", ToastAndroid.LONG);
-
-            await Promise.all(
-              [localStorageSetItemQueue, localStorageSetCheckedItemQueue].map(
-                async (fun) => await fun([])
-              )
-            );
-
-            dispatch(clearItemQueue());
-            dispatch(setItemQueueChecked([]));
+            setIsClearAllPickQueueModalVisible(() => true);
           }}
           style={{
             bottom: defaultAppPadding * 2,
@@ -219,6 +213,58 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
           }}
         />
       )}
+      <Modal
+        onDismiss={() => {
+          setIsClearAllPickQueueModalVisible(() => false);
+        }}
+        style={{ alignItems: "center", justifyContent: "center" }}
+        visible={isClearAllPickQueueModalVisible}
+      >
+        <View
+          style={{
+            backgroundColor: "white",
+            borderRadius: 10,
+            padding: defaultAppPadding,
+          }}
+        >
+          <Text variant="titleLarge" style={{ fontWeight: "700" }}>
+            Clear Pick Queue?
+          </Text>
+          <View style={{ flexDirection: "row", marginTop: defaultAppPadding }}>
+            <Button
+              mode="contained"
+              onPress={() => {
+                setIsClearAllPickQueueModalVisible(() => false);
+              }}
+              style={{ marginRight: defaultAppPadding / 2 }}
+            >
+              Cancel
+            </Button>
+            <Button
+              icon="delete"
+              buttonColor="red"
+              mode="contained"
+              onPress={async () => {
+                ToastAndroid.show("Item queue cleared!", ToastAndroid.LONG);
+
+                await Promise.all(
+                  [
+                    localStorageSetItemQueue,
+                    localStorageSetCheckedItemQueue,
+                  ].map(async (fun) => await fun([]))
+                );
+
+                dispatch(clearItemQueue());
+                dispatch(setItemQueueChecked([]));
+
+                setIsClearAllPickQueueModalVisible(() => false);
+              }}
+            >
+              CLEAR
+            </Button>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 };
