@@ -400,6 +400,7 @@ export const ItemQueueScreen: FC<ItemQueueScreenNavProps> = ({
         }}
         onDismiss={() => {
           setIsSnackVisible(() => false);
+          setLastActions(() => []);
         }}
         visible={isSnackVisible}
       >
