@@ -6,8 +6,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppSelector } from "@hooks";
 import { LogsScreenProps } from "@types";
 import { defaultAppPadding } from "@theme";
-import { ScreenStackHeaderConfig } from "react-native-screens";
-import { array } from "zod";
 
 interface LogItem {
   dateCreated: string;

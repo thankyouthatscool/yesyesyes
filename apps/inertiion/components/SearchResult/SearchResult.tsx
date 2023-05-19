@@ -170,7 +170,11 @@ export const SearchResult: FC<{ navigation: HomeScreenNav }> = ({
             icon="plus"
             mode="contained"
             onPress={() => {
-              navigation.navigate("NewCatalogItemScreen", {});
+              navigation.navigate("NewCatalogItemScreen", {
+                formData: {
+                  code: searchTerm,
+                },
+              });
             }}
           >
             Add {searchTerm}

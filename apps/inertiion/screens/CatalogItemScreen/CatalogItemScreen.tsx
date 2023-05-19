@@ -184,7 +184,7 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
               color?.toUpperCase() || null,
               size?.toUpperCase() || null,
               description || null,
-              location.toUpperCase(),
+              !!location ? location.toUpperCase() : null,
               id,
             ],
             () => {
@@ -311,7 +311,7 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
             navigation.goBack();
           }}
         >
-          Go Back
+          Back
         </Button>
         <View style={{ alignItems: "center", flexDirection: "row" }}>
           {!!isUpdateNeeded ? (

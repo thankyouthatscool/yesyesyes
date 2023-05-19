@@ -2,7 +2,7 @@ import Checkbox from "expo-checkbox";
 import * as Haptics from "expo-haptics";
 import { FC, useCallback, useEffect, useState } from "react";
 import { ScrollView, ToastAndroid, View } from "react-native";
-import { Card, IconButton, Snackbar, Text } from "react-native-paper";
+import { Button, Card, IconButton, Snackbar, Text } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAppDispatch, useAppSelector } from "@hooks";
@@ -91,13 +91,15 @@ export const ItemQueueScreen: FC<ItemQueueScreenNavProps> = ({
         }}
       >
         <View style={{ alignItems: "center", flexDirection: "row" }}>
-          <IconButton
+          <Button
             icon="arrow-left"
             mode="contained"
             onPress={() => {
               navigation.goBack();
             }}
-          />
+          >
+            Back
+          </Button>
           <Text variant="headlineLarge">Queue</Text>
         </View>
         <IconButton

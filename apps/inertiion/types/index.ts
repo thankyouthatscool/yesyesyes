@@ -21,10 +21,10 @@ export type HomeScreenNavStackProps = {
   NewCatalogItemScreen: {
     formData?: {
       code: string;
-      color: string;
-      description: string;
-      location: string;
-      size: string;
+      color?: string;
+      description?: string;
+      location?: string;
+      size?: string;
     };
   };
   NewStorageLocationScreen: undefined;
@@ -124,7 +124,7 @@ export type NewCatalogItemInput = {
   color?: string;
   size?: string;
   description?: string;
-  location: string;
+  location?: string;
 };
 
 export type CatalogState = {

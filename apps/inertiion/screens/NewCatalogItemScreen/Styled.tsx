@@ -1,9 +1,18 @@
 import { FC, PropsWithChildren } from "react";
 import { View } from "react-native";
 
+import { defaultAppPadding } from "@theme";
+
 export const ButtonWrapper: FC<PropsWithChildren> = ({ children }) => {
   return (
-    <View style={{ flexDirection: "row", justifyContent: "flex-end" }}>
+    <View
+      style={{
+        alignItems: "center",
+        flexDirection: "row",
+        justifyContent: "flex-end",
+        marginTop: defaultAppPadding,
+      }}
+    >
       {children}
     </View>
   );

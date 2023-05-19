@@ -1,7 +1,7 @@
 import * as Crypto from "expo-crypto";
 import { FC, useCallback, useState } from "react";
 import { ScrollView, ToastAndroid } from "react-native";
-import { IconButton, Text, TextInput } from "react-native-paper";
+import { Button, IconButton, Text, TextInput } from "react-native-paper";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAppDispatch, useAppSelector } from "@hooks";
@@ -59,7 +59,7 @@ export const NewCatalogItemScreen: FC<NewCatalogItemScreenNavProps> = ({
             !!color ? color.toUpperCase() : null,
             !!size ? size.toUpperCase() : null,
             !!description ? description : null,
-            location.toUpperCase(),
+            !!location ? location.toUpperCase() : null,
           ],
           () => {
             ToastAndroid.show(
@@ -110,7 +110,9 @@ export const NewCatalogItemScreen: FC<NewCatalogItemScreenNavProps> = ({
   return (
     <SafeAreaView>
       <ScrollView contentContainerStyle={{ padding: defaultAppPadding }}>
-        <Text variant="titleLarge">New Catalog Item</Text>
+        <Text variant="titleLarge">
+          New Catalog Item{formData?.code ? ` - ${formData.code}` : ""}
+        </Text>
         <TextInput
           label="Code"
           mode="outlined"
@@ -172,7 +174,7 @@ export const NewCatalogItemScreen: FC<NewCatalogItemScreenNavProps> = ({
           value={newCatalogItemData.location}
         />
         <ButtonWrapper>
-          <IconButton
+          <Button
             icon="close"
             mode="contained"
             onPress={() => {
@@ -182,15 +184,19 @@ export const NewCatalogItemScreen: FC<NewCatalogItemScreenNavProps> = ({
 
               navigation.goBack();
             }}
-            size={30}
-          />
-          <IconButton
+          >
+            Cancel
+          </Button>
+
+          <Button
             disabled={!newCatalogItemData.code || !newCatalogItemData.location}
             icon="content-save"
             mode="contained"
             onPress={handleSaveNewCatalogItem}
-            size={30}
-          />
+            style={{ marginLeft: defaultAppPadding }}
+          >
+            Save
+          </Button>
         </ButtonWrapper>
       </ScrollView>
     </SafeAreaView>
