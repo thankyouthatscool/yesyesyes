@@ -36,7 +36,7 @@ import {
 } from "react-native-safe-area-context";
 
 import { useAppDispatch, useAppSelector } from "@hooks";
-import { setUploadingState, setSearchResult } from "@store";
+import { setUploadingState, setSearchResult, setSearchTerm } from "@store";
 import { defaultAppPadding } from "@theme";
 import { CatalogItem, StorageComponentNav } from "@types";
 
@@ -60,7 +60,7 @@ const ENV = Constants.expoConfig?.extra?.ENV;
 
 const API_URL =
   ENV === "development:win"
-    ? "http://192.168.0.7:5000"
+    ? "http://192.168.0.8:5000"
     : Constants.expoConfig?.extra?.API_URL!;
 
 const { width: SCREEN_WIDTH } = Dimensions.get("screen");
@@ -89,6 +89,11 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isNotesUpdateNeeded, setIsNotesUpdateNeeded] =
     useState<boolean>(false);
+
+  const [
+    isDeleteItemConfirmationModalOpen,
+    setIsDeleteItemConfirmationModalOpen,
+  ] = useState<boolean>(false);
 
   const [isDisplayFullImage, setIsDisplayFullImage] = useState<boolean>(false);
   const [fullImageScreenURI, setFullScreenImageURI] = useState<string | null>(
@@ -376,6 +381,14 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
                 console.log("will add to the item queue");
               }}
               title="Add to Queue"
+            />
+            <Menu.Item
+              leadingIcon="delete"
+              onPress={() => {
+                setIsDeleteItemConfirmationModalOpen(() => true);
+                setIsMenuOpen(() => false);
+              }}
+              title="Delete Item"
             />
           </Menu>
         </View>
@@ -671,6 +684,87 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
             ))}
         </ScrollView>
       )}
+      <Modal
+        onDismiss={() => {
+          setIsDeleteItemConfirmationModalOpen(() => false);
+        }}
+        style={{
+          alignItems: "center",
+          flexDirection: "row",
+          justifyContent: "center",
+        }}
+        visible={isDeleteItemConfirmationModalOpen}
+      >
+        <View
+          style={{
+            backgroundColor: "white",
+            borderRadius: 10,
+            padding: defaultAppPadding * 3,
+          }}
+        >
+          <View
+            style={{
+              alignItems: "center",
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+          >
+            <Text variant="titleLarge">Confirm DELETE?</Text>
+            <IconButton icon="close" />
+          </View>
+          <Text variant="bodyLarge">Are you sure you want to delete:</Text>
+          <Text>{itemData?.code}</Text>
+          <Text>{itemData?.color}</Text>
+          <Text>{itemData?.size}</Text>
+          <Text>{itemData?.description}</Text>
+          <Text>{itemData?.location}</Text>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "flex-end",
+              marginTop: defaultAppPadding,
+            }}
+          >
+            <Button
+              mode="contained-tonal"
+              onPress={() => {
+                setIsDeleteItemConfirmationModalOpen(() => false);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              mode="contained"
+              onPress={() => {
+                db.transaction(
+                  (tx) => {
+                    tx.executeSql(
+                      `
+                      DELETE FROM items
+                      WHERE id = ?
+                    `,
+                      [itemId]
+                    );
+                  },
+                  (err) => {
+                    console.log(err.message);
+                  }
+                );
+
+                setIsDeleteItemConfirmationModalOpen(() => false);
+
+                dispatch(setSearchTerm(""));
+                dispatch(setSearchResult([]));
+
+                navigation.navigate("HomeScreen");
+              }}
+              style={{ marginLeft: defaultAppPadding }}
+            >
+              Delete
+            </Button>
+          </View>
+        </View>
+      </Modal>
       <Modal
         onDismiss={() => {
           setIsImageSelectModalOpen(() => false);

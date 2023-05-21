@@ -93,10 +93,11 @@ export const ItemQueueScreen: FC<ItemQueueScreenNavProps> = ({
         <View style={{ alignItems: "center", flexDirection: "row" }}>
           <Button
             icon="arrow-left"
-            mode="contained"
+            mode="contained-tonal"
             onPress={() => {
               navigation.goBack();
             }}
+            style={{ marginHorizontal: defaultAppPadding }}
           >
             Back
           </Button>

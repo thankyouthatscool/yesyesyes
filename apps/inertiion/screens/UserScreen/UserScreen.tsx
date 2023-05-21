@@ -13,7 +13,7 @@ const ENV = Constants.expoConfig?.extra?.ENV;
 
 const API_URL =
   ENV === "development:win"
-    ? "http://192.168.0.7:5000"
+    ? "http://192.168.0.8:5000"
     : Constants.expoConfig?.extra?.API_URL!;
 
 export const UserScreen = () => {
