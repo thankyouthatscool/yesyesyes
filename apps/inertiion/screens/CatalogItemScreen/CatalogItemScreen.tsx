@@ -253,6 +253,8 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
   }, [images, itemData]);
 
   const pickImage = useCallback(async (source: "camera" | "gallery") => {
+    ToastAndroid.show("Picking an image", ToastAndroid.LONG);
+
     let res: ImagePicker.ImagePickerResult;
 
     if (source === "camera") {
@@ -265,16 +267,12 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
     } else {
       res = await ImagePicker.launchImageLibraryAsync({
         allowsEditing: false,
+        allowsMultipleSelection: true,
         aspect: [4, 3],
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         quality: 0.5,
       });
     }
-
-    ToastAndroid.show(
-      `There is some res ${res.assets?.length}`,
-      ToastAndroid.LONG
-    );
 
     if (!res.canceled) {
       try {
@@ -295,6 +293,8 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
 
           console.log(err.message);
         } else {
+          ToastAndroid.show("Something went wrong!", ToastAndroid.LONG);
+
           console.log(err);
         }
       }
@@ -517,7 +517,6 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
                         contentFit="contain"
                         source={image.uri}
                         style={{
-                          borderRadius: 10,
                           height: 120,
                           marginRight: defaultAppPadding / 2,
                           width: 90,

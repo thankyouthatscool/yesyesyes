@@ -58,14 +58,16 @@ export const SettingsScreen = () => {
 
               db.transaction(
                 (tx) => {
-                  ["storage", "items", "logs", "notes"].forEach((table) => {
-                    tx.executeSql(`DROP TABLE ${table}`, [], () => {
-                      ToastAndroid.show(
-                        `${table} table dropped!`,
-                        ToastAndroid.SHORT
-                      );
-                    });
-                  });
+                  ["images", "storage", "items", "logs", "notes"].forEach(
+                    (table) => {
+                      tx.executeSql(`DROP TABLE ${table}`, [], () => {
+                        ToastAndroid.show(
+                          `${table} table dropped!`,
+                          ToastAndroid.SHORT
+                        );
+                      });
+                    }
+                  );
                 },
                 (err) => {
                   console.log(err.message);
