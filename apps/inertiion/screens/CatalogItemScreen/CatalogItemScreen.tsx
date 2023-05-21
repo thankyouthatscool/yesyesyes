@@ -271,6 +271,11 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
       });
     }
 
+    ToastAndroid.show(
+      `There is some res ${res.assets?.length}`,
+      ToastAndroid.LONG
+    );
+
     if (!res.canceled) {
       try {
         // TODO: Will need to upload!!!
