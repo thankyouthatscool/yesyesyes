@@ -272,17 +272,27 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
     }
 
     if (!res.canceled) {
-      // TODO: Will need to upload!!!
+      try {
+        // TODO: Will need to upload!!!
 
-      const selectedAssets = res.assets.map((asset) => ({
-        referenceId: itemId,
-        referenceType: "item" as const,
-        uri: asset.uri,
-      }));
+        const selectedAssets = res.assets.map((asset) => ({
+          referenceId: itemId,
+          referenceType: "item" as const,
+          uri: asset.uri,
+        }));
 
-      setIsImageSelectModalOpen(() => false);
-      setImages((images) => [...images, ...selectedAssets]);
-      setIsUpdateNeeded(() => true);
+        setIsImageSelectModalOpen(() => false);
+        setImages((images) => [...images, ...selectedAssets]);
+        setIsUpdateNeeded(() => true);
+      } catch (err) {
+        if (err instanceof Error) {
+          ToastAndroid.show(err.message, ToastAndroid.LONG);
+
+          console.log(err.message);
+        } else {
+          console.log(err);
+        }
+      }
     }
   }, []);
 
@@ -292,7 +302,10 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
   }, [itemId]);
 
   useEffect(() => {
-    console.log(images);
+    ToastAndroid.show(
+      images.map((image) => image.uri).join(", "),
+      ToastAndroid.SHORT
+    );
   }, [images]);
 
   return (

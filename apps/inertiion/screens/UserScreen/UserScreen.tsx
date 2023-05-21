@@ -42,7 +42,13 @@ export const UserScreen = () => {
 
         await setSession!(completeSignIn.createdSessionId)!;
       } catch (err) {
-        console.log(err);
+        if (err instanceof Error) {
+          ToastAndroid.show(err.message, ToastAndroid.LONG);
+        } else {
+          ToastAndroid.show("Something went wrong.", ToastAndroid.LONG);
+
+          console.log(err);
+        }
       }
     }
 
