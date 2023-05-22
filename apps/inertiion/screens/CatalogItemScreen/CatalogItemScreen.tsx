@@ -1041,83 +1041,71 @@ export const CatalogItemScreenStorageComponent: FC<{
   }, [itemStorageData]);
 
   const handleDeleteItemStorageRow = useCallback((id: string) => {
-    let code: string;
-    let color: string;
-    let storageLocation: string;
-    let cartons: number;
-    let pieces: number;
+    console.log("🚀 ~ file: CatalogItemScreen.tsx:1132 ~ id:", id);
 
-    db.transaction(
-      (tx) => {
-        tx.executeSql(
-          `
-          SELECT *
-          FROM storage
+    db.transaction((tx) => {
+      tx.executeSql(
+        `
+          SELECT * FROM storage 
           INNER JOIN items
-          ON items.id = storage.ItemId
-          WHERE storage.storageId = ?
-      `,
-          [id],
-          (_, { rows: { _array } }) => {
-            console.log(_array);
+          ON items.id = storage.itemId
+          WHERE storage.storageId = ?`,
+        [id],
+        (_, { rows: { _array } }) => {
+          console.log(
+            "🚀 ~ file: CatalogItemScreen.tsx:1144 ~ db.transaction ~ _array:",
+            _array
+          );
 
-            code = _array[0].code;
-            color = _array[0].color;
-            storageLocation = _array[0].storageLocation;
-            cartons = _array[0].cartons;
-            pieces = _array[0].pieces;
-          }
-        );
-      },
-      (err) => {
-        console.log(err);
-      }
-    );
+          if (_array.length) {
+            const { code, color, storageLocation, cartons, pieces } = _array[0];
 
-    db.transaction(
-      (tx) => {
-        tx.executeSql(
-          `
-            DELETE FROM storage 
-            WHERE storageId = ?
-          `,
-          [id],
-          () => {
-            setItemStorageData((itemStorageData) =>
-              itemStorageData.filter((item) => item.storageId !== id)
+            console.log(
+              "🚀 ~ file: CatalogItemScreen.tsx:1148 ~ db.transaction ~ code, color, storageLocation, cartons, pieces :",
+              code,
+              color,
+              storageLocation,
+              cartons,
+              pieces
             );
 
-            ToastAndroid.show("Storage Row removed!", ToastAndroid.LONG);
+            tx.executeSql(
+              `
+                INSERT INTO logs
+                VALUES (?, ?, ?, ?, ?, ?)
+            `,
+              [
+                Crypto.randomUUID(),
+                id,
+                "delete, storage",
+                `Storage location "${storageLocation}" deleted. ${cartons} carton(s)/${pieces} piece(s) of ${code} ${
+                  !!color && ` ${color}`
+                } removed.`,
+                userId || "unknown",
+                Date.now().toString(),
+              ]
+            );
+
+            tx.executeSql(
+              "DELETE FROM storage WHERE storageId = ?",
+              [id],
+              (_, { rows: { _array } }) => {
+                console.log(
+                  "🚀 ~ file: CatalogItemScreen.tsx:1153 ~ db.transaction ~ _array :",
+                  _array
+                );
+              }
+            );
+          } else {
+            console.log("only removing from mem");
           }
-        );
 
-        tx.executeSql(
-          `
-            INSERT INTO logs
-            VALUES (?, ?, ?, ?, ?, ?)
-        `,
-          [
-            Crypto.randomUUID(),
-            id,
-            "delete, storage",
-            `Storage location "${storageLocation}" deleted. ${cartons} carton(s)/${pieces} piece(s) of ${code} ${
-              !!color && ` ${color}`
-            } removed.`,
-            userId || "unknown",
-            Date.now().toString(),
-          ],
-          () => {}
-        );
-      },
-      (err) => {
-        console.log(err);
-
-        ToastAndroid.show(
-          "Something went wrong! Please try again later.",
-          ToastAndroid.LONG
-        );
-      }
-    );
+          setItemStorageData((itemStorageData) =>
+            itemStorageData.filter((item) => item.storageId !== id)
+          );
+        }
+      );
+    });
   }, []);
 
   useEffect(() => {
