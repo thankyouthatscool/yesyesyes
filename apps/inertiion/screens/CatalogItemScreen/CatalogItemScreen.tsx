@@ -255,50 +255,57 @@ export const CatalogItemScreen: FC<CatalogItemScreenNavProps> = ({
   const pickImage = useCallback(async (source: "camera" | "gallery") => {
     ToastAndroid.show("Picking an image", ToastAndroid.LONG);
 
-    let res: ImagePicker.ImagePickerResult;
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
 
-    if (source === "camera") {
-      res = await ImagePicker.launchCameraAsync({
-        allowsEditing: false,
-        aspect: [4, 3],
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        quality: 0.5,
-      });
-    } else {
-      res = await ImagePicker.launchImageLibraryAsync({
-        allowsEditing: false,
-        allowsMultipleSelection: true,
-        aspect: [4, 3],
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        quality: 0.5,
-      });
-    }
+    if (status === ImagePicker.PermissionStatus.GRANTED) {
+      let res: ImagePicker.ImagePickerResult;
 
-    if (!res.canceled) {
-      try {
-        // TODO: Will need to upload!!!
+      if (source === "camera") {
+        res = await ImagePicker.launchCameraAsync({
+          allowsEditing: false,
+          allowsMultipleSelection: false,
+          aspect: [4, 3],
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          quality: 0.5,
+        });
+      } else {
+        res = await ImagePicker.launchImageLibraryAsync({
+          allowsEditing: false,
+          allowsMultipleSelection: true,
+          aspect: [4, 3],
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          quality: 0.5,
+        });
+      }
 
-        const selectedAssets = res.assets.map((asset) => ({
-          referenceId: itemId,
-          referenceType: "item" as const,
-          uri: asset.uri,
-        }));
+      if (!res.canceled) {
+        try {
+          // TODO: Will need to upload!!!
 
-        setIsImageSelectModalOpen(() => false);
-        setImages((images) => [...images, ...selectedAssets]);
-        setIsUpdateNeeded(() => true);
-      } catch (err) {
-        if (err instanceof Error) {
-          ToastAndroid.show(err.message, ToastAndroid.LONG);
+          const selectedAssets = res.assets.map((asset) => ({
+            referenceId: itemId,
+            referenceType: "item" as const,
+            uri: asset.uri,
+          }));
 
-          console.log(err.message);
-        } else {
-          ToastAndroid.show("Something went wrong!", ToastAndroid.LONG);
+          setIsImageSelectModalOpen(() => false);
+          setImages((images) => [...images, ...selectedAssets]);
+          setIsUpdateNeeded(() => true);
+        } catch (err) {
+          if (err instanceof Error) {
+            ToastAndroid.show(err.message, ToastAndroid.LONG);
 
-          console.log(err);
+            console.log(err.message);
+          } else {
+            ToastAndroid.show("Something went wrong!", ToastAndroid.LONG);
+
+            console.log(err);
+          }
         }
       }
+    } else {
     }
+    ToastAndroid.show("Do not have camera permission.", ToastAndroid.LONG);
   }, []);
 
   useEffect(() => {
