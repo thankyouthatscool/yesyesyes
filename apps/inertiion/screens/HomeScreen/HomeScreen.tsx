@@ -149,6 +149,13 @@ export const HomeScreen: FC<HomeScreenNavProps> = ({ navigation }) => {
             title="Add New Item"
           />
           <Menu.Item
+            leadingIcon="note"
+            onPress={() => {
+              setIsMenuOpen(() => false);
+            }}
+            title="Add New Note"
+          />
+          <Menu.Item
             leadingIcon="text-box-outline"
             onPress={() => {
               setIsMenuOpen(() => false);
